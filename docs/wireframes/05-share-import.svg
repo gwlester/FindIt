@@ -1,0 +1,67 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Share nearby</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<rect x='16' y='104' width='328' height='300' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='130' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>From Alex</text>
+<clipPath id='received'><rect x='16' y='142' width='328' height='198'/></clipPath>
+<g clip-path='url(#received)'>
+<rect x='30' y='146' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 157 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='157' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Creek crossing</text>
+<text x='64' y='173' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.42011° N, 91.15550° W</text>
+<rect x='30' y='194' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 205 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='205' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Water tower</text>
+<text x='64' y='221' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.45120° N, 91.20102° W</text>
+<rect x='30' y='242' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='253' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Old oak tree cache</text>
+<text x='64' y='269' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.43520° N, 91.19030° W</text>
+<rect x='30' y='290' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 301 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='301' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Picnic table</text>
+<text x='64' y='317' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.43001° N, 91.18002° W</text>
+<rect x='30' y='338' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 349 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='349' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Zoo gate</text>
+<text x='64' y='365' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.53120° N, 91.10102° W</text>
+</g>
+<rect x='334' y='142' width='4' height='198' rx='2' fill='#e2e2e2'/>
+<rect x='334' y='142' width='4' height='129' rx='2' fill='#888'/>
+<rect x='30' y='350' width='142' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='101.0' y='377.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Cancel</text>
+<rect x='188' y='350' width='142' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
+<text x='259.0' y='377.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Import selected</text>
+<rect x='16' y='416' width='328' height='328' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='442' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Share my places</text>
+<text x='30' y='464' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Nearby FindIt users will see you as “Gerald”.</text>
+<clipPath id='share-list-2'><rect x='16' y='476' width='328' height='206'/></clipPath>
+<g clip-path='url(#share-list-2)'>
+<rect x='30' y='482' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 493 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='493' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Bridge micro</text>
+<text x='64' y='509' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.44102° N, 91.18311° W</text>
+<rect x='30' y='530' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 541 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='541' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Creek crossing</text>
+<text x='64' y='557' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.42011° N, 91.15550° W</text>
+<rect x='30' y='578' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='589' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Lakeside ammo can</text>
+<text x='64' y='605' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.40911° N, 91.17208° W</text>
+<rect x='30' y='626' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 637 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='637' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Library bench</text>
+<text x='64' y='653' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.41277° N, 91.17702° W</text>
+<rect x='30' y='674' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 685 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='685' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Old oak tree cache</text>
+<text x='64' y='701' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.43520° N, 91.19030° W</text>
+</g>
+<rect x='334' y='476' width='4' height='206' rx='2' fill='#e2e2e2'/>
+<rect x='334' y='476' width='4' height='124' rx='2' fill='#888'/>
+<rect x='30' y='688' width='300' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='715.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Share 4 places</text>
+</svg>

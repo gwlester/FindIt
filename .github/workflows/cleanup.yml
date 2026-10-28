@@ -1,0 +1,83 @@
+name: Clean up Actions storage
+
+# Keeps Actions storage small:
+#  - deletes a PR's caches as soon as the PR is closed,
+#  - deletes a branch's caches when the branch is deleted,
+#  - weekly: deletes artifacts older than 7 days, caches for branches that no
+#    longer exist, and workflow runs (with their logs) older than 30 days.
+# (Old releases are deleted by the release job in build-android.yml.)
+
+on:
+  pull_request:
+    types: [closed]
+  delete:
+  schedule:
+    - cron: '17 6 * * 1' # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: cleanup-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.ref || 'scheduled' }}
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  GH_REPO: ${{ github.repository }}
+
+jobs:
+  pr-caches:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete caches for the closed PR
+        run: |
+          ref="refs/pull/${{ github.event.pull_request.number }}/merge"
+          gh cache list --ref "$ref" --limit 1000 --json id --jq '.[].id' |
+            while read -r id; do gh cache delete "$id"; done
+
+  branch-caches:
+    if: github.event_name == 'delete' && github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete caches for the deleted branch
+        env:
+          BRANCH: ${{ github.event.ref }}
+        run: |
+          gh cache list --ref "refs/heads/$BRANCH" --limit 1000 --json id --jq '.[].id' |
+            while read -r id; do gh cache delete "$id"; done
+
+  sweep:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete artifacts older than 7 days
+        run: |
+          cutoff=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          gh api --paginate "repos/$GH_REPO/actions/artifacts?per_page=100" \
+            --jq ".artifacts[] | select(.expired == false and .created_at < \"$cutoff\") | .id" |
+            while read -r id; do gh api -X DELETE "repos/$GH_REPO/actions/artifacts/$id"; done
+
+      - name: Delete caches for branches that no longer exist
+        run: |
+          branches=$(gh api --paginate "repos/$GH_REPO/branches?per_page=100" --jq '.[].name')
+          gh cache list --limit 1000 --json id,ref --jq '.[] | "\(.id) \(.ref)"' |
+            while read -r id ref; do
+              case "$ref" in
+                refs/heads/*)
+                  if ! grep -qxF "${ref#refs/heads/}" <<<"$branches"; then gh cache delete "$id"; fi ;;
+                refs/pull/*)
+                  pr=$(cut -d/ -f3 <<<"$ref")
+                  state=$(gh pr view "$pr" --json state --jq .state 2>/dev/null || echo CLOSED)
+                  if [ "$state" != "OPEN" ]; then gh cache delete "$id"; fi ;;
+              esac
+            done
+
+      - name: Delete workflow runs older than 30 days
+        run: |
+          cutoff=$(date -u -d '30 days ago' +%Y-%m-%d)
+          gh api --paginate "repos/$GH_REPO/actions/runs?per_page=100&created=<$cutoff" \
+            --jq '.workflow_runs[] | select(.status == "completed") | .id' |
+            while read -r id; do gh api -X DELETE "repos/$GH_REPO/actions/runs/$id"; done
+
