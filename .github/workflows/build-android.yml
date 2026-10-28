@@ -2,11 +2,9 @@ name: Build Android
 
 on:
   # Every branch in this repo builds on push (PRs from this repo are covered by
-  # that); pull_request is only for PRs from forks. Pushing a version tag (v1.2.3)
-  # builds and publishes a GitHub Release (path filters don't apply to tags).
+  # that); pull_request is only for PRs from forks. Each successful build of
+  # master is published as a release (see the release job).
   push:
-    branches: ['**']
-    tags: ['v*.*.*']
     paths: ['source/**', '.github/workflows/build-android.yml']
   pull_request:
     paths: ['source/**', '.github/workflows/build-android.yml']
@@ -32,6 +30,9 @@ jobs:
     timeout-minutes: 60
     env:
       CI: 1
+      IS_RELEASE: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v7
 
@@ -60,22 +61,31 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      # For a release tag, stamp the version into the app: versionName from the tag,
-      # versionCode from the run number so each release installs over the previous one.
+      # Release builds (master) get a date-based version YYYY.MM.DD.NNN (UTC), where NNN
+      # counts that day's releases. versionCode is YYMMDDNNN so every release installs
+      # over the previous one. Other branches keep the version in app.json.
       - name: Set release version
-        if: startsWith(github.ref, 'refs/tags/v')
+        id: version
+        if: env.IS_RELEASE == 'true'
         env:
-          VERSION: ${{ github.ref_name }}
-          VERSION_CODE: ${{ github.run_number }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
-          node -e '
+          today=$(date -u +%Y.%m.%d)
+          last=$(gh api "repos/$GH_REPO/git/matching-refs/tags/$today." --jq '.[].ref' |
+            sed -n "s|^refs/tags/$today\.\([0-9]\{3\}\)$|\1|p" | sort | tail -1)
+          seq=$(printf '%03d' $((10#${last:-000} + 1)))
+          version="$today.$seq"
+          code="$(date -u +%y%m%d)$seq"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          VERSION="$version" VERSION_CODE="$code" node -e '
             const fs = require("fs");
             const app = JSON.parse(fs.readFileSync("app.json", "utf8"));
-            app.expo.version = process.env.VERSION.replace(/^v/, "");
+            app.expo.version = process.env.VERSION;
             app.expo.android.versionCode = Number(process.env.VERSION_CODE);
             fs.writeFileSync("app.json", JSON.stringify(app, null, 2) + "\n");
-            console.log("version", app.expo.version, "versionCode", app.expo.android.versionCode);
           '
+          echo "Version $version (versionCode $code)"
 
       - name: Generate Android project
         run: npx expo prebuild --platform android --no-install
@@ -95,23 +105,27 @@ jobs:
           retention-days: 7
           compression-level: 0 # APKs are already compressed
 
-  # For a version tag, publish the APK as a GitHub Release. The asset is always named
-  # findit.apk so https://github.com/<repo>/releases/latest/download/findit.apk works.
-  # Release files don't count toward Actions storage.
+  # Publishes each successful master build as a GitHub Release tagged with its
+  # date-based version. The asset is always named findit.apk so
+  # https://github.com/<repo>/releases/latest/download/findit.apk works.
+  # Release files don't count toward Actions storage; cleanup.yml keeps the newest 10.
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: needs.build.outputs.version != ''
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: write
+    concurrency:
+      group: release
+      cancel-in-progress: false
     defaults:
       run:
         working-directory: .
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      TAG: ${{ github.ref_name }}
+      VERSION: ${{ needs.build.outputs.version }}
     steps:
       - uses: actions/download-artifact@v8
         with:
@@ -121,9 +135,5 @@ jobs:
       - name: Publish release
         run: |
           cp apk/*.apk findit.apk
-          # The release may already exist if it was drafted in the GitHub UI.
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" findit.apk --clobber
-          else
-            gh release create "$TAG" findit.apk --verify-tag --title "FindIt $TAG" --generate-notes
-          fi
+          gh release create "$VERSION" findit.apk --target "$GITHUB_SHA" \
+            --title "FindIt $VERSION" --generate-notes --latest

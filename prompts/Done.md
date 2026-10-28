@@ -4,14 +4,15 @@ Completed work, newest first.
 
 ## 2026-10-28: Releases and download link
 
-Request: a link on the main README to the latest release of the FindIt app.
+Requests: a link on the main README to the latest release; date-based versions like `2026.10.28.001`.
 
 Delivered:
-- Pushing a version tag (`v1.2.3`) builds the APK with that version (versionCode = run number)
-  and the `release` job publishes a GitHub Release with `findit.apk` attached.
-- README "Download" section linking to `releases/latest/download/findit.apk` and the latest
-  release page.
-- How to make a release is documented in `docs/building.md`.
+- Every successful `master` build is published as a GitHub Release tagged `YYYY.MM.DD.NNN`
+  (UTC, `NNN` = that day's sequence). The version is stamped into the app; versionCode is `YYMMDDNNN`.
+- APK attached as `findit.apk`; README "Download" section links to
+  `releases/latest/download/findit.apk` and the latest release page.
+- Weekly cleanup keeps the newest 10 releases.
+- Documented in `docs/building.md`.
 
 ## 2026-10-28: Scrolling lists
 

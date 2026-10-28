@@ -1,6 +1,6 @@
 # Building and running
 
-Everything below runs inside `source/`.
+Everything below runs inside `source/`, except the GitHub Actions notes at the end.
 
 ## Prerequisites
 
@@ -58,21 +58,20 @@ from forks), and can be started by hand from the Actions tab once it is on `mast
    signed with the debug key so it can be sideloaded;
 3. uploads the APK as the artifact `findit-<commit>`, kept for **7 days**.
 
-### Making a release
+### Releases
 
-Push a version tag, for example:
+Every successful build of `master` is published as a GitHub Release with a **date-based
+version** `YYYY.MM.DD.NNN` (UTC date; `NNN` counts that day's releases from `001`), for example
+`2026.10.28.001`. The build stamps that version into the app (`versionName`). The Android
+`versionCode` is `YYMMDDNNN` (e.g. `261028001`), so each release installs over the previous one.
+Builds of other branches keep the version in `app.json`.
 
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-(or draft a release with a new `v1.0.0` tag in GitHub's Releases page). The workflow then
-builds with that version (`versionName` 1.0.0, `versionCode` = the workflow run number, so each
-release installs over the last). The `release` job publishes a GitHub Release with the APK
-attached as `findit.apk`. The README's download link
+The APK is attached as `findit.apk`, so the README's download link
 (`https://github.com/gwlester/findit/releases/latest/download/findit.apk`) always points at the
-newest release. Release files don't count toward Actions storage.
+newest release. Release files don't count toward Actions storage, and the weekly cleanup keeps
+only the newest 10 releases (deleting older releases and their tags).
+
+To make a release, merge to `master` (or run the workflow by hand on `master` from the Actions tab).
 
 ### Builds between releases
 
@@ -86,6 +85,7 @@ Every other build is only in the Actions tab: open the run, download the artifac
   after every run (`cache-cleanup: always`). Newer pushes cancel builds still in progress.
 - `.github/workflows/cleanup.yml` deletes a PR's caches when it closes and a branch's caches
   when it is deleted. Once a week it also deletes artifacts older than 7 days, caches for
-  branches that are gone, and workflow runs (and their logs) older than 30 days.
+  branches that are gone, workflow runs (and their logs) older than 30 days, and all but the
+  newest 10 releases.
   Scheduled and branch-delete events only run workflows from the default branch, so this
   starts working once it is merged to `master`. It can also be run by hand from the Actions tab.

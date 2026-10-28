@@ -12,7 +12,8 @@ Simple geocache-type app for Android.
 **[⬇ Download the latest FindIt release (findit.apk)](https://github.com/gwlester/findit/releases/latest/download/findit.apk)**
 ([release notes and older versions](https://github.com/gwlester/findit/releases/latest)).
 Android 7+ on 64-bit ARM phones. Open the file on the phone and allow installs from unknown
-sources. Releases are currently signed with the debug key.
+sources. Releases use date-based versions (e.g. `2026.10.28.001`), one per successful
+build of `master`, and are currently signed with the debug key.
 
 | Folder | Contents |
 | --- | --- |
