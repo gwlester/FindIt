@@ -1,0 +1,33 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>FindIt</text>
+<text x='340' y='69' font-family='Helvetica, Arial, sans-serif' font-size='15' font-weight='bold' fill='#555' text-anchor='end'>Settings</text>
+<text x='180.0' y='112' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#888' font-weight='normal' text-anchor='middle'>Tap a place to find it · long-press to edit</text>
+<rect x='16' y='126' width='328' height='60' rx='12' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='150' font-family='Helvetica, Arial, sans-serif' font-size='16' fill='#333' font-weight='bold' text-anchor='start'>Old oak tree cache</text>
+<text x='30' y='170' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.43520° N, 91.19030° W</text>
+<text x='330' y='161.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='end'>125 m</text>
+<rect x='16' y='196' width='328' height='76' rx='12' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='220' font-family='Helvetica, Arial, sans-serif' font-size='16' fill='#333' font-weight='bold' text-anchor='start'>Bridge micro</text>
+<text x='30' y='240' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.44102° N, 91.18311° W</text>
+<text x='30' y='258' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>From Alex</text>
+<text x='330' y='239.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='end'>1.42 km</text>
+<rect x='16' y='282' width='328' height='60' rx='12' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='306' font-family='Helvetica, Arial, sans-serif' font-size='16' fill='#333' font-weight='bold' text-anchor='start'>Library bench</text>
+<text x='30' y='326' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.41277° N, 91.17702° W</text>
+<text x='330' y='317.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='end'>4.80 km</text>
+<rect x='16' y='352' width='328' height='76' rx='12' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='376' font-family='Helvetica, Arial, sans-serif' font-size='16' fill='#333' font-weight='bold' text-anchor='start'>Lakeside ammo can</text>
+<text x='30' y='396' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.40911° N, 91.17208° W</text>
+<text x='30' y='414' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>From Sam</text>
+<text x='330' y='395.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='end'>5.31 km</text>
+<text x='30' y='454' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Distance from current GPS fix; list sorted by name.</text>
+<line x1='0' y1='674' x2='360' y2='674' stroke='#bbb'/>
+<rect x='16' y='688' width='156' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
+<text x='94.0' y='715.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Add place</text>
+<rect x='188' y='688' width='156' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='266.0' y='715.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Share nearby</text>
+</svg>

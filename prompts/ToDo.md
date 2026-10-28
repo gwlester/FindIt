@@ -1,0 +1,23 @@
+# ToDo
+
+Open work, roughly in priority order. Move items to `Done.md` when finished.
+
+## Verify on hardware
+- [ ] Build a development build (`cd source && npx expo run:android`) and fix any Kotlin
+      compile errors in `modules/findit-native`. It hasn't been compiled yet.
+- [ ] Check the compass on a real phone: rose orientation, arrow direction, true vs magnetic heading.
+- [ ] Check satellite counts against a GNSS test app (e.g. GPSTest).
+- [ ] Test Bluetooth sharing between two Android phones (Android 12+ and, if possible, ≤ 11),
+      including several places, long notes, and two receivers at once.
+
+## Improvements
+- [ ] Keep the screen awake on the compass screen (`expo-keep-awake`).
+- [ ] Smooth the heading (low-pass filter / animated rotation) so the rose doesn't jitter.
+- [ ] Automated unit tests (Jest) for `lib/geo.ts`, `lib/base64.ts`, `ble/protocol.ts`.
+- [ ] App icon and splash screen artwork (currently Expo defaults).
+- [ ] Show a "connected / downloaded by" count history on the sharing side.
+
+## Ideas (not committed)
+- [ ] Import/export GPX files.
+- [ ] Mark places as found, with date.
+- [ ] Optional map view.
