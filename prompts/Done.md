@@ -2,6 +2,17 @@
 
 Completed work, newest first.
 
+## 2026-10-28: Releases and download link
+
+Request: a link on the main README to the latest release of the FindIt app.
+
+Delivered:
+- Pushing a version tag (`v1.2.3`) builds the APK with that version (versionCode = run number)
+  and the `release` job publishes a GitHub Release with `findit.apk` attached.
+- README "Download" section linking to `releases/latest/download/findit.apk` and the latest
+  release page.
+- How to make a release is documented in `docs/building.md`.
+
 ## 2026-10-28: Scrolling lists
 
 Request: the places list and the list of FindIt users nearby must scroll when they don't fit.

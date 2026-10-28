@@ -2,8 +2,11 @@ name: Build Android
 
 on:
   # Every branch in this repo builds on push (PRs from this repo are covered by
-  # that); pull_request is only for PRs from forks.
+  # that); pull_request is only for PRs from forks. Pushing a version tag (v1.2.3)
+  # builds and publishes a GitHub Release (path filters don't apply to tags).
   push:
+    branches: ['**']
+    tags: ['v*.*.*']
     paths: ['source/**', '.github/workflows/build-android.yml']
   pull_request:
     paths: ['source/**', '.github/workflows/build-android.yml']
@@ -57,6 +60,23 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # For a release tag, stamp the version into the app: versionName from the tag,
+      # versionCode from the run number so each release installs over the previous one.
+      - name: Set release version
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          VERSION: ${{ github.ref_name }}
+          VERSION_CODE: ${{ github.run_number }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const app = JSON.parse(fs.readFileSync("app.json", "utf8"));
+            app.expo.version = process.env.VERSION.replace(/^v/, "");
+            app.expo.android.versionCode = Number(process.env.VERSION_CODE);
+            fs.writeFileSync("app.json", JSON.stringify(app, null, 2) + "\n");
+            console.log("version", app.expo.version, "versionCode", app.expo.android.versionCode);
+          '
+
       - name: Generate Android project
         run: npx expo prebuild --platform android --no-install
 
@@ -74,3 +94,36 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           compression-level: 0 # APKs are already compressed
+
+  # For a version tag, publish the APK as a GitHub Release. The asset is always named
+  # findit.apk so https://github.com/<repo>/releases/latest/download/findit.apk works.
+  # Release files don't count toward Actions storage.
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: .
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: findit-${{ github.sha }}
+          path: apk
+
+      - name: Publish release
+        run: |
+          cp apk/*.apk findit.apk
+          # The release may already exist if it was drafted in the GitHub UI.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" findit.apk --clobber
+          else
+            gh release create "$TAG" findit.apk --verify-tag --title "FindIt $TAG" --generate-notes
+          fi

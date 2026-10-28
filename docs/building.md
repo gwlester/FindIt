@@ -58,8 +58,26 @@ from forks), and can be started by hand from the Actions tab once it is on `mast
    signed with the debug key so it can be sideloaded;
 3. uploads the APK as the artifact `findit-<commit>`, kept for **7 days**.
 
-To install: open the run in the Actions tab, download the artifact, unzip it, and open the
-`.apk` on the phone (allow installs from unknown sources).
+### Making a release
+
+Push a version tag, for example:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+(or draft a release with a new `v1.0.0` tag in GitHub's Releases page). The workflow then
+builds with that version (`versionName` 1.0.0, `versionCode` = the workflow run number, so each
+release installs over the last). The `release` job publishes a GitHub Release with the APK
+attached as `findit.apk`. The README's download link
+(`https://github.com/gwlester/findit/releases/latest/download/findit.apk`) always points at the
+newest release. Release files don't count toward Actions storage.
+
+### Builds between releases
+
+Every other build is only in the Actions tab: open the run, download the artifact
+(you need to be signed in to GitHub), unzip it, and open the `.apk` on the phone.
 
 ### Keeping Actions storage clean
 

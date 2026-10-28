@@ -7,6 +7,13 @@ Simple geocache-type app for Android.
   with the approximate distance, an uncertainty radius and live GPS satellite counts below it.
 - Share places with other FindIt users nearby over Bluetooth LE.
 
+## Download
+
+**[⬇ Download the latest FindIt release (findit.apk)](https://github.com/gwlester/findit/releases/latest/download/findit.apk)**
+([release notes and older versions](https://github.com/gwlester/findit/releases/latest)).
+Android 7+ on 64-bit ARM phones. Open the file on the phone and allow installs from unknown
+sources. Releases are currently signed with the debug key.
+
 | Folder | Contents |
 | --- | --- |
 | [`source/`](source) | The Expo / React Native app |

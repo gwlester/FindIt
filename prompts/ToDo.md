@@ -5,6 +5,7 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
 ## Verify on hardware
 - [ ] Make sure the GitHub Actions build passes (it is the first real compile of
       `modules/findit-native`), then install the APK artifact on a phone.
+- [ ] Merge to `master` and tag the first release (`v1.0.0`) so the README download link works.
 - [ ] Check the compass on a real phone: rose orientation, arrow direction, true vs magnetic heading.
 - [ ] Check satellite counts against a GNSS test app (e.g. GPSTest).
 - [ ] Test Bluetooth sharing between two Android phones (Android 12+ and, if possible, ≤ 11),
