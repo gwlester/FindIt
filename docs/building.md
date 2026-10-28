@@ -68,8 +68,8 @@ Builds of other branches keep the version in `app.json`.
 
 The APK is attached as `findit.apk`, so the README's download link
 (`https://github.com/gwlester/findit/releases/latest/download/findit.apk`) always points at the
-newest release. Release files don't count toward Actions storage, and the weekly cleanup keeps
-only the newest 10 releases (deleting older releases and their tags).
+newest release. Only the **two newest releases** are kept: right after publishing, the release
+job deletes older releases and their tags. Release files don't count toward Actions storage.
 
 To make a release, merge to `master` (or run the workflow by hand on `master` from the Actions tab).
 
@@ -85,7 +85,6 @@ Every other build is only in the Actions tab: open the run, download the artifac
   after every run (`cache-cleanup: always`). Newer pushes cancel builds still in progress.
 - `.github/workflows/cleanup.yml` deletes a PR's caches when it closes and a branch's caches
   when it is deleted. Once a week it also deletes artifacts older than 7 days, caches for
-  branches that are gone, workflow runs (and their logs) older than 30 days, and all but the
-  newest 10 releases.
+  branches that are gone, and workflow runs (and their logs) older than 30 days.
   Scheduled and branch-delete events only run workflows from the default branch, so this
   starts working once it is merged to `master`. It can also be run by hand from the Actions tab.

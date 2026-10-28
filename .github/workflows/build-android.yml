@@ -108,7 +108,8 @@ jobs:
   # Publishes each successful master build as a GitHub Release tagged with its
   # date-based version. The asset is always named findit.apk so
   # https://github.com/<repo>/releases/latest/download/findit.apk works.
-  # Release files don't count toward Actions storage; cleanup.yml keeps the newest 10.
+  # Only the two newest releases are kept: older ones (and their tags) are deleted
+  # right after publishing. Release files don't count toward Actions storage.
   release:
     needs: build
     if: needs.build.outputs.version != ''
@@ -137,3 +138,10 @@ jobs:
           cp apk/*.apk findit.apk
           gh release create "$VERSION" findit.apk --target "$GITHUB_SHA" \
             --title "FindIt $VERSION" --generate-notes --latest
+
+      - name: Delete older releases (keep the newest 2)
+        run: |
+          gh release list --limit 1000 --json tagName \
+            --jq '[.[] | .tagName | select(test("^[0-9]{4}\\.[0-9]{2}\\.[0-9]{2}\\.[0-9]{3}$"))]
+                  | sort | reverse | .[2:] | .[]' |
+            while read -r tag; do gh release delete "$tag" --cleanup-tag --yes; done

@@ -11,7 +11,7 @@ Delivered:
   (UTC, `NNN` = that day's sequence). The version is stamped into the app; versionCode is `YYMMDDNNN`.
 - APK attached as `findit.apk`; README "Download" section links to
   `releases/latest/download/findit.apk` and the latest release page.
-- Weekly cleanup keeps the newest 10 releases.
+- Only the two newest releases are kept; the release job deletes older ones (and their tags) after publishing.
 - Documented in `docs/building.md`.
 
 ## 2026-10-28: Scrolling lists

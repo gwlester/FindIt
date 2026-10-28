@@ -4,8 +4,8 @@ name: Clean up Actions storage
 #  - deletes a PR's caches as soon as the PR is closed,
 #  - deletes a branch's caches when the branch is deleted,
 #  - weekly: deletes artifacts older than 7 days, caches for branches that no
-#    longer exist, workflow runs (with their logs) older than 30 days, and all but
-#    the newest 10 date-versioned releases (YYYY.MM.DD.NNN) with their tags.
+#    longer exist, and workflow runs (with their logs) older than 30 days.
+# (Old releases are deleted by the release job in build-android.yml.)
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ on:
 
 permissions:
   actions: write
-  contents: write # deleting old releases and their tags
+  contents: read
 
 concurrency:
   group: cleanup-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.ref || 'scheduled' }}
@@ -81,9 +81,3 @@ jobs:
             --jq '.workflow_runs[] | select(.status == "completed") | .id' |
             while read -r id; do gh api -X DELETE "repos/$GH_REPO/actions/runs/$id"; done
 
-      - name: Keep only the newest 10 releases
-        run: |
-          gh release list --limit 1000 --json tagName,createdAt \
-            --jq '[.[] | select(.tagName | test("^[0-9]{4}\\.[0-9]{2}\\.[0-9]{2}\\.[0-9]{3}$"))]
-                  | sort_by(.createdAt) | reverse | .[10:] | .[].tagName' |
-            while read -r tag; do gh release delete "$tag" --cleanup-tag --yes; done
