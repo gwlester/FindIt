@@ -1,0 +1,76 @@
+name: Build Android
+
+on:
+  # Every branch in this repo builds on push (PRs from this repo are covered by
+  # that); pull_request is only for PRs from forks.
+  push:
+    paths: ['source/**', '.github/workflows/build-android.yml']
+  pull_request:
+    paths: ['source/**', '.github/workflows/build-android.yml']
+  workflow_dispatch:
+
+# A newer push to the same branch/PR cancels the build in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: source
+
+jobs:
+  build:
+    # Skip the duplicate pull_request run for PRs whose branch is in this repo.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CI: 1
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # Caches Gradle dependencies. Only the default branch writes to the cache
+      # (other branches read it), and stale entries are removed after every run.
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-cleanup: always
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Generate Android project
+        run: npx expo prebuild --platform android --no-install
+
+      # Release build, signed with the debug key from the Expo template, so it can
+      # be sideloaded. arm64-v8a only: covers current phones and keeps the build fast.
+      - name: Build APK
+        working-directory: source/android
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: findit-${{ github.sha }}
+          path: source/android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0 # APKs are already compressed

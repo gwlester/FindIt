@@ -2,6 +2,19 @@
 
 Completed work, newest first.
 
+## 2026-10-28: GitHub Actions
+
+Requests: commit and push; GitHub Actions to build; keep Actions storage clean.
+
+Delivered:
+- `.github/workflows/build-android.yml`: typecheck, lint, `expo prebuild`, release APK
+  (arm64-v8a, debug-signed) uploaded as an artifact kept for 7 days; Gradle cache writes only from
+  the default branch, with automatic cleanup; newer pushes cancel builds still running.
+- `.github/workflows/cleanup.yml`: deletes caches when a PR closes or a branch is deleted. Weekly,
+  it also deletes artifacts older than 7 days, caches for branches that are gone, and runs older than
+  30 days.
+- Documented in `docs/building.md`.
+
 ## 2026-10-28: Initial app
 
 Requests:

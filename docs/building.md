@@ -47,3 +47,27 @@ of editing it.
 ## Adding packages
 
 Use `npx expo install <package>` so versions match the Expo SDK.
+
+## Continuous integration (GitHub Actions)
+
+`.github/workflows/build-android.yml` runs on every push that touches `source/` (and on PRs
+from forks), and can be started by hand from the Actions tab once it is on `master`. It:
+
+1. installs dependencies (`npm ci`), then runs the typecheck and lint;
+2. generates the Android project (`expo prebuild`) and builds a release APK for `arm64-v8a`,
+   signed with the debug key so it can be sideloaded;
+3. uploads the APK as the artifact `findit-<commit>`, kept for **7 days**.
+
+To install: open the run in the Actions tab, download the artifact, unzip it, and open the
+`.apk` on the phone (allow installs from unknown sources).
+
+### Keeping Actions storage clean
+
+- Artifacts expire after 7 days. They're stored uncompressed, since APKs are already compressed.
+- The Gradle cache is written only from the default branch, and stale entries are removed
+  after every run (`cache-cleanup: always`). Newer pushes cancel builds still in progress.
+- `.github/workflows/cleanup.yml` deletes a PR's caches when it closes and a branch's caches
+  when it is deleted. Once a week it also deletes artifacts older than 7 days, caches for
+  branches that are gone, and workflow runs (and their logs) older than 30 days.
+  Scheduled and branch-delete events only run workflows from the default branch, so this
+  starts working once it is merged to `master`. It can also be run by hand from the Actions tab.
