@@ -73,4 +73,5 @@ Delivered:
   ESLint at 9.x, because eslint-plugin-react doesn't support ESLint 10 yet.
 - Checks run: `tsc` and `eslint` pass, `expo prebuild` succeeds, the Android JS bundle exports,
   and the geo, coordinate-parsing, base64 and protocol logic were spot-checked with a script.
-  **Not yet compiled or run on a device** (no Android SDK in the build environment).
+  Not run on a device yet. The first GitHub Actions build (run 40787921139) compiled everything,
+  including the Kotlin module, and produced a 32 MB release APK.

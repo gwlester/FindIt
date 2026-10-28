@@ -3,8 +3,7 @@
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
 ## Verify on hardware
-- [ ] Make sure the GitHub Actions build passes (it is the first real compile of
-      `modules/findit-native`), then install the APK artifact on a phone.
+- [ ] Install the APK (Actions artifact, or the first release once merged) on a phone.
 - [ ] Merge to `master` so the first release is published and the README download link works.
 - [ ] Check the compass on a real phone: rose orientation, arrow direction, true vs magnetic heading.
 - [ ] Check satellite counts against a GNSS test app (e.g. GPSTest).
