@@ -1,6 +1,7 @@
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   fetchSharedPlaces,
@@ -40,6 +41,7 @@ export default function ShareScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
   const { settings } = useSettings();
+  const insets = useSafeAreaInsets();
 
   const [bluetooth, setBluetooth] = useState<string>('Unknown');
   const [places, setPlaces] = useState<Place[]>([]);
@@ -163,8 +165,9 @@ export default function ShareScreen() {
     Alert.alert('Imported', `Added ${added} place${added === 1 ? '' : 's'}${skipped ? `, skipped ${skipped} already saved` : ''}.`);
   };
 
+  // Each list scrolls inside its own section so the buttons always stay on screen.
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <View style={[styles.screen, { paddingBottom: insets.bottom + 16 }]}>
       {!bluetoothReady ? (
         <Text style={[styles.warning, { color: theme.danger }]}>
           {bluetooth === 'PoweredOff' ? 'Bluetooth is off — turn it on to share.' : `Bluetooth: ${bluetooth}`}
@@ -172,20 +175,22 @@ export default function ShareScreen() {
       ) : null}
 
       {received ? (
-        <Section title={`From ${received.from}`}>
-          {received.places.length === 0 ? (
-            <Text style={{ color: theme.muted }}>They aren’t sharing any places.</Text>
-          ) : (
-            received.places.map((p, i) => (
-              <Checkbox
-                key={i}
-                checked={received.selected.has(i)}
-                label={p.name}
-                sublabel={formatLatLon(p.latitude, p.longitude)}
-                onToggle={() => setReceived({ ...received, selected: toggle(received.selected, i) })}
-              />
-            ))
-          )}
+        <Section title={`From ${received.from}`} style={styles.fill}>
+          <ScrollView style={styles.fill} persistentScrollbar>
+            {received.places.length === 0 ? (
+              <Text style={{ color: theme.muted }}>They aren’t sharing any places.</Text>
+            ) : (
+              received.places.map((p, i) => (
+                <Checkbox
+                  key={i}
+                  checked={received.selected.has(i)}
+                  label={p.name}
+                  sublabel={formatLatLon(p.latitude, p.longitude)}
+                  onToggle={() => setReceived({ ...received, selected: toggle(received.selected, i) })}
+                />
+              ))
+            )}
+          </ScrollView>
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
               <Button title="Cancel" variant="secondary" onPress={() => setReceived(null)} />
@@ -195,56 +200,60 @@ export default function ShareScreen() {
             </View>
           </View>
         </Section>
-      ) : null}
+      ) : (
+        <Section title="Receive from nearby" style={styles.fill}>
+          <Button
+            title={scanning ? 'Stop looking' : 'Look for nearby FindIt users'}
+            variant={scanning ? 'secondary' : 'primary'}
+            onPress={toggleScanning}
+            disabled={!bluetoothReady || fetching != null}
+          />
+          <ScrollView style={styles.fill} persistentScrollbar>
+            {scanning && nearby.size === 0 ? (
+              <View style={styles.row}>
+                <ActivityIndicator color={theme.accent} />
+                <Text style={{ color: theme.muted }}>Looking… the other phone must be sharing.</Text>
+              </View>
+            ) : null}
+            {[...nearby.values()].map((user) => (
+              <Pressable
+                key={user.id}
+                onPress={() => download(user)}
+                disabled={fetching != null}
+                style={({ pressed }) => [styles.user, { borderColor: theme.border, opacity: pressed ? 0.7 : 1 }]}
+              >
+                <Text style={{ color: theme.text, fontSize: 16, fontWeight: '600' }}>{user.name}</Text>
+                <Text style={{ color: theme.muted }}>{signalLabel(user.rssi)} · tap to download</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+          {fetching ? (
+            <View style={styles.row}>
+              <ActivityIndicator color={theme.accent} />
+              <Text style={{ color: theme.muted }}>
+                {fetching.total ? `Downloading ${fetching.done} of ${fetching.total}…` : 'Connecting…'}
+              </Text>
+            </View>
+          ) : null}
+        </Section>
+      )}
 
-      <Section title="Receive from nearby">
-        <Button
-          title={scanning ? 'Stop looking' : 'Look for nearby FindIt users'}
-          variant={scanning ? 'secondary' : 'primary'}
-          onPress={toggleScanning}
-          disabled={!bluetoothReady || fetching != null}
-        />
-        {scanning && nearby.size === 0 ? (
-          <View style={styles.row}>
-            <ActivityIndicator color={theme.accent} />
-            <Text style={{ color: theme.muted }}>Looking… the other phone must be sharing.</Text>
-          </View>
-        ) : null}
-        {[...nearby.values()].map((user) => (
-          <Pressable
-            key={user.id}
-            onPress={() => download(user)}
-            disabled={fetching != null}
-            style={({ pressed }) => [styles.user, { borderColor: theme.border, opacity: pressed ? 0.7 : 1 }]}
-          >
-            <Text style={{ color: theme.text, fontSize: 16, fontWeight: '600' }}>{user.name}</Text>
-            <Text style={{ color: theme.muted }}>{signalLabel(user.rssi)} · tap to download</Text>
-          </Pressable>
-        ))}
-        {fetching ? (
-          <View style={styles.row}>
-            <ActivityIndicator color={theme.accent} />
-            <Text style={{ color: theme.muted }}>
-              {fetching.total ? `Downloading ${fetching.done} of ${fetching.total}…` : 'Connecting…'}
-            </Text>
-          </View>
-        ) : null}
-      </Section>
-
-      <Section title="Share my places">
+      <Section title="Share my places" style={styles.fill}>
         <Text style={{ color: theme.muted, marginBottom: 6 }}>
           Nearby FindIt users will see you as “{settings.displayName}”.
         </Text>
-        {places.map((p) => (
-          <Checkbox
-            key={p.id}
-            checked={selected.has(p.id)}
-            label={p.name}
-            sublabel={formatLatLon(p.latitude, p.longitude)}
-            onToggle={() => !sharing && setSelected(toggle(selected, p.id))}
-          />
-        ))}
-        {places.length === 0 ? <Text style={{ color: theme.muted }}>You have no places to share yet.</Text> : null}
+        <ScrollView style={styles.fill} persistentScrollbar>
+          {places.map((p) => (
+            <Checkbox
+              key={p.id}
+              checked={selected.has(p.id)}
+              label={p.name}
+              sublabel={formatLatLon(p.latitude, p.longitude)}
+              onToggle={() => !sharing && setSelected(toggle(selected, p.id))}
+            />
+          ))}
+          {places.length === 0 ? <Text style={{ color: theme.muted }}>You have no places to share yet.</Text> : null}
+        </ScrollView>
         <Button
           title={sharing ? 'Stop sharing' : `Share ${selected.size} place${selected.size === 1 ? '' : 's'}`}
           variant={sharing ? 'danger' : 'primary'}
@@ -257,13 +266,15 @@ export default function ShareScreen() {
           </Text>
         ) : null}
       </Section>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, paddingBottom: 48 },
-  warning: { fontSize: 15, fontWeight: '600', marginBottom: 12 },
+  screen: { flex: 1, padding: 16, gap: 12 },
+  // Sections split the free height; each needs room for a few rows before scrolling.
+  fill: { flex: 1, minHeight: 120, marginBottom: 0 },
+  warning: { fontSize: 15, fontWeight: '600' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 8 },
   user: { borderWidth: 1, borderRadius: 10, padding: 12, marginTop: 8 },
 });

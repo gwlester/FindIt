@@ -11,7 +11,8 @@ Orange text is annotation, not UI.
 
 The list of known places, sorted by name, with the distance from your current GPS fix.
 Tap a place to open the compass; long-press it to edit or delete. Places received from
-someone else show who they came from.
+someone else show who they came from. The list scrolls when there are more places than fit;
+the **Add place** / **Share nearby** buttons stay fixed at the bottom.
 
 ![Places](wireframes/01-places.svg)
 
@@ -42,14 +43,19 @@ can also be typed as decimal degrees (`30.4352`), degrees and decimal minutes
 
 Two independent halves. **Receive from nearby** scans for phones that are sharing and lists
 them by name and rough signal strength. **Share my places** lets you tick which places to
-offer and starts Bluetooth advertising while the screen is open.
+offer and starts Bluetooth advertising while the screen is open. The two sections split the
+screen; the nearby-users list and the places checklist each scroll inside their own section,
+so the **Look for…** and **Share N places** buttons are always visible. Both phones can share
+and look at the same time.
 
 ![Share nearby](wireframes/04-share.svg)
 
 ## 5. Share nearby: import
 
-After tapping a nearby user, their places download and you choose which to keep.
-Places you already have (same name, same coordinates) are skipped.
+After tapping a nearby user, their places download and the import panel replaces the
+"Receive from nearby" section until you import or cancel. The received list scrolls, with
+**Cancel** / **Import selected** fixed below it. Places you already have (same name, same
+coordinates) are skipped.
 
 ![Import](wireframes/05-share-import.svg)
 

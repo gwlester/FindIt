@@ -2,6 +2,17 @@
 
 Completed work, newest first.
 
+## 2026-10-28: Scrolling lists
+
+Request: the places list and the list of FindIt users nearby must scroll when they don't fit.
+
+Delivered:
+- Places screen: the list scrolls between the header and the fixed bottom buttons (scrollbar always shown).
+- Share nearby: the screen no longer scrolls as one page. "Receive from nearby" (or the import panel)
+  and "Share my places" each take part of the screen; their lists scroll inside the section so the
+  buttons stay visible.
+- Wireframes updated to show the scrolling regions.
+
 ## 2026-10-28: GitHub Actions
 
 Requests: commit and push; GitHub Actions to build; keep Actions storage clean.

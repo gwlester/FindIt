@@ -57,7 +57,9 @@ export default function PlacesScreen() {
       <FlatList
         data={places}
         keyExtractor={(p) => String(p.id)}
-        contentContainerStyle={places.length === 0 ? styles.emptyContainer : styles.list}
+        style={styles.list}
+        persistentScrollbar
+        contentContainerStyle={places.length === 0 ? styles.emptyContainer : styles.listContent}
         ListHeaderComponent={
           places.length > 0 ? (
             <Text style={[styles.tip, { color: theme.muted }]}>Tap a place to find it · long-press to edit</Text>
@@ -107,7 +109,8 @@ export default function PlacesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  list: { padding: 16, paddingBottom: 40, gap: 10 },
+  list: { flex: 1 },
+  listContent: { padding: 16, paddingBottom: 40, gap: 10 },
   emptyContainer: { flexGrow: 1, justifyContent: 'center', padding: 32 },
   empty: { textAlign: 'center', fontSize: 16, lineHeight: 22 },
   row: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 12, borderWidth: 1, gap: 12 },

@@ -60,6 +60,19 @@ class Screen:
         if sub:
             self.text(x + 34, y + 27, sub, 12, MUTED)
 
+    def clip_start(self, cid, x, y, w, h):
+        """Everything until clip_end() is clipped to this box (a scrolling region)."""
+        self.add(f"<clipPath id='{cid}'><rect x='{x}' y='{y}' width='{w}' height='{h}'/></clipPath>")
+        self.add(f"<g clip-path='url(#{cid})'>")
+
+    def clip_end(self):
+        self.add("</g>")
+
+    def scrollbar(self, x, y, h, thumb_frac=0.45):
+        """Scroll indicator: a track with a thumb at the top."""
+        self.add(f"<rect x='{x}' y='{y}' width='4' height='{h}' rx='2' fill='#e2e2e2'/>")
+        self.add(f"<rect x='{x}' y='{y}' width='4' height='{h * thumb_frac:.0f}' rx='2' fill='{MUTED}'/>")
+
     def note(self, x, y, s):
         """Annotation (callout) outside normal UI, drawn in a hand-note style."""
         self.text(x, y, s, 11, "#b04a00", "normal")
@@ -90,12 +103,17 @@ def places():
     s = Screen("FindIt", header_right="Settings", back=False)
     s.text(W / 2, 112, "Tap a place to find it · long-press to edit", 11, MUTED, anchor="middle")
     rows = [
-        ("Old oak tree cache", "30.43520° N, 91.19030° W", None, "125 m"),
         ("Bridge micro", "30.44102° N, 91.18311° W", "From Alex", "1.42 km"),
-        ("Library bench", "30.41277° N, 91.17702° W", None, "4.80 km"),
+        ("Creek crossing", "30.42011° N, 91.15550° W", None, "3.38 km"),
         ("Lakeside ammo can", "30.40911° N, 91.17208° W", "From Sam", "5.31 km"),
+        ("Library bench", "30.41277° N, 91.17702° W", None, "4.80 km"),
+        ("Old oak tree cache", "30.43520° N, 91.19030° W", None, "125 m"),
+        ("Water tower", "30.45120° N, 91.20102° W", "From Alex", "1.77 km"),
+        ("Zoo gate", "30.53120° N, 91.10102° W", None, "12.4 km"),
+        ("Zydeco park", "30.52011° N, 91.12550° W", None, "13.0 km"),
     ]
     y = 126
+    s.clip_start("places", 0, 120, W, H - 86 - 120)
     for name, coords, src, dist in rows:
         h = 76 if src else 60
         s.rect(16, y, W - 32, h, fill="#fff", r=12)
@@ -105,7 +123,8 @@ def places():
             s.text(30, y + 62, src, 12, MUTED)
         s.text(W - 30, y + h / 2 + 5, dist, 15, ACCENT, "bold", "end")
         y += h + 10
-    s.note(30, y + 16, "Distance from current GPS fix; list sorted by name.")
+    s.clip_end()
+    s.scrollbar(W - 9, 126, H - 86 - 132, 0.7)
     s.add(f"<line x1='0' y1='{H-86}' x2='{W}' y2='{H-86}' stroke='{LINE}'/>")
     s.button(16, H - 72, 156, "Add place")
     s.button(188, H - 72, 156, "Share nearby", filled=False)
@@ -188,55 +207,64 @@ def compass():
     s.render("03-compass")
 
 
+def share_section(s, top, bottom, scroll_id):
+    """'Share my places': fixed title and button, scrolling checklist between them."""
+    s.rect(16, top, W - 32, bottom - top, fill=FILL, r=12)
+    s.text(30, top + 26, "Share my places", 17, weight="bold")
+    s.text(30, top + 48, "Nearby FindIt users will see you as “Gerald”.", 12, MUTED)
+    items = [
+        ("Bridge micro", "30.44102° N, 91.18311° W", True),
+        ("Creek crossing", "30.42011° N, 91.15550° W", True),
+        ("Lakeside ammo can", "30.40911° N, 91.17208° W", False),
+        ("Library bench", "30.41277° N, 91.17702° W", True),
+        ("Old oak tree cache", "30.43520° N, 91.19030° W", True),
+    ]
+    list_top, list_bottom = top + 60, bottom - 62
+    s.clip_start(scroll_id, 16, list_top, W - 32, list_bottom - list_top)
+    for i, (n, c, ch) in enumerate(items):
+        s.checkbox(30, list_top + 6 + i * 48, n, c, ch)
+    s.clip_end()
+    s.scrollbar(W - 26, list_top, list_bottom - list_top, 0.6)
+    s.button(30, bottom - 56, W - 60, "Share 4 places")
+
+
 def share():
     s = Screen("Share nearby")
-    s.rect(16, 104, W - 32, 210, fill=FILL, r=12)
+    s.rect(16, 104, W - 32, 300, fill=FILL, r=12)
     s.text(30, 130, "Receive from nearby", 17, weight="bold")
     s.button(30, 142, W - 60, "Stop looking", filled=False)
-    for i, (n, d) in enumerate([("Alex", "very close"), ("Sam's Pixel", "farther away")]):
-        y = 196 + i * 56
-        s.rect(30, y, W - 60, 48, fill="#fff", r=10)
+    s.clip_start("nearby", 16, 194, W - 32, 198)
+    users = [("Alex", "very close"), ("Sam's Pixel", "close"), ("Jo", "farther away"), ("Pat", "farther away")]
+    for i, (n, d) in enumerate(users):
+        y = 198 + i * 56
+        s.rect(30, y, W - 66, 48, fill="#fff", r=10)
         s.text(42, y + 20, n, 15, weight="bold")
         s.text(42, y + 38, f"{d} · tap to download", 12, MUTED)
-    s.rect(16, 328, W - 32, 330, fill=FILL, r=12)
-    s.text(30, 354, "Share my places", 17, weight="bold")
-    s.text(30, 376, "Nearby FindIt users will see you as “Gerald”.", 12, MUTED)
-    items = [
-        ("Old oak tree cache", "30.43520° N, 91.19030° W", True),
-        ("Bridge micro", "30.44102° N, 91.18311° W", True),
-        ("Library bench", "30.41277° N, 91.17702° W", False),
-        ("Lakeside ammo can", "30.40911° N, 91.17208° W", True),
-    ]
-    for i, (n, c, ch) in enumerate(items):
-        s.checkbox(30, 392 + i * 48, n, c, ch)
-    s.button(30, 590, W - 60, "Share 3 places")
-    s.note(16, 684, "Sharing advertises over Bluetooth LE while this screen is open.")
-    s.note(16, 700, "Both phones can share and look at the same time.")
+    s.clip_end()
+    s.scrollbar(W - 26, 194, 198, 0.75)
+    share_section(s, 416, 744, "share-list")
     s.render("04-share")
 
 
 def receive():
     s = Screen("Share nearby")
-    s.rect(16, 104, W - 32, 290, fill=FILL, r=12)
+    s.rect(16, 104, W - 32, 300, fill=FILL, r=12)
     s.text(30, 130, "From Alex", 17, weight="bold")
     items = [
         ("Creek crossing", "30.42011° N, 91.15550° W", True),
         ("Water tower", "30.45120° N, 91.20102° W", True),
         ("Old oak tree cache", "30.43520° N, 91.19030° W", False),
+        ("Picnic table", "30.43001° N, 91.18002° W", True),
+        ("Zoo gate", "30.53120° N, 91.10102° W", True),
     ]
+    s.clip_start("received", 16, 142, W - 32, 198)
     for i, (n, c, ch) in enumerate(items):
-        s.checkbox(30, 148 + i * 48, n, c, ch)
-    s.note(30, 306, "Places you already have are skipped on import.")
-    s.button(30, 326, 142, "Cancel", filled=False)
-    s.button(188, 326, 142, "Import selected")
-    s.rect(16, 408, W - 32, 96, fill=FILL, r=12, dash=True)
-    s.text(30, 434, "Receive from nearby", 17, MUTED, "bold")
-    s.text(30, 460, "(list of nearby users)", 13, MUTED)
-    s.rect(16, 518, W - 32, 96, fill=FILL, r=12, dash=True)
-    s.text(30, 544, "Share my places", 17, MUTED, "bold")
-    s.text(30, 570, "(checklist + Share button)", 13, MUTED)
-    s.note(16, 640, "After tapping a nearby user: connect → download →")
-    s.note(16, 654, "pick what to keep.")
+        s.checkbox(30, 146 + i * 48, n, c, ch)
+    s.clip_end()
+    s.scrollbar(W - 26, 142, 198, 0.65)
+    s.button(30, 350, 142, "Cancel", filled=False)
+    s.button(188, 350, 142, "Import selected")
+    share_section(s, 416, 744, "share-list-2")
     s.render("05-share-import")
 
 

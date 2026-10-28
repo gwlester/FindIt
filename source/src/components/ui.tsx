@@ -1,5 +1,14 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  type StyleProp,
+  type TextInputProps,
+  type ViewStyle,
+} from 'react-native';
 
 import { useTheme } from '../lib/theme';
 
@@ -48,10 +57,10 @@ export function Field({ label, hint, ...props }: TextInputProps & { label: strin
   );
 }
 
-export function Section({ title, children }: { title: string; children: ReactNode }) {
+export function Section({ title, children, style }: { title: string; children: ReactNode; style?: StyleProp<ViewStyle> }) {
   const theme = useTheme();
   return (
-    <View style={[styles.section, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+    <View style={[styles.section, { backgroundColor: theme.surface, borderColor: theme.border }, style]}>
       <Text style={[styles.sectionTitle, { color: theme.text }]}>{title}</Text>
       {children}
     </View>
