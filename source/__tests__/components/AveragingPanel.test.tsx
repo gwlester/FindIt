@@ -30,7 +30,7 @@ test('before any fix, when stopped, with one ignored fix and an error', async ()
   const onUse = jest.fn();
   await renderApp(
     <AveragingPanel running={false} fixes={1} average={null} error="GPS lost" onUse={onUse} onCancel={jest.fn()} />,
-    { settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90 } },
+    { settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const } },
   );
   expect(screen.getByText('Averaging stopped')).toBeOnTheScreen();
   expect(screen.getByText(/Waiting for GPS fixes… \(1 poor fix ignored\)/)).toBeOnTheScreen();

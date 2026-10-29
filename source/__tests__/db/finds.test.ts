@@ -107,9 +107,9 @@ test('deleting a place deletes its finds', async () => {
 });
 
 test('settings: found places mode (default once) and hiding found places', async () => {
-  expect(await loadSettings(db as never)).toMatchObject({ findMode: 'once', hideFound: false, shareHistoryDays: 90 });
-  await saveSettings(db as never, { ...DEFAULT_SETTINGS, findMode: 'log', hideFound: true, shareHistoryDays: 90 });
-  expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true, shareHistoryDays: 90 });
+  expect(await loadSettings(db as never)).toMatchObject({ findMode: 'once', hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const });
+  await saveSettings(db as never, { ...DEFAULT_SETTINGS, findMode: 'log', hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const });
+  expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const });
   await saveSettings(db as never, { ...DEFAULT_SETTINGS, findMode: 'off' });
   expect((await loadSettings(db as never)).findMode).toBe('off');
   await db.runAsync("UPDATE settings SET value = 'weird' WHERE key = 'findMode'");

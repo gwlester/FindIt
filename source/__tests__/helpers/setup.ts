@@ -13,6 +13,7 @@ jest.mock('expo-sqlite', () => require('./expoSqliteMock'));
 jest.mock('expo-keep-awake', () => require('./keepAwakeMock'));
 jest.mock('expo-router', () => require('./expoRouterMock'));
 jest.mock('react-native-ble-plx', () => require('./bleMock'));
+jest.mock('@maplibre/maplibre-react-native', () => require('./maplibreMock'));
 jest.mock('../../modules/findit-native', () => ({
   __esModule: true,
   default: require('./nativeModuleMock').nativeMock,

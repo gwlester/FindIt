@@ -2,6 +2,18 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Map screen
+
+Built test-first (map sources, initial view, setting, screen):
+- MapLibre (`@maplibre/maplibre-react-native` 11.5) with free sources: OpenFreeMap streets
+  (OpenStreetMap data, no key) and USGS National Map satellite imagery (public domain, US only;
+  a note appears when the map is outside the US).
+- All places as labelled pins (✓ for ones I've found) and the blue "you" dot. Opens framed to
+  fit the places, on one place from **Show on map**, or following you with no places. Tap a pin
+  for its distance and **Find it**. The Map / Satellite choice is remembered.
+- Entry points: **Map** in the places header and **Show on map** on long-press.
+- Wireframes 01 (header) and 09 (map); architecture (stack, data leaving the phone).
+
 ## 2026-10-29: App icon and splash (B · Pin)
 
 - Three concepts in Girl Scout green and blues (`docs/branding/`); the owner chose **B · Pin**:
