@@ -3,8 +3,9 @@
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
 ## Current wave (agreed 2026-10-29; one PR each, built test-first)
-- [ ] App icon and splash screen: 2–3 concepts (Girl Scout green, blues) for the owner to
-      review before one is used. **Owner merges this one.**
+- [ ] App icon and splash screen: three concepts are in `docs/branding/` (A Compass, B Pin,
+      C Search area) for the owner to review. **Owner merges this one**, then a follow-up PR
+      wires the chosen concept into `source/assets` and `app.json`.
 
 ## Next wave
 - [ ] Map view with free maps (OpenStreetMap-based via MapLibre) and US-only satellite imagery
