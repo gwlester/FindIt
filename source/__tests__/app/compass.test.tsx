@@ -4,6 +4,7 @@ import { useLocalSearchParams } from 'expo-router';
 
 import CompassScreen from '../../src/app/compass/[id]';
 import { emitHeading, emitPosition, emitPositionError } from '../helpers/expoLocationMock';
+import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
 import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
 import { place, renderApp } from '../helpers/renderApp';
 
@@ -12,6 +13,13 @@ const M_LAT = 110574;
 
 beforeEach(() => {
   jest.mocked(useLocalSearchParams).mockReturnValue({ id: '1' });
+});
+
+test('keeps the screen awake while open', async () => {
+  await renderApp(<CompassScreen />, { places: [OAK] });
+  expect(activeKeepAwakeTags()).toEqual(['compass']);
+  await screen.unmount();
+  expect(activeKeepAwakeTags()).toEqual([]);
 });
 
 test('before any fix', async () => {

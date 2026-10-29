@@ -5,6 +5,7 @@ import { useSettings } from '../hooks/useSettings';
 import type { Average } from '../lib/averaging';
 import { formatDistance } from '../lib/format';
 import { useTheme } from '../lib/theme';
+import { KeepAwake } from './KeepAwake';
 import { Button } from './ui';
 
 type Props = {
@@ -31,6 +32,7 @@ export function AveragingPanel({ running, fixes, average, error, onUse, onCancel
 
   return (
     <View style={[styles.panel, { borderColor: theme.accent }]}>
+      <KeepAwake tag="averaging" />
       <View style={styles.row}>
         {running ? <ActivityIndicator color={theme.accent} /> : null}
         <Text style={[styles.title, { color: theme.text }]}>

@@ -6,6 +6,7 @@ import { requestBluetoothPermissions } from '../../src/ble/permissions';
 import { decodeInfo, decodeItem } from '../../src/ble/protocol';
 import { listPlaces } from '../../src/db/locations';
 import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
+import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
 import { mockAlert, place, renderApp } from '../helpers/renderApp';
 
 jest.mock('../../src/ble/permissions', () => ({ requestBluetoothPermissions: jest.fn(async () => true) }));
@@ -94,6 +95,29 @@ describe('sharing my places', () => {
     expect(screen.getByRole('button', { name: 'Look for nearby FindIt users' })).toBeDisabled();
     await act(async () => setBtState('Unauthorized'));
     expect(screen.getByText('Bluetooth: Unauthorized')).toBeOnTheScreen();
+  });
+});
+
+describe('keeping the screen awake', () => {
+  it('only while sharing, looking or downloading', async () => {
+    const u = userEvent.setup();
+    await renderApp(<ShareScreen />, { places: [place('Oak')] });
+    expect(activeKeepAwakeTags()).toEqual([]);
+
+    await u.press(screen.getByRole('button', { name: 'Share 1 place' }));
+    expect(activeKeepAwakeTags()).toEqual(['share']);
+    await u.press(screen.getByRole('button', { name: 'Stop sharing' }));
+    expect(activeKeepAwakeTags()).toEqual([]);
+
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    expect(activeKeepAwakeTags()).toEqual(['share']);
+    await act(async () => scan.onUser(user('d1', 'Alex', -50)));
+    let finish!: (v: Awaited<ReturnType<typeof fetchSharedPlaces>>) => void;
+    jest.mocked(fetchSharedPlaces).mockImplementationOnce(() => new Promise((resolve) => (finish = resolve)));
+    await u.press(screen.getByText('Alex'));
+    expect(activeKeepAwakeTags()).toEqual(['share']); // downloading (scan stopped)
+    await act(async () => finish({ from: 'Alex', places: [] }));
+    expect(activeKeepAwakeTags()).toEqual([]);
   });
 });
 

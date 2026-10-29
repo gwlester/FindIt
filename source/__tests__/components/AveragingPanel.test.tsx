@@ -2,6 +2,7 @@ import { act, screen, userEvent } from '@testing-library/react-native';
 
 import { AveragingPanel } from '../../src/components/AveragingPanel';
 import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
+import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
 import { renderApp } from '../helpers/renderApp';
 
 const AVERAGE = { latitude: 1, longitude: 2, count: 84, durationSec: 84, spread: 3.4, accuracy: 2.1 };
@@ -37,6 +38,13 @@ test('before any fix, when stopped, with one ignored fix and an error', async ()
   expect(screen.getByRole('button', { name: 'Use average' })).toBeDisabled();
   await act(async () => emitNative('onGnssStatus', { known: 1, inView: 1, used: 0, usedByConstellation: {} }));
   expect(screen.getByText('Satellites: 0 used · 1 in view')).toBeOnTheScreen();
+});
+
+test('keeps the screen awake while averaging', async () => {
+  await renderApp(
+    <AveragingPanel running fixes={0} average={null} error={null} onUse={jest.fn()} onCancel={jest.fn()} />,
+  );
+  expect(activeKeepAwakeTags()).toEqual(['averaging']);
 });
 
 test('no ignored fixes', async () => {

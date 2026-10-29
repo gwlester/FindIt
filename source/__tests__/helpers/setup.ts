@@ -5,10 +5,12 @@ import { resetBleMock } from './bleMock';
 import { useLocalSearchParams } from './expoRouterMock';
 import { setCurrentDb } from './expoSqliteMock';
 import { resetLocationMock } from './expoLocationMock';
+import { resetKeepAwakeMock } from './keepAwakeMock';
 import { resetNativeMock } from './nativeModuleMock';
 
 jest.mock('expo-location', () => require('./expoLocationMock'));
 jest.mock('expo-sqlite', () => require('./expoSqliteMock'));
+jest.mock('expo-keep-awake', () => require('./keepAwakeMock'));
 jest.mock('expo-router', () => require('./expoRouterMock'));
 jest.mock('react-native-ble-plx', () => require('./bleMock'));
 jest.mock('../../modules/findit-native', () => ({
@@ -21,6 +23,7 @@ beforeEach(() => {
   resetLocationMock();
   resetNativeMock();
   resetBleMock();
+  resetKeepAwakeMock();
   setCurrentDb(null);
   useLocalSearchParams.mockReturnValue({});
 });
