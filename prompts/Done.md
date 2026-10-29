@@ -2,8 +2,11 @@
 
 Completed work, newest first.
 
-## 2026-10-29: Coverage on GitHub (run summary, PR comment); flaky CI fix
+## 2026-10-29: Coverage on GitHub (run summary, PR comment, Codecov, badges, Pages); flaky CI fix
 
+- Codecov upload (OIDC, no stored token, non-blocking) for history and PR checks; README
+  badges for build status, Codecov coverage and the HTML report; `master` builds publish the
+  HTML coverage report to GitHub Pages (https://gwlester.github.io/FindIt/).
 - `scripts/coverage-report.js` (written test-first) turns Jest's coverage summary into a
   Markdown table. CI adds it to each run's summary page and upserts it as a PR comment.
 - Fixed intermittent CI test failures: screen tests could exceed Jest's 5 s timeout on a busy

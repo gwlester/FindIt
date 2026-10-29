@@ -79,8 +79,19 @@ from forks), and can be started by hand from the Actions tab once it is on `mast
   the 90% minimum) to its summary page in the Actions tab.
 - **Pull requests:** builds of a branch with an open pull request post the same table as a PR
   comment. Later pushes update that one comment.
+- **Codecov:** every build uploads `coverage/lcov.info` to
+  [codecov.io](https://codecov.io/gh/gwlester/FindIt) for coverage history, per-PR changes and the
+  README badge. The upload uses GitHub's OIDC identity, so no token is stored, and never fails
+  the build.
+- **HTML report:** `master` builds publish the browsable line-by-line report
+  (`coverage/lcov-report`) to GitHub Pages at <https://gwlester.github.io/FindIt/>. The Pages
+  artifact is kept for one day.
 - The table is produced by `source/scripts/coverage-report.js` from Jest's
   `coverage/coverage-summary.json`, and is tested like the rest of the code.
+
+One-time setup (repository owner):
+1. Codecov: sign in at <https://codecov.io> with GitHub and enable `gwlester/FindIt`.
+2. GitHub Pages: repository **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
 ### Releases
 

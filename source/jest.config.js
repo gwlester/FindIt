@@ -12,7 +12,8 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/__tests__/helpers/setup.ts'],
   testMatch: ['<rootDir>/__tests__/**/*.test.{ts,tsx}'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', 'scripts/**/*.js', 'modules/findit-native/index.ts'],
-  coverageReporters: ['text', 'text-summary', 'json-summary'],
+  // json-summary: run summary / PR comment; lcov: Codecov (lcov.info) and the HTML report (lcov-report/).
+  coverageReporters: ['text', 'text-summary', 'json-summary', 'lcov'],
   // A glob key applies the threshold to every matching file individually.
   coverageThreshold: {
     './src/**/*.{ts,tsx}': PER_FILE,

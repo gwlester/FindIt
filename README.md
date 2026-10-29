@@ -1,5 +1,9 @@
 # FindIt
 
+[![Build Android](https://github.com/gwlester/FindIt/actions/workflows/build-android.yml/badge.svg?branch=master)](https://github.com/gwlester/FindIt/actions/workflows/build-android.yml)
+[![Coverage](https://codecov.io/gh/gwlester/FindIt/graph/badge.svg?branch=master)](https://codecov.io/gh/gwlester/FindIt)
+[![Coverage report](https://img.shields.io/badge/coverage_report-HTML-blue)](https://gwlester.github.io/FindIt/)
+
 Simple geocache-type app for Android.
 
 - Keep a list of named places (stored locally in SQLite).
