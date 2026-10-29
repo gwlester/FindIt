@@ -2,6 +2,11 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Test-driven development
+
+Request: use TDD from now on. Recorded in the root `CLAUDE.md` (red → green → refactor, bug
+fixes start with a reproducing test, 90% per-file coverage).
+
 ## 2026-10-29: GPX / GeoJSON import and export; unit tests
 
 Requests: GPX and GeoJSON import/export (ask the format on export, detect it on import); unit
