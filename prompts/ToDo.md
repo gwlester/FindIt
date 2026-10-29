@@ -12,14 +12,15 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
       including several places, long notes, and two receivers at once.
 
 ## Improvements
+- [ ] One-time setup by the repo owner: enable the repo on codecov.io, and set
+      Settings → Pages → Source to "GitHub Actions" (see docs/building.md).
+- [ ] Android tests for the Kotlin module (`GnssMonitor.kt`, `ShareServer.kt`); not covered by the Jest suite.
+- [ ] Try importing a real geocaching.com pocket-query GPX and a GPX exported from a Garmin unit.
 - [ ] Release signing with a real keystore (GitHub secret) instead of the debug key.
 - [ ] Keep the screen awake on the compass screen (`expo-keep-awake`).
-- [ ] Automated unit tests (Jest) for `lib/geo.ts`, `lib/base64.ts`, `lib/averaging.ts`,
-      `lib/smoothing.ts`, `ble/protocol.ts` (currently spot-checked with throwaway scripts).
 - [ ] App icon and splash screen artwork (currently Expo defaults).
 - [ ] Show a "connected / downloaded by" count history on the sharing side.
 
 ## Ideas (not committed)
-- [ ] Import/export GPX files.
 - [ ] Mark places as found, with date.
 - [ ] Optional map view.

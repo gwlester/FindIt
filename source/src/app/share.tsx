@@ -13,7 +13,7 @@ import { requestBluetoothPermissions } from '../ble/permissions';
 import type { SharedPlace } from '../ble/protocol';
 import { startSharing, stopSharing, onSharePeer } from '../ble/server';
 import { Button, Checkbox, Section } from '../components/ui';
-import { addPlace, hasDuplicate, listPlaces, type Place } from '../db/locations';
+import { importPlaces, listPlaces, type Place } from '../db/locations';
 import { useSettings } from '../hooks/useSettings';
 import { formatLatLon } from '../lib/format';
 import { useTheme } from '../lib/theme';
@@ -149,17 +149,8 @@ export default function ShareScreen() {
 
   const importSelected = async () => {
     if (!received) return;
-    let added = 0;
-    let skipped = 0;
-    for (const [i, place] of received.places.entries()) {
-      if (!received.selected.has(i)) continue;
-      if (await hasDuplicate(db, place)) {
-        skipped++;
-        continue;
-      }
-      await addPlace(db, { ...place, source: received.from });
-      added++;
-    }
+    const chosen = received.places.filter((_, i) => received.selected.has(i));
+    const { added, skipped } = await importPlaces(db, chosen, received.from);
     setReceived(null);
     setPlaces(await listPlaces(db));
     Alert.alert('Imported', `Added ${added} place${added === 1 ? '' : 's'}${skipped ? `, skipped ${skipped} already saved` : ''}.`);

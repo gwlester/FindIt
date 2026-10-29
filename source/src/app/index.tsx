@@ -48,9 +48,14 @@ export default function PlacesScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Pressable accessibilityRole="button" onPress={() => router.push('/settings')} hitSlop={12}>
-              <Text style={{ color: theme.accent, fontSize: 16, fontWeight: '600' }}>Settings</Text>
-            </Pressable>
+            <View style={styles.headerButtons}>
+              <Pressable accessibilityRole="button" onPress={() => router.push('/files')} hitSlop={12}>
+                <Text style={[styles.headerButton, { color: theme.accent }]}>Files</Text>
+              </Pressable>
+              <Pressable accessibilityRole="button" onPress={() => router.push('/settings')} hitSlop={12}>
+                <Text style={[styles.headerButton, { color: theme.accent }]}>Settings</Text>
+              </Pressable>
+            </View>
           ),
         }}
       />
@@ -109,6 +114,8 @@ export default function PlacesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  headerButtons: { flexDirection: 'row', gap: 20 },
+  headerButton: { fontSize: 16, fontWeight: '600' },
   list: { flex: 1 },
   listContent: { padding: 16, paddingBottom: 40, gap: 10 },
   emptyContainer: { flexGrow: 1, justifyContent: 'center', padding: 32 },

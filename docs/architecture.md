@@ -16,8 +16,10 @@ FindIt/
         ├── ble/           Bluetooth sharing: protocol, scanner/downloader, server wrapper
         ├── components/    Compass graphic and small UI building blocks
         ├── db/            SQLite schema, migrations and queries
+        ├── formats/       GPX and GeoJSON import/export, file picking and sharing
         ├── hooks/         Position, heading, satellites, settings
-        └── lib/           Geo maths, formatting, base64/UTF-8, theme
+        └── lib/           Geo maths, formatting, base64/UTF-8, averaging, smoothing, theme
+    └── __tests__/         Jest tests (mirrors src/); helpers/ holds the mocks and test database
 ```
 
 ## Stack
@@ -30,6 +32,8 @@ FindIt/
 | GPS / heading | `expo-location` (`watchPositionAsync` at `BestForNavigation`, `watchHeadingAsync`) |
 | Satellites | `findit-native` module: Android `GnssStatus` callback |
 | Compass drawing | `react-native-svg` |
+| Import / export | GPX 1.1 and GeoJSON (`fast-xml-parser`), `expo-document-picker`, `expo-file-system`, `expo-sharing` |
+| Tests | Jest (`jest-expo`) + React Native Testing Library 14, real SQLite via Node's `node:sqlite` |
 | BLE, receiving side | `react-native-ble-plx` (scan, connect, read/write) |
 | BLE, sharing side | `findit-native` module: Android `BluetoothGattServer` + `BluetoothLeAdvertiser` |
 
@@ -56,6 +60,45 @@ CREATE TABLE settings (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);
 
 Migrations live in `source/src/db/schema.ts` and are tracked with `PRAGMA user_version`.
 To change the schema, append a new migration to the list; never edit an old one.
+
+## Import / export formats (`src/formats/`)
+
+| | GPX 1.1 (XML) | GeoJSON (RFC 7946) |
+| --- | --- | --- |
+| Used by | geocaching.com, Garmin and other GPS units, c:geo, Locus, OsmAnd, Google Earth | web maps, geojson.io, QGIS |
+| A place is | a waypoint `<wpt lat lon>` with `<name>`, `<desc>` (notes), `<time>`, `<sym>Geocache</sym>` | a `Point` feature, coordinates `[longitude, latitude]` |
+| Accuracy | `<extensions><findit:accuracy>` (namespace `https://github.com/gwlester/findit/gpx/1`) | `properties.accuracy` |
+| MIME / extension | `application/gpx+xml`, `.gpx` | `application/geo+json`, `.geojson` |
+
+- **Export:** the user picks the format each time. The file is written to the cache directory
+  and the Android share sheet opens.
+- **Import:** the format is detected from the file extension, then the MIME type, then the
+  first character of the content (`<` or `{`).
+- **GPX import:**
+  - The XML is validated first, and only waypoints are imported; routes and tracks count as skipped.
+  - GPX 1.0 and 1.1 files from geocaching.com are understood. The place name is
+    "Cache name (GC code)" and `Hint: …` from the Groundspeak extension goes into the notes.
+- **GeoJSON import:** accepts a FeatureCollection, a Feature or a bare Point. `name` / `title`
+  become the name, and `notes` / `description` / `desc` become the notes. Non-point
+  geometries are skipped.
+- Imported places are added with their source set to the file name. Duplicates (same name
+  within ~1 m) are skipped, as with Bluetooth import.
+
+## Tests
+
+`npm test` runs the Jest suite in `source/__tests__/`, and `npm run test:coverage` also enforces
+**at least 90% statement, branch, function and line coverage for every file** in `src/` and
+`modules/findit-native/index.ts`. CI runs the coverage version.
+
+- Screens, hooks and components are rendered with React Native Testing Library and driven
+  like a user: pressing, typing, long-pressing.
+- Database code runs against a real in-memory SQLite (Node's `node:sqlite`) behind the
+  expo-sqlite API, so the SQL itself is tested.
+- GPS, compass, the native GNSS/BLE module, Bluetooth scanning and navigation are replaced
+  by controllable mocks in `__tests__/helpers/`. Tests emit fixes, headings, satellite
+  status and scan results.
+- The Kotlin module (`GnssMonitor.kt`, `ShareServer.kt`) isn't covered by these tests. It needs
+  device or instrumented Android tests (see `prompts/ToDo.md`).
 
 ## Compass maths
 

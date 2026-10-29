@@ -37,8 +37,22 @@ After that, `npm start` serves JavaScript changes to the installed app.
 
 ```bash
 npm run typecheck
+```
+
+```bash
 npm run lint
 ```
+
+```bash
+npm test
+```
+
+```bash
+npm run test:coverage
+```
+
+`test:coverage` fails if any file is below 90% statement, branch, function or line coverage.
+The tests need Node 22.13 or newer, for the built-in `node:sqlite` used as a real test database.
 
 `npx expo prebuild --platform android` generates the `android/` project. It is
 git-ignored; configure native behaviour through `app.json` and config plugins instead
@@ -53,10 +67,31 @@ Use `npx expo install <package>` so versions match the Expo SDK.
 `.github/workflows/build-android.yml` runs on every push that touches `source/` (and on PRs
 from forks), and can be started by hand from the Actions tab once it is on `master`. It:
 
-1. installs dependencies (`npm ci`), then runs the typecheck and lint;
+1. installs dependencies (`npm ci`), then runs the typecheck, lint, and unit tests with the
+   90%-per-file coverage check;
 2. generates the Android project (`expo prebuild`) and builds a release APK for `arm64-v8a`,
    signed with the debug key so it can be sideloaded;
 3. uploads the APK as the artifact `findit-<commit>`, kept for **7 days**.
+
+### Test coverage reports
+
+- **Run summary:** every build adds a coverage table (totals plus every file, ✅/❌ against
+  the 90% minimum) to its summary page in the Actions tab.
+- **Pull requests:** builds of a branch with an open pull request post the same table as a PR
+  comment. Later pushes update that one comment.
+- **Codecov:** every build uploads `coverage/lcov.info` to
+  [codecov.io](https://codecov.io/gh/gwlester/FindIt) for coverage history, per-PR changes and the
+  README badge. The upload uses GitHub's OIDC identity, so no token is stored, and never fails
+  the build.
+- **HTML report:** `master` builds publish the browsable line-by-line report
+  (`coverage/lcov-report`) to GitHub Pages at <https://gwlester.github.io/FindIt/>. The Pages
+  artifact is kept for one day.
+- The table is produced by `source/scripts/coverage-report.js` from Jest's
+  `coverage/coverage-summary.json`, and is tested like the rest of the code.
+
+One-time setup (repository owner):
+1. Codecov: sign in at <https://codecov.io> with GitHub and enable `gwlester/FindIt`.
+2. GitHub Pages: repository **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
 ### Releases
 

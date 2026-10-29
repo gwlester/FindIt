@@ -28,6 +28,10 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
+      pull-requests: write # coverage comment
+      id-token: write # Codecov upload without a stored token (OIDC)
     env:
       CI: 1
       IS_RELEASE: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}
@@ -60,6 +64,71 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      # Fails if any source file drops below 90% statement/branch/function/line coverage.
+      - name: Unit tests (90% coverage per file)
+        shell: bash
+        run: npm run test:coverage 2>&1 | tee test-output.log
+
+      # Coverage table on the run's summary page; written even when tests fail so a
+      # shortfall is visible. Also saved for the pull request comment below.
+      - name: Coverage summary
+        if: always() && hashFiles('source/coverage/coverage-summary.json') != ''
+        run: >
+          node scripts/coverage-report.js coverage/coverage-summary.json
+          --root "$PWD" --title "Test coverage"
+          --footer "Commit ${GITHUB_SHA::7} · [run $GITHUB_RUN_NUMBER]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+          --append "$GITHUB_STEP_SUMMARY" > coverage-report.md
+
+      # Coverage history, badge and pull request checks on codecov.io. Uses GitHub's OIDC
+      # identity, so no secret is stored; never fails the build (e.g. before Codecov is set up).
+      - name: Upload coverage to Codecov
+        if: always() && hashFiles('source/coverage/lcov.info') != ''
+        uses: codecov/codecov-action@v7
+        with:
+          files: source/coverage/lcov.info
+          disable_search: true
+          use_oidc: true
+          fail_ci_if_error: false
+
+      # master: the browsable HTML coverage report, published to GitHub Pages by the
+      # coverage-site job. Kept for one day only; Pages serves its own copy.
+      - name: Package HTML coverage report for GitHub Pages
+        if: env.IS_RELEASE == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: source/coverage/lcov-report
+          retention-days: 1
+
+      # Branch builds with an open pull request: post the report as a PR comment, updating
+      # the same comment on later pushes instead of adding new ones.
+      - name: Coverage comment on the pull request
+        if: always() && github.event_name == 'push' && github.ref != 'refs/heads/master' && hashFiles('source/coverage-report.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          pr=$(gh pr list --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number // empty')
+          if [ -z "$pr" ]; then echo "No open pull request for $GITHUB_REF_NAME"; exit 0; fi
+          id=$(gh api --paginate "repos/$GH_REPO/issues/$pr/comments" \
+            --jq '.[] | select(.body | startswith("<!-- findit-coverage -->")) | .id' | head -1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$GH_REPO/issues/comments/$id" -F body=@coverage-report.md > /dev/null
+          else
+            gh pr comment "$pr" --body-file coverage-report.md
+          fi
+
+      # Surface the end of the test output (failures, coverage shortfalls) as an annotation,
+      # so it can be read from the run summary and the API without downloading logs.
+      - name: Report test failures
+        if: failure()
+        shell: bash
+        run: |
+          [ -f test-output.log ] || exit 0
+          summary=$(grep -E '●|✕|threshold|Tests:|Test Suites:' test-output.log | tail -60)
+          summary=${summary//'%'/'%25'}
+          summary=${summary//$'\n'/'%0A'}
+          echo "::error title=Unit tests failed::${summary}"
 
       # Release builds (master) get a date-based version YYYY.MM.DD.NNN (UTC), where NNN
       # counts that day's releases. versionCode is YYMMDDNNN so every release installs
@@ -104,6 +173,23 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           compression-level: 0 # APKs are already compressed
+
+  # Publishes the HTML coverage report of each master build to GitHub Pages
+  # (https://gwlester.github.io/FindIt/). Requires Settings → Pages → Source: GitHub Actions.
+  coverage-site:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v5
 
   # Publishes each successful master build as a GitHub Release tagged with its
   # date-based version. The asset is always named findit.apk so

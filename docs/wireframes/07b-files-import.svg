@@ -1,0 +1,41 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Import / Export</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<rect x='16' y='104' width='328' height='330' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='130' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Import from caches.gpx</text>
+<text x='30' y='152' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>GPX · 4 places · 1 other item skipped</text>
+<clipPath id='import-list'><rect x='16' y='162' width='328' height='210'/></clipPath>
+<g clip-path='url(#import-list)'>
+<rect x='30' y='168' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 179 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='179' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Old Oak (GC12345)</text>
+<text x='64' y='195' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.43520° N, 91.19030° W</text>
+<rect x='30' y='216' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 227 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='227' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Bridge micro (GC2B3C4)</text>
+<text x='64' y='243' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.44102° N, 91.18311° W</text>
+<rect x='30' y='264' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='275' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Water tower (GC9ZZ01)</text>
+<text x='64' y='291' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.45120° N, 91.20102° W</text>
+<rect x='30' y='312' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 323 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='323' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Zoo gate (GC7Q2W1)</text>
+<text x='64' y='339' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>30.53120° N, 91.10102° W</text>
+</g>
+<rect x='334' y='162' width='4' height='210' rx='2' fill='#e2e2e2'/>
+<rect x='334' y='162' width='4' height='158' rx='2' fill='#888'/>
+<rect x='30' y='380' width='142' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='101.0' y='407.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Cancel</text>
+<rect x='188' y='380' width='142' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
+<text x='259.0' y='407.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Import selected</text>
+<rect x='16' y='448' width='328' height='140' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5' stroke-dasharray='5 4'/>
+<text x='30' y='474' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#888' font-weight='bold' text-anchor='start'>Export</text>
+<text x='30' y='500' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#888' font-weight='normal' text-anchor='start'>(checklist + Export button, unchanged)</text>
+<text x='16' y='612' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Format chosen automatically: .gpx / .geojson / .json, then MIME type,</text>
+<text x='16' y='626' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>then content. geocaching.com files: cache name + code, hint in notes.</text>
+<text x='16' y='640' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Places you already have (same name and position) are skipped.</text>
+</svg>

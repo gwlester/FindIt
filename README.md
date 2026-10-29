@@ -1,11 +1,16 @@
 # FindIt
 
+[![Build Android](https://github.com/gwlester/FindIt/actions/workflows/build-android.yml/badge.svg?branch=master)](https://github.com/gwlester/FindIt/actions/workflows/build-android.yml)
+[![Coverage](https://codecov.io/gh/gwlester/FindIt/graph/badge.svg?branch=master)](https://codecov.io/gh/gwlester/FindIt)
+[![Coverage report](https://img.shields.io/badge/coverage_report-HTML-blue)](https://gwlester.github.io/FindIt/)
+
 Simple geocache-type app for Android.
 
 - Keep a list of named places (stored locally in SQLite).
 - Pick one and a compass points to it. The rose keeps N/E/S/W on the real directions,
   with the approximate distance, an uncertainty radius and live GPS satellite counts below it.
 - Share places with other FindIt users nearby over Bluetooth LE.
+- Import and export places as GPX (geocaching.com, GPS units, other geocaching apps) or GeoJSON.
 
 ## Download
 

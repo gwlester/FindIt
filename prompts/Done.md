@@ -2,6 +2,42 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Coverage on GitHub (run summary, PR comment, Codecov, badges, Pages); flaky CI fix
+
+- Codecov upload (OIDC, no stored token, non-blocking) for history and PR checks; README
+  badges for build status, Codecov coverage and the HTML report; `master` builds publish the
+  HTML coverage report to GitHub Pages (https://gwlester.github.io/FindIt/).
+- `scripts/coverage-report.js` (written test-first) turns Jest's coverage summary into a
+  Markdown table. CI adds it to each run's summary page and upserts it as a PR comment.
+- Fixed intermittent CI test failures: screen tests could exceed Jest's 5 s timeout on a busy
+  runner with coverage on. Reproduced locally (3 of 9 stressed runs failed), then the timeout
+  was raised to 30 s (9 of 9 pass). CI now also reports failing tests as annotations.
+
+## 2026-10-29: Test-driven development
+
+Request: use TDD from now on. Recorded in the root `CLAUDE.md` (red → green → refactor, bug
+fixes start with a reproducing test, 90% per-file coverage).
+
+## 2026-10-29: GPX / GeoJSON import and export; unit tests
+
+Requests: GPX and GeoJSON import/export (ask the format on export, detect it on import); unit
+tests with at least 90% function/branch/line coverage on each file (all TypeScript files).
+
+Delivered:
+- `src/formats/`: GPX 1.1 export (FindIt accuracy extension) and GPX 1.0/1.1 import, including
+  geocaching.com caches (name + code, hint). GeoJSON export/import. Format detection by
+  extension, MIME type or content.
+- New **Import / Export** screen (header link "Files"). Export asks GPX or GeoJSON, then opens
+  the share sheet. Import uses the file picker, previews and selects places, and skips duplicates.
+  Shared `importPlaces()` is also used by Bluetooth import.
+- Jest + React Native Testing Library 14 test suite: 190 tests in 31 files covering every
+  TypeScript file. SQL runs on a real in-memory SQLite. GPS, compass, BLE, the native module and
+  navigation are mocked.
+  - Every file is at ≥90% statements/branches/functions/lines; most are at 100%. This is enforced
+    per file in `jest.config.js` and in CI.
+- Separate `__tests__/tsconfig.json` (TypeScript 6 no longer loads global types by default).
+- Docs (formats, tests), wireframes (07 Import / Export, 07b importing) updated.
+
 ## 2026-10-29: More accuracy from GPS
 
 Request: use more of the satellites in view to improve accuracy. Apps can't choose which
