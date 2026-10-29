@@ -5,6 +5,7 @@
 <line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
 <text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Old oak tree cache</text>
 <text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='340' y='71' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' text-anchor='end'>⚙</text>
 <text x='180.0' y='112' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='middle'>30.43520° N, 91.19030° W · ✓ Found 2026-10-20</text>
 <polygon points='172.0,116 188.0,116 180.0,128' fill='#555'/>
 <g transform='rotate(-30 180.0 270)'>

@@ -6,6 +6,7 @@
 <text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Map</text>
 <text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
 <text x='340' y='69' font-family='Helvetica, Arial, sans-serif' font-size='15' font-weight='bold' fill='#555' text-anchor='end'>Offline maps</text>
+<text x='222' y='71' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' text-anchor='end'>⚙</text>
 <clipPath id='map'><rect x='2' y='89' width='356' height='645'/></clipPath>
 <g clip-path='url(#map)'>
 <rect x='0' y='89' width='360' height='669' fill='#eef1ea'/>

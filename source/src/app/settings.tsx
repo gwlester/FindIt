@@ -9,6 +9,7 @@ import type { FindMode } from '../db/finds';
 import type { CompassBackground } from '../lib/compassMap';
 import { HISTORY_RETENTION_OPTIONS, retentionLabel } from '../db/shareHistory';
 import type { Units } from '../lib/format';
+import { useBottomPadding } from '../lib/insets';
 import { useTheme } from '../lib/theme';
 
 const MAX_DISPLAY_NAME = 40;
@@ -28,6 +29,7 @@ export default function SettingsScreen() {
 function SettingsForm() {
   const { settings, updateSettings } = useSettings();
   const theme = useTheme();
+  const bottom = useBottomPadding();
   const [displayName, setDisplayName] = useState(settings.displayName);
   const [units, setUnits] = useState<Units>(settings.units);
   const [highAccuracyGps, setHighAccuracyGps] = useState(settings.highAccuracyGps);
@@ -55,7 +57,7 @@ function SettingsForm() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView testID="scroll" contentContainerStyle={[styles.content, { paddingBottom: bottom }]}>
       <Field
         label="Your name for sharing"
         value={displayName}

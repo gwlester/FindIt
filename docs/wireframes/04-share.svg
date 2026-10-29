@@ -5,6 +5,7 @@
 <line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
 <text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Share nearby</text>
 <text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='340' y='71' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' text-anchor='end'>⚙</text>
 <rect x='16' y='104' width='328' height='300' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
 <text x='30' y='130' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Receive from nearby</text>
 <rect x='30' y='142' width='300' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>

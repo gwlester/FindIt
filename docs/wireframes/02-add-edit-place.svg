@@ -5,6 +5,7 @@
 <line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
 <text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Add place</text>
 <text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='340' y='71' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' text-anchor='end'>⚙</text>
 <text x='16' y='116' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='bold' text-anchor='start'>Name</text>
 <rect x='16' y='122' width='328' height='40' rx='8' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
 <text x='28' y='147.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#888' font-weight='normal' text-anchor='start'>e.g. Old oak tree cache</text>

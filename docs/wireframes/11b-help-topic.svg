@@ -5,6 +5,7 @@
 <line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
 <text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Help: Compass</text>
 <text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='340' y='71' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' text-anchor='end'>⚙</text>
 <text x='16' y='120' font-family='Helvetica, Arial, sans-serif' font-size='18' fill='#333' font-weight='bold' text-anchor='start'>Compass</text>
 <text x='16' y='146' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>The outer ring turns so N, E, S and W always point</text>
 <text x='16' y='168' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>the real way; the arrow points at the place. Hold the</text>

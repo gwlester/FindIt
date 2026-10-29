@@ -2,6 +2,13 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Settings everywhere, Save no longer under the navigation bar
+
+Test-first. Scrolling screens (Settings, Place, Compass, Help, About, Licences) now pad their
+content by the bottom system inset (`useBottomPadding`), so Save is fully visible. A ⚙
+`SettingsButton` sits in every header (the places screen already had a Settings link; Settings
+has none). Wireframes regenerated.
+
 ## 2026-10-29: Google Play submission package
 
 - `docs/google-play-submission.md`: account details (from the Virtual Church Musician apps),

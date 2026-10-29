@@ -5,6 +5,7 @@
 <line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
 <text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Offline maps</text>
 <text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='340' y='71' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' text-anchor='end'>⚙</text>
 <text x='16' y='114' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Saved areas work with no connection, even in airplane</text>
 <text x='16' y='130' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>mode. To add one, open the map, show the area and tap</text>
 <text x='16' y='146' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Download (once for Map, once for Satellite).</text>
