@@ -32,6 +32,7 @@ FindIt/
 | GPS / heading | `expo-location` (`watchPositionAsync` at `BestForNavigation`, `watchHeadingAsync`) |
 | Satellites | `findit-native` module: Android `GnssStatus` callback |
 | Compass drawing | `react-native-svg` |
+| Screen on | `expo-keep-awake` via `<KeepAwake tag>`: compass, averaging panel, Share screen while active |
 | Import / export | GPX 1.1 and GeoJSON (`fast-xml-parser`), `expo-document-picker`, `expo-file-system`, `expo-sharing` |
 | Tests | Jest (`jest-expo`) + React Native Testing Library 14, real SQLite via Node's `node:sqlite` |
 | BLE, receiving side | `react-native-ble-plx` (scan, connect, read/write) |

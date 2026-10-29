@@ -2,26 +2,32 @@
 
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
+## Current wave (agreed 2026-10-29; one PR each, built test-first)
+- [ ] Search-area view on the compass (wireframes 03c/03d) with a setting for the distance at
+      which it replaces the arrow: stored in metres, shown in the current units rounded to
+      5 m / 10 ft, converted when units change; option "always show the arrow".
+- [ ] Mark places as found: a "Mark found" button on the compass that asks for an optional
+      comment; a setting for "once" or "log" (switching to "once" keeps the latest entry); ✓ and
+      date in the list with a "hide found places" filter; export and Bluetooth sharing ask
+      whether to include found information (GPX `<sym>Geocache Found</sym>` + FindIt extension).
+- [ ] Sharing history with names: the receiving phone sends its "name for sharing" (BLE
+      protocol v2, older versions shown as "FindIt user"); the sharing phone keeps a history
+      (when, who, how many places) with a retention setting, including "forever".
+- [ ] App icon and splash screen: 2–3 concepts (Girl Scout green, blues) for the owner to
+      review before one is used. **Owner merges this one.**
+
+## Next wave
+- [ ] Map view with free maps (OpenStreetMap-based via MapLibre) and US-only satellite imagery
+      (USGS, public domain); download areas before heading out so maps work in airplane mode.
+- [ ] Compass display option: plain, map, or satellite behind the search area.
+
 ## Verify on hardware
-- [X] Install the latest release APK (README download link) on a phone.
-- [X] Check the compass on a real phone: rose orientation, arrow direction, true vs magnetic heading.
-- [X] Check satellite counts against a GNSS test app (e.g. GPSTest), with High-accuracy GPS on and off.
-- [X] Field-test position averaging: average for 1–2 min at a known point (survey marker) and
-      compare the error with the reported accuracy, in open sky and under trees.
 - [ ] Test Bluetooth sharing between two Android phones (Android 12+ and, if possible, ≤ 11),
       including several places, long notes, and two receivers at once.
 
 ## Improvements
-- [X] Keep the screen awake on the compass screen (`expo-keep-awake`).
-- [X] Show a "connected/downloaded by" count history on the sharing side.
-- [X] Add setting for distance to switch from arrow to search circle
-- [X] Mark places as found, with date and comment. Optional based on a setting.
-- [X] App icon and splash screen artwork (currently Expo defaults).
 - [ ] Optional, repo owner: Settings → General → Pull Requests → "Automatically delete head
       branches" (the cleanup workflow already deletes merged branches).
 - [ ] Android tests for the Kotlin module (`GnssMonitor.kt`, `ShareServer.kt`); not covered by the Jest suite.
 - [ ] Try importing a real geocaching.com pocket-query GPX and a GPX exported from a Garmin unit.
 - [ ] Release signing with a real keystore (GitHub secret) instead of the debug key.
-
-## Ideas (not committed)
-- [ ] Optional map view. Question: where would we get the map from?

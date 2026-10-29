@@ -2,6 +2,18 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Keep the screen awake; hardware verification; next wave planned
+
+- Verified on hardware by the owner (all worked, including indoors): installing the release APK,
+  the compass (rose orientation, arrow, true vs magnetic heading), satellite counts against a GNSS
+  test app with High-accuracy GPS on and off, and position averaging at a known point (open sky
+  and under trees).
+- Keep the screen awake (test-first, `expo-keep-awake`): always on the compass, while the
+  averaging panel is open, and on the Share screen while sharing, looking or downloading. A small
+  `<KeepAwake tag>` component scopes it; tests check it's released again.
+- Next wave agreed (see ToDo): search area + switch-distance setting, mark found, sharing history
+  with names, icon/splash; maps afterwards.
+
 ## 2026-10-29: Average my position on the compass
 
 Request: "use average" on the compass page, chosen as a steadier distance (nothing saved).

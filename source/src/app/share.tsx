@@ -12,6 +12,7 @@ import {
 import { requestBluetoothPermissions } from '../ble/permissions';
 import type { SharedPlace } from '../ble/protocol';
 import { startSharing, stopSharing, onSharePeer } from '../ble/server';
+import { KeepAwake } from '../components/KeepAwake';
 import { Button, Checkbox, Section } from '../components/ui';
 import { importPlaces, listPlaces, type Place } from '../db/locations';
 import { useSettings } from '../hooks/useSettings';
@@ -159,6 +160,8 @@ export default function ShareScreen() {
   // Each list scrolls inside its own section so the buttons always stay on screen.
   return (
     <View style={[styles.screen, { paddingBottom: insets.bottom + 16 }]}>
+      {/* Sharing and scanning only work while this screen is open. */}
+      {sharing || scanning || fetching ? <KeepAwake tag="share" /> : null}
       {!bluetoothReady ? (
         <Text style={[styles.warning, { color: theme.danger }]}>
           {bluetooth === 'PoweredOff' ? 'Bluetooth is off — turn it on to share.' : `Bluetooth: ${bluetooth}`}

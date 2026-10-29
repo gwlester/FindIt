@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { Compass } from '../../components/Compass';
+import { KeepAwake } from '../../components/KeepAwake';
 import { Button } from '../../components/ui';
 import { getPlace, type Place } from '../../db/locations';
 import { useAveragePosition } from '../../hooks/useAveragePosition';
@@ -67,6 +68,7 @@ export default function CompassScreen() {
   return (
     <ScrollView contentContainerStyle={styles.content}>
       <Stack.Screen options={{ title: place?.name ?? 'Find it' }} />
+      <KeepAwake tag="compass" />
       {place ? (
         <Text style={[styles.coords, { color: theme.muted }]}>{formatLatLon(place.latitude, place.longitude)}</Text>
       ) : null}
