@@ -1,10 +1,12 @@
-name: Clean up Actions storage
+name: Clean up
 
-# Keeps Actions storage small:
+# Keeps the repository and Actions storage tidy:
 #  - deletes a PR's caches as soon as the PR is closed,
+#  - deletes a PR's branch (and its caches) as soon as the PR is merged,
 #  - deletes a branch's caches when the branch is deleted,
 #  - weekly: deletes artifacts older than 7 days, caches for branches that no
-#    longer exist, and workflow runs (with their logs) older than 30 days.
+#    longer exist, workflow runs (with their logs) older than 30 days, and stale
+#    branches (tip belongs to a merged PR, no open PR) that were missed.
 # (Old releases are deleted by the release job in build-android.yml.)
 
 on:
@@ -37,6 +39,32 @@ jobs:
           gh cache list --ref "$ref" --limit 1000 --json id --jq '.[].id' |
             while read -r id; do gh cache delete "$id"; done
 
+  # Branches deleted with the workflow token don't trigger other workflows, so this
+  # also removes the branch's caches instead of relying on the `delete` event.
+  merged-branch:
+    if: >
+      github.event_name == 'pull_request' && github.event.pull_request.merged &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref != github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+    steps:
+      - name: Delete the merged branch and its caches
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if gh api -X DELETE "repos/$GH_REPO/git/refs/heads/$BRANCH" 2> err.txt; then
+            echo "Deleted branch $BRANCH"
+          elif grep -q "Reference does not exist" err.txt; then
+            echo "Branch $BRANCH was already deleted"
+          else
+            cat err.txt; exit 1
+          fi
+          gh cache list --ref "refs/heads/$BRANCH" --limit 1000 --json id --jq '.[].id' |
+            while read -r id; do gh cache delete "$id"; done
+
   branch-caches:
     if: github.event_name == 'delete' && github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
@@ -51,7 +79,23 @@ jobs:
   sweep:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write # deleting stale branches
     steps:
+      - name: Delete stale branches (merged, no open pull request)
+        run: |
+          default=$(gh api "repos/$GH_REPO" --jq .default_branch)
+          gh api --paginate "repos/$GH_REPO/branches?per_page=100" --jq '.[] | "\(.name) \(.commit.sha)"' |
+            while read -r branch sha; do
+              [ "$branch" = "$default" ] && continue
+              merged=$(gh api "repos/$GH_REPO/commits/$sha/pulls" --jq '[.[] | select(.merged_at != null)] | length')
+              open=$(gh api "repos/$GH_REPO/pulls?state=open&head=${GH_REPO%%/*}:$branch" --jq 'length')
+              if [ "$merged" -gt 0 ] && [ "$open" -eq 0 ]; then
+                gh api -X DELETE "repos/$GH_REPO/git/refs/heads/$branch" && echo "Deleted stale branch $branch"
+              fi
+            done
+
       - name: Delete artifacts older than 7 days
         run: |
           cutoff=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)

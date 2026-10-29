@@ -2,6 +2,17 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Delete stale branches
+
+Request: delete branches once they're stale (merged). The repo setting can't be changed from the
+session, so `cleanup.yml` does it:
+- On merge of a same-repo PR: delete its branch and the branch's caches.
+- Weekly sweep: delete any branch whose latest commit belongs to a merged PR and that has no
+  open PR (never the default branch). Dry-run against the repo found exactly the merged
+  `claude/findit-android-app` branch.
+- Also done: "Protect master" ruleset active with required `build` check (owner), and PR #5 was
+  the first merge under it.
+
 ## 2026-10-29: Workflow triggers for branch protection
 
 Problem (shown on real commits before fixing): same-repo PRs got a *skipped* `build` check from
