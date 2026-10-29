@@ -2,6 +2,17 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Google Play submission package
+
+- `docs/google-play-submission.md`: account details (from the Virtual Church Musician apps),
+  create-app fields, listing text, content/Data-safety/permission answers, release-build gaps,
+  console checklist; `docs/privacy-policy.md` (the KnG policy covers only VCM).
+- `store/`: 512 px icon, feature graphic, and six phone screenshots (raw captures plus framed
+  1350x2560 versions, since Play limits the aspect ratio to 2:1) taken on an Android 14 emulator
+  with an x86_64 release build and seeded sample places.
+- Test-first: blocked the unneeded `SYSTEM_ALERT_WINDOW` permission in `app.json`.
+- Housekeeping: merged branches deleted locally and on the remote; Actions artifacts and caches cleared.
+
 ## 2026-10-29: Renamed to FindCache
 
 "FindIt" is already an Android app, so the app is now **FindCache** (the repo keeps its name).

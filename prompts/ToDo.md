@@ -22,4 +22,9 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
       branches" (the cleanup workflow already deletes merged branches).
 - [ ] Android tests for the Kotlin module (`GnssMonitor.kt`, `ShareServer.kt`); not covered by the Jest suite.
 - [ ] Try importing a real geocaching.com pocket-query GPX and a GPX exported from a Garmin unit.
-- [ ] Release signing with a real keystore (GitHub secret) instead of the debug key.
+- [ ] Release signing with a real keystore (GitHub secret) instead of the debug key, and a signed
+      AAB (`bundleRelease`) for Play; see `docs/google-play-submission.md` §6.
+- [ ] Google Play: decide the open items in `docs/google-play-submission.md` (contact email,
+      privacy-policy URL, Data safety map-tile answer), confirm "FindCache" is free on Play, then
+      create the app and run the closed test. Optional: tablet screenshots.
+- [ ] Confirm `SYSTEM_ALERT_WINDOW` is gone from the next release APK (`aapt2 dump badging`).
