@@ -64,8 +64,9 @@ Use `npx expo install <package>` so versions match the Expo SDK.
 
 ## Continuous integration (GitHub Actions)
 
-`.github/workflows/build-android.yml` runs on every push that touches `source/` (and on PRs
-from forks), and can be started by hand from the Actions tab once it is on `master`. It:
+`.github/workflows/build-android.yml` runs on **every pull request** (including docs-only
+ones), on **every push to `master`**, and by hand from the Actions tab. Its job is called
+`build`, which is the status check required by the `master` ruleset. It:
 
 1. installs dependencies (`npm ci`), then runs the typecheck, lint, and unit tests with the
    90%-per-file coverage check;
@@ -93,9 +94,25 @@ One-time setup (repository owner):
 1. Codecov: sign in at <https://codecov.io> with GitHub and enable `gwlester/FindIt`.
 2. GitHub Pages: repository **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 
+### Branch protection (`master` ruleset)
+
+Settings → Rules → Rulesets → **Protect master**: target the default branch; Active; bypass:
+Repository admin, *for pull requests only*.
+
+| Rule | Setting |
+| --- | --- |
+| Restrict deletions | On |
+| Require a pull request before merging | On: 0 required approvals (you can't approve your own PRs), require conversation resolution, Merge allowed |
+| Require an additional approval for unattributed Copilot pull requests | On |
+| Require status checks to pass | On: branches must be up to date; required check **`build`** (source: GitHub Actions), optionally **`codecov/project`** (source: Codecov) |
+| Block force pushes | On |
+| Linear history, signed commits, deployments, code scanning | Off |
+
 ### Releases
 
-Every successful build of `master` is published as a GitHub Release with a **date-based
+Every successful build of `master` **that changes the app** (`source/` or the build workflow) is
+published as a GitHub Release; docs-only merges are built and tested but not released. Running
+the workflow by hand on `master` always releases. Releases use a **date-based
 version** `YYYY.MM.DD.NNN` (UTC date; `NNN` counts that day's releases from `001`), for example
 `2026.10.28.001`. The build stamps that version into the app (`versionName`). The Android
 `versionCode` is `YYMMDDNNN` (e.g. `261028001`), so each release installs over the previous one.

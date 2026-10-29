@@ -12,8 +12,8 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
       including several places, long notes, and two receivers at once.
 
 ## Improvements
-- [ ] One-time setup by the repo owner: enable the repo on codecov.io, and set
-      Settings → Pages → Source to "GitHub Actions" (see docs/building.md).
+- [ ] Repo owner: add the required `build` status check to the `master` ruleset once the
+      trigger fix is merged (see "Branch protection" in docs/building.md).
 - [ ] Android tests for the Kotlin module (`GnssMonitor.kt`, `ShareServer.kt`); not covered by the Jest suite.
 - [ ] Try importing a real geocaching.com pocket-query GPX and a GPX exported from a Garmin unit.
 - [ ] Release signing with a real keystore (GitHub secret) instead of the debug key.

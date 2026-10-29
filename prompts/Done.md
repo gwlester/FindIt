@@ -2,6 +2,21 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Workflow triggers for branch protection
+
+Problem (shown on real commits before fixing): same-repo PRs got a *skipped* `build` check from
+the `pull_request` event, and GitHub counts skipped as passing, so a required check could pass
+before the real build finished. A docs-only commit got only that skipped check, with no build.
+
+- `build-android.yml` now runs on every pull request (no path filter) and on pushes to `master`.
+  It no longer runs on pushes to other branches.
+- Releases only happen when a `master` push changes `source/` or the build workflow (or on a
+  manual run). Checked against a simulated git history: docs-only merge → no release; app or
+  workflow change → release; manual run → release.
+- The PR coverage comment uses the pull request event; it's skipped for fork PRs.
+- Recommended `master` ruleset documented in `docs/building.md`. Codecov (OIDC) and GitHub
+  Pages are set up by the owner.
+
 ## 2026-10-29: Coverage on GitHub (run summary, PR comment, Codecov, badges, Pages); flaky CI fix
 
 - Codecov upload (OIDC, no stored token, non-blocking) for history and PR checks; README
