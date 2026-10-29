@@ -11,4 +11,4 @@ Bluetooth Low Energy. All data is stored on the phone in a local SQLite database
 | [architecture.md](architecture.md) | Folder layout, libraries, data model, how the pieces fit |
 | [ble-protocol.md](ble-protocol.md) | The Bluetooth sharing protocol between phones |
 | [building.md](building.md) | How to build, run and check the app |
-| [branding/](branding/README.md) | App icon and splash concepts (for review; not used yet) |
+| [branding/](branding/README.md) | App icon and splash: the chosen design (B · Pin) and the other concepts |

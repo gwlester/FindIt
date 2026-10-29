@@ -1,9 +1,13 @@
-# App icon and splash concepts (for review)
+# App icon and splash
+
+**Chosen: B · Pin** (2026-10-29). It is the app's launcher icon (adaptive, with a themed
+monochrome layer) and its splash screen on navy `#0B3D6B`. The other concepts are kept for reference.
+
+# Concepts
 
 Three concepts in Girl Scout green (`#00AE58`, deep `#00703C`) with blues (`#1F6FB2`, navy
 `#0B3D6B`, sky `#BFE3F7`). Only the colours are borrowed: there is no Girl Scouts trefoil or
-other mark. **None of these is used by the app yet.** Pick one (or ask for changes) and a
-follow-up PR wires it in.
+other mark.
 
 ![Concepts: launcher sizes, themed icon, home screen and splash](preview.png)
 
@@ -27,12 +31,12 @@ python3 docs/branding/generate_concepts.py
 node docs/branding/preview.js docs/branding docs/branding/preview.png
 ```
 
-## Using the chosen concept (follow-up PR)
+## Updating the app's icon
 
-1. Export the chosen concept's SVGs to 1024×1024 PNGs, replacing `source/assets/icon.png`,
-   `android-icon-foreground.png`, `android-icon-background.png`, `android-icon-monochrome.png`
-   and `splash-icon.png` (the foreground layer).
-2. In `app.json`, set `android.adaptiveIcon.backgroundColor` and add the `expo-splash-screen`
-   plugin with `image: ./assets/splash-icon.png`, the concept's splash background colour, and a
-   dark-mode variant.
-3. Check the launcher icon and splash on a device (icons are cached; reinstall if needed).
+1. Change `generate_concepts.py`, then regenerate the SVGs (above).
+2. Export the chosen concept to the app's 1024×1024 PNGs (`icon.png`, the three
+   `android-icon-*.png` layers and `splash-icon.png`):
+   `node docs/branding/export_png.js docs/branding b-pin source/assets`
+3. `app.json` sets `android.adaptiveIcon.backgroundColor` and the `expo-splash-screen` plugin
+   (image, background colour, dark-mode colour); `__tests__/config/appConfig.test.ts` checks them.
+4. Check the launcher icon and splash on a device (launchers cache icons; reinstall if needed).

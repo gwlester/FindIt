@@ -90,9 +90,13 @@ def pin_fg(mono=False):
     pts = []
     for i in range(8):
         pts.append(spt(150 if i % 2 == 0 else 34, i * 45))
+    if mono:
+        # Themed icons use only the alpha channel, so the star is cut out of the pin.
+        cut = poly(pts, "#000")
+        return f"<mask id='m'><rect width='{S}' height='{S}' fill='#fff'/>{cut}</mask><g mask='url(#m)'>{path}</g>"
     star_poly = poly(pts, star)
-    north = poly([spt(150, 0), spt(34, 45), (hx, hy), spt(34, -45)], NAVY if not mono else "#000")
-    return path + star_poly + north + f"<circle cx='{hx}' cy='{hy}' r='18' fill='{NAVY if not mono else '#000'}'/>"
+    north = poly([spt(150, 0), spt(34, 45), (hx, hy), spt(34, -45)], NAVY)
+    return path + star_poly + north + f"<circle cx='{hx}' cy='{hy}' r='18' fill='{NAVY}'/>"
 
 
 def pin_bg():

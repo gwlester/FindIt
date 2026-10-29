@@ -2,6 +2,14 @@
 
 Completed work, newest first.
 
+## 2026-10-29: App icon and splash (B · Pin)
+
+- Three concepts in Girl Scout green and blues (`docs/branding/`); the owner chose **B · Pin**:
+  a green map pin with a compass star on a blue gradient.
+- Adaptive launcher icon (foreground, background, themed monochrome with the star cut out) and
+  an `expo-splash-screen` navy splash, light and dark. `export_png.js` regenerates the assets;
+  a config test checks `app.json`.
+
 ## 2026-10-29: Sharing history with names (Bluetooth protocol v2)
 
 Built test-first (protocol, client, database, screens; Kotlin compiled by CI):
