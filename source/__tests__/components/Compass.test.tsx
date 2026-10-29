@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react-native';
 
 import { Compass } from '../../src/components/Compass';
+import { svgTexts } from '../helpers/svg';
 
 // react-native-svg turns rotation props into a transform matrix [cos, sin, -sin, cos, tx, ty]
 // on its host group elements; read the angles of the rotated groups back from it.
@@ -32,4 +33,45 @@ test('without heading the rose stays north-up and there is no arrow', async () =
   expect(r).not.toContain(75);
   const noBearing = rotations((await render(<Compass size={300} heading={10} bearing={null} />)).toJSON());
   expect(noBearing).toContain(-10);
+});
+
+describe('search-area view', () => {
+  type Node = { type?: string; props?: Record<string, unknown>; children?: unknown };
+  const circles = (json: unknown) => {
+    const out: Record<string, unknown>[] = [];
+    const walk = (n: unknown) => {
+      if (!n || typeof n !== 'object') return;
+      if (Array.isArray(n)) return n.forEach(walk);
+      const node = n as Node;
+      if (node.type === 'RNSVGCircle' && node.props) out.push(node.props);
+      walk(node.children);
+    };
+    walk(json);
+    return out;
+  };
+  const SCALE = { meters: 20, label: '20 m', halfLabel: '10 m' };
+
+  it('draws the cache, its search circle and your halo to scale instead of the arrow', async () => {
+    // size 300 → outer ring 136, map radius 90 → 4.5 px per metre at a 20 m scale.
+    const { toJSON } = await render(
+      <Compass size={300} heading={30} bearing={75} searchArea={{ distanceM: 14, radiusM: 6, youM: 4, scale: SCALE }} />,
+    );
+    const c = circles(toJSON());
+    const search = c.find((p) => p.r === 27);
+    expect(search).toBeDefined();
+    expect(search!.cx as number).toBeCloseTo(150 + 63 * Math.SQRT1_2, 1); // 45° right of straight ahead
+    expect(search!.cy as number).toBeCloseTo(150 - 63 * Math.SQRT1_2, 1);
+    expect(c.some((p) => p.r === 18)).toBe(true); // your GPS halo
+    expect(svgTexts(toJSON())).toEqual(expect.arrayContaining(['20 m', '10 m']));
+    expect(rotations(toJSON())).not.toContain(45); // no arrow
+  });
+
+  it('is north-up without a heading', async () => {
+    const { toJSON } = await render(
+      <Compass size={300} heading={null} bearing={90} searchArea={{ distanceM: 10, radiusM: 5, youM: 0, scale: SCALE }} />,
+    );
+    const search = circles(toJSON()).find((p) => p.r === 22.5)!;
+    expect(search.cx as number).toBeCloseTo(195, 1);
+    expect(search.cy as number).toBeCloseTo(150, 1);
+  });
 });

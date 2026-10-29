@@ -1,6 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 import type { Units } from '../lib/format';
+import { DEFAULT_SEARCH_AREA_M } from '../lib/searchArea';
 
 export type Settings = {
   /** Name other FindIt users see when we share. */
@@ -8,9 +9,22 @@ export type Settings = {
   units: Units;
   /** Ask the GNSS chipset for full tracking on the compass/averaging screens (more battery). */
   highAccuracyGps: boolean;
+  /** Within this distance (m) the compass shows the search area instead of the arrow; null = always the arrow. */
+  searchAreaDistanceM: number | null;
 };
 
-export const DEFAULT_SETTINGS: Settings = { displayName: 'FindIt user', units: 'metric', highAccuracyGps: true };
+export const DEFAULT_SETTINGS: Settings = {
+  displayName: 'FindIt user',
+  units: 'metric',
+  highAccuracyGps: true,
+  searchAreaDistanceM: DEFAULT_SEARCH_AREA_M,
+};
+
+function parseSearchArea(value: string | undefined): number | null {
+  if (value === 'off') return null;
+  const meters = Number(value);
+  return value !== undefined && Number.isFinite(meters) && meters > 0 ? meters : DEFAULT_SEARCH_AREA_M;
+}
 
 export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
   const rows = await db.getAllAsync<{ key: string; value: string }>('SELECT key, value FROM settings');
@@ -19,6 +33,7 @@ export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
     displayName: map.displayName ?? DEFAULT_SETTINGS.displayName,
     units: map.units === 'imperial' ? 'imperial' : 'metric',
     highAccuracyGps: map.highAccuracyGps !== 'false',
+    searchAreaDistanceM: parseSearchArea(map.searchAreaDistanceM),
   };
 }
 
@@ -28,7 +43,7 @@ export async function saveSettings(db: SQLiteDatabase, settings: Settings): Prom
       await db.runAsync(
         'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
         key,
-        String(value),
+        value === null ? 'off' : String(value),
       );
     }
   });

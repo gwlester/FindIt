@@ -2,6 +2,17 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Compass search area, with a switch-distance setting
+
+Built test-first (`lib/searchArea.ts`, settings, Compass component, compass screen):
+- Within the switch distance the compass's inner circle becomes a heading-up map: the cache at
+  its scaled distance and bearing, a shaded search circle (uncertainty radius), your accuracy as a
+  halo, and scale labels; banner "You're in the search area — look around!".
+- Settings → Search area: "Always show the arrow", or a −/+ distance (default 50 m). Stored in
+  metres; shown in the current units rounded to 5 m / 10 ft and converted when units change
+  (50 m ↔ 160 ft, no drift).
+- Wireframes 03c/03d (no longer a proposal) and 06 settings.
+
 ## 2026-10-29: Keep the screen awake; hardware verification; next wave planned
 
 - Verified on hardware by the owner (all worked, including indoors): installing the release APK,

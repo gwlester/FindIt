@@ -88,12 +88,20 @@ describe('settings', () => {
     expect(await loadSettings(db as never)).toEqual(DEFAULT_SETTINGS);
   });
   it('saves and reloads every setting', async () => {
-    const next = { displayName: 'Gerald', units: 'imperial' as const, highAccuracyGps: false };
+    const next = { displayName: 'Gerald', units: 'imperial' as const, highAccuracyGps: false, searchAreaDistanceM: 48.768 };
     await saveSettings(db as never, next);
     expect(await loadSettings(db as never)).toEqual(next);
     await saveSettings(db as never, { ...next, units: 'metric', highAccuracyGps: true });
     expect(await loadSettings(db as never)).toMatchObject({ units: 'metric', highAccuracyGps: true });
   });
+  it('stores the search-area distance in metres, or off', async () => {
+    expect((await loadSettings(db as never)).searchAreaDistanceM).toBe(50);
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, searchAreaDistanceM: null });
+    expect((await loadSettings(db as never)).searchAreaDistanceM).toBeNull();
+    await db.runAsync("UPDATE settings SET value = 'garbage' WHERE key = 'searchAreaDistanceM'");
+    expect((await loadSettings(db as never)).searchAreaDistanceM).toBe(50);
+  });
+
   it('rolls back a failed save', async () => {
     await expect(
       db.withTransactionAsync(async () => {

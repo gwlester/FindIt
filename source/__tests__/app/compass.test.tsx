@@ -5,6 +5,7 @@ import { useLocalSearchParams } from 'expo-router';
 import CompassScreen from '../../src/app/compass/[id]';
 import { emitHeading, emitPosition, emitPositionError } from '../helpers/expoLocationMock';
 import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
+import { svgTexts } from '../helpers/svg';
 import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
 import { place, renderApp } from '../helpers/renderApp';
 
@@ -59,10 +60,10 @@ test('distance, uncertainty, bearing, heading and satellites', async () => {
 test('inside the uncertainty radius, magnetic heading needing calibration, imperial', async () => {
   await renderApp(<CompassScreen />, {
     places: [place('Here', { accuracy: null })],
-    settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false },
+    settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50 },
   });
   await act(async () => emitPosition({ latitude: 30.4352, longitude: -91.1903, accuracy: 6 }));
-  expect(screen.getByText(/within the uncertainty radius/)).toBeOnTheScreen();
+  expect(screen.getByText('You’re in the search area — look around!')).toBeOnTheScreen();
   expect(screen.getByText('GPS accuracy ± 20 ft')).toBeOnTheScreen();
   await act(async () => emitHeading({ trueHeading: -1, magHeading: 90, accuracy: 1 }));
   expect(screen.getByText('Heading 090° magnetic')).toBeOnTheScreen();
@@ -134,5 +135,41 @@ describe('averaging my position', () => {
     expect(screen.getByRole('button', { name: 'Average my position' })).toBeOnTheScreen();
     expect(screen.queryByText(/averaged over/)).not.toBeOnTheScreen();
     expect(screen.getByText(/^≈ 40\d m$/)).toBeOnTheScreen();
+  });
+});
+
+describe('search area', () => {
+  const south = (m: number, accuracy = 3) =>
+    emitPosition({ latitude: 30.4352 - m / M_LAT, longitude: -91.1903, accuracy });
+
+  it('replaces the arrow within the switch distance (default 50 m)', async () => {
+    await renderApp(<CompassScreen />, { places: [OAK] });
+    await act(async () => south(100));
+    expect(svgTexts(screen.toJSON())).not.toContain('20 m');
+    await act(async () => south(14));
+    expect(svgTexts(screen.toJSON())).toContain('20 m');
+    expect(screen.queryByText(/in the search area/)).not.toBeOnTheScreen();
+  });
+
+  it('follows the setting, in the chosen units, and can be turned off', async () => {
+    await renderApp(<CompassScreen />, {
+      places: [OAK],
+      settings: { displayName: 'x', units: 'imperial', highAccuracyGps: true, searchAreaDistanceM: 20 },
+    });
+    await act(async () => south(30));
+    expect(svgTexts(screen.toJSON()).some((t) => t.endsWith(' ft'))).toBe(false);
+    // Position is smoothed, so a few fixes are needed to settle at 14 m.
+    await act(async () => {
+      for (let i = 0; i < 8; i++) south(14);
+    });
+    expect(svgTexts(screen.toJSON())).toContain('100 ft');
+    await screen.unmount();
+
+    await renderApp(<CompassScreen />, {
+      places: [OAK],
+      settings: { displayName: 'x', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: null },
+    });
+    await act(async () => south(5));
+    expect(svgTexts(screen.toJSON())).not.toContain('10 m');
   });
 });

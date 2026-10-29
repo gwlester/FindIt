@@ -1,7 +1,7 @@
 import { render, screen, userEvent } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { Button, Checkbox, Field, Section } from '../../src/components/ui';
+import { Button, Checkbox, Field, Section, Stepper } from '../../src/components/ui';
 
 test('Button variants press and disable', async () => {
   const user = userEvent.setup();
@@ -49,4 +49,16 @@ test('Section and Checkbox', async () => {
   expect(screen.getByRole('checkbox', { name: 'Two' })).not.toBeChecked();
   await user.press(screen.getByRole('checkbox', { name: 'Two' }));
   expect(onToggle).toHaveBeenCalled();
+});
+
+test('Stepper shows the value and steps both ways', async () => {
+  const user = userEvent.setup();
+  const onDecrease = jest.fn();
+  const onIncrease = jest.fn();
+  await render(<Stepper value="50 m" onDecrease={onDecrease} onIncrease={onIncrease} decreaseLabel="Less" increaseLabel="More" />);
+  expect(screen.getByText('50 m')).toBeOnTheScreen();
+  await user.press(screen.getByRole('button', { name: 'Less' }));
+  await user.press(screen.getByRole('button', { name: 'More' }));
+  expect(onDecrease).toHaveBeenCalledTimes(1);
+  expect(onIncrease).toHaveBeenCalledTimes(1);
 });
