@@ -25,10 +25,10 @@ class FindItNativeModule : Module() {
 
     Events("onGnssStatus", "onSharePeer")
 
-    AsyncFunction("startGnssStatus") {
+    AsyncFunction("startGnssStatus") { fullTracking: Boolean ->
       requirePermission(Manifest.permission.ACCESS_FINE_LOCATION)
       val monitor = gnss ?: GnssMonitor(context) { sendEvent("onGnssStatus", it) }.also { gnss = it }
-      monitor.start()
+      monitor.start(fullTracking)
     }
 
     AsyncFunction("stopGnssStatus") {

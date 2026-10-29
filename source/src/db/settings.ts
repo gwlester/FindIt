@@ -6,9 +6,11 @@ export type Settings = {
   /** Name other FindIt users see when we share. */
   displayName: string;
   units: Units;
+  /** Ask the GNSS chipset for full tracking on the compass/averaging screens (more battery). */
+  highAccuracyGps: boolean;
 };
 
-export const DEFAULT_SETTINGS: Settings = { displayName: 'FindIt user', units: 'metric' };
+export const DEFAULT_SETTINGS: Settings = { displayName: 'FindIt user', units: 'metric', highAccuracyGps: true };
 
 export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
   const rows = await db.getAllAsync<{ key: string; value: string }>('SELECT key, value FROM settings');
@@ -16,6 +18,7 @@ export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
   return {
     displayName: map.displayName ?? DEFAULT_SETTINGS.displayName,
     units: map.units === 'imperial' ? 'imperial' : 'metric',
+    highAccuracyGps: map.highAccuracyGps !== 'false',
   };
 }
 

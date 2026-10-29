@@ -18,11 +18,12 @@ function SettingsForm() {
   const { settings, updateSettings } = useSettings();
   const [displayName, setDisplayName] = useState(settings.displayName);
   const [units, setUnits] = useState<Units>(settings.units);
+  const [highAccuracyGps, setHighAccuracyGps] = useState(settings.highAccuracyGps);
 
   const save = async () => {
     const name = displayName.trim();
     if (!name) return Alert.alert('Name required', 'Nearby users need a name to recognise you.');
-    await updateSettings({ displayName: name, units });
+    await updateSettings({ displayName: name, units, highAccuracyGps });
     router.back();
   };
 
@@ -38,6 +39,14 @@ function SettingsForm() {
       <Section title="Distance units">
         <Checkbox checked={units === 'metric'} label="Metric" sublabel="metres / kilometres" onToggle={() => setUnits('metric')} />
         <Checkbox checked={units === 'imperial'} label="Imperial" sublabel="feet / miles" onToggle={() => setUnits('imperial')} />
+      </Section>
+      <Section title="GPS">
+        <Checkbox
+          checked={highAccuracyGps}
+          label="High-accuracy GPS"
+          sublabel="Keep tracking every satellite while finding or averaging a place (Android 12+). Uses more battery."
+          onToggle={() => setHighAccuracyGps(!highAccuracyGps)}
+        />
       </Section>
       <View>
         <Button title="Save" onPress={save} />

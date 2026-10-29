@@ -1,5 +1,7 @@
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+import { smoothPosition } from '../lib/smoothing';
 
 export type Position = {
   latitude: number;
@@ -22,9 +24,13 @@ export function ensureLocationPermission(): Promise<boolean> {
   return permissionRequest;
 }
 
-/** Streams high-accuracy GPS fixes while mounted. */
-export function usePosition() {
+/**
+ * Streams high-accuracy GPS fixes while mounted. With `smooth`, the position is
+ * smoothed over the last few seconds to steady the display (accuracy stays as reported).
+ */
+export function usePosition({ smooth = false }: { smooth?: boolean } = {}) {
   const [position, setPosition] = useState<Position | null>(null);
+  const smoothed = useRef<Position | null>(null);
   const [permission, setPermission] = useState<PermissionState>('pending');
   const [error, setError] = useState<string | null>(null);
 
@@ -44,12 +50,14 @@ export function usePosition() {
         { accuracy: Location.Accuracy.BestForNavigation, timeInterval: 1000, distanceInterval: 0 },
         (loc) => {
           setError(null);
-          setPosition({
+          const fix: Position = {
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,
             accuracy: loc.coords.accuracy,
             timestamp: loc.timestamp,
-          });
+          };
+          smoothed.current = smooth ? smoothPosition(smoothed.current, fix) : fix;
+          setPosition(smoothed.current);
         },
         (reason) => setError(reason),
       );
@@ -61,7 +69,7 @@ export function usePosition() {
       cancelled = true;
       subscription?.remove();
     };
-  }, []);
+  }, [smooth]);
 
   return { position, permission, error };
 }

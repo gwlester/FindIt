@@ -1,12 +1,15 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text } from 'react-native';
+import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { AveragingPanel } from '../components/AveragingPanel';
 import { Button, Field, Section } from '../components/ui';
 import { addPlace, getPlace, updatePlace } from '../db/locations';
+import { useAveragePosition } from '../hooks/useAveragePosition';
 import { usePosition } from '../hooks/usePosition';
 import { useSettings } from '../hooks/useSettings';
+import type { Average } from '../lib/averaging';
 import { formatDistance } from '../lib/format';
 import { parseCoordinate } from '../lib/geo';
 import { useTheme } from '../lib/theme';
@@ -20,6 +23,8 @@ export default function PlaceScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const editingId = id ? Number(id) : null;
   const { position, permission } = usePosition();
+  const averager = useAveragePosition();
+  const [averaging, setAveraging] = useState(false);
 
   const [name, setName] = useState('');
   const [lat, setLat] = useState('');
@@ -46,6 +51,24 @@ export default function PlaceScreen() {
     setLat(position.latitude.toFixed(6));
     setLon(position.longitude.toFixed(6));
     setAccuracy(position.accuracy);
+  };
+
+  const startAveraging = () => {
+    setAveraging(true);
+    averager.start();
+  };
+
+  const applyAverage = (average: Average) => {
+    averager.reset();
+    setAveraging(false);
+    setLat(average.latitude.toFixed(7));
+    setLon(average.longitude.toFixed(7));
+    setAccuracy(average.accuracy);
+  };
+
+  const cancelAveraging = () => {
+    averager.reset();
+    setAveraging(false);
   };
 
   // Typing coordinates by hand means we no longer know how accurate they are.
@@ -85,12 +108,35 @@ export default function PlaceScreen() {
         />
 
         <Section title="Coordinates">
-          <Button
-            title={position ? 'Use my current position' : 'Waiting for GPS…'}
-            variant="secondary"
-            onPress={useCurrentPosition}
-            disabled={!position}
-          />
+          {averaging ? (
+            <AveragingPanel
+              running={averager.running}
+              fixes={averager.fixes}
+              average={averager.average}
+              error={averager.error}
+              onUse={applyAverage}
+              onCancel={cancelAveraging}
+            />
+          ) : (
+            <View style={styles.buttons}>
+              <View style={{ flex: 1 }}>
+                <Button
+                  title={position ? 'Use current' : 'Waiting for GPS…'}
+                  variant="secondary"
+                  onPress={useCurrentPosition}
+                  disabled={!position}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Button
+                  title="Average position"
+                  variant="secondary"
+                  onPress={startAveraging}
+                  disabled={permission === 'denied'}
+                />
+              </View>
+            </View>
+          )}
           <Text style={[styles.gps, { color: theme.muted }]}>
             {permission === 'denied'
               ? 'Location permission denied — enter coordinates by hand.'
@@ -138,4 +184,5 @@ export default function PlaceScreen() {
 const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 48 },
   gps: { fontSize: 13, marginBottom: 10, marginTop: 2 },
+  buttons: { flexDirection: 'row', gap: 10 },
 });

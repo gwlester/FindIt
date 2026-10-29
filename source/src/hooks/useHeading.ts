@@ -1,6 +1,7 @@
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import { smoothAngle } from '../lib/smoothing';
 import { ensureLocationPermission } from './usePosition';
 
 export type Heading = {
@@ -12,8 +13,10 @@ export type Heading = {
   accuracy: number;
 };
 
+/** Streams the compass heading, smoothed to stop the rose jittering. */
 export function useHeading() {
   const [heading, setHeading] = useState<Heading | null>(null);
+  const smoothed = useRef<number | null>(null);
 
   useEffect(() => {
     let subscription: Location.LocationSubscription | null = null;
@@ -23,7 +26,8 @@ export function useHeading() {
       if (!(await ensureLocationPermission()) || cancelled) return;
       const sub = await Location.watchHeadingAsync((h) => {
         const isTrue = h.trueHeading >= 0;
-        setHeading({ degrees: isTrue ? h.trueHeading : h.magHeading, isTrue, accuracy: h.accuracy });
+        smoothed.current = smoothAngle(smoothed.current, isTrue ? h.trueHeading : h.magHeading);
+        setHeading({ degrees: smoothed.current, isTrue, accuracy: h.accuracy });
       });
       if (cancelled) sub.remove();
       else subscription = sub;
