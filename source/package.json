@@ -48,7 +48,8 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit && tsc --noEmit -p __tests__",
     "test": "NODE_OPTIONS=--disable-warning=ExperimentalWarning jest",
-    "test:coverage": "NODE_OPTIONS=--disable-warning=ExperimentalWarning jest --coverage"
+    "test:coverage": "NODE_OPTIONS=--disable-warning=ExperimentalWarning jest --coverage",
+    "licenses": "node scripts/generate-licenses.js"
   },
   "private": true
 }

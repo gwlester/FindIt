@@ -1,0 +1,12 @@
+[
+  { "name": "MapLibre Native (Android)", "license": "BSD-2-Clause", "url": "https://github.com/maplibre/maplibre-native/blob/main/LICENSE.md" },
+  { "name": "Hermes JavaScript engine", "license": "MIT", "url": "https://github.com/facebook/hermes/blob/main/LICENSE" },
+  { "name": "Yoga layout engine", "license": "MIT", "url": "https://github.com/facebook/yoga/blob/main/LICENSE" },
+  { "name": "Fresco", "license": "MIT", "url": "https://github.com/facebook/fresco/blob/main/LICENSE" },
+  { "name": "SoLoader", "license": "Apache-2.0", "url": "https://github.com/facebook/SoLoader/blob/main/LICENSE", "textFile": "licenses/Apache-2.0.txt" },
+  { "name": "RxAndroidBle and RxJava (Bluetooth)", "license": "Apache-2.0", "url": "https://github.com/dariuszseweryn/RxAndroidBle/blob/master/LICENSE", "textFile": "licenses/Apache-2.0.txt" },
+  { "name": "OkHttp and Okio", "license": "Apache-2.0", "url": "https://github.com/square/okhttp/blob/master/LICENSE.txt", "textFile": "licenses/Apache-2.0.txt" },
+  { "name": "AndroidX libraries", "license": "Apache-2.0", "url": "https://developer.android.com/jetpack/androidx", "textFile": "licenses/Apache-2.0.txt" },
+  { "name": "Kotlin standard library", "license": "Apache-2.0", "url": "https://github.com/JetBrains/kotlin/blob/master/license/LICENSE.txt", "textFile": "licenses/Apache-2.0.txt" },
+  { "name": "SQLite", "license": "Public domain", "url": "https://www.sqlite.org/copyright.html" }
+]

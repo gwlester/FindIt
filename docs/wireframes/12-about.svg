@@ -1,0 +1,28 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>About FindIt</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<circle cx='180' cy='160' r='48' fill='#1F6FB2'/>
+<path d='M180 200 L156 165 A30 30 0 1 1 204 165 Z' fill='#00AE58'/>
+<polygon points='180,128 186,148 200,152 186,156 180,176 174,156 160,152 174,148' fill='#fff'/>
+<text x='180.0' y='236' font-family='Helvetica, Arial, sans-serif' font-size='26' fill='#333' font-weight='bold' text-anchor='middle'>FindIt</text>
+<text x='180.0' y='258' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#888' font-weight='normal' text-anchor='middle'>Version 2026.10.29.001</text>
+<text x='24' y='292' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>FindIt is a simple geocache-style app: save named</text>
+<text x='24' y='311' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>places, then let the compass, the distance and the</text>
+<text x='24' y='330' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>uncertainty radius guide you back to them. It works</text>
+<text x='24' y='349' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>offline, keeps everything on your phone, and shares</text>
+<text x='24' y='368' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>places with FindIt users nearby over Bluetooth. Maps</text>
+<text x='24' y='387' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>come from OpenStreetMap and, in the United States,</text>
+<text x='24' y='406' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>USGS satellite imagery.</text>
+<rect x='24' y='440' width='312' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='467.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>FindIt licence</text>
+<rect x='24' y='496' width='312' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='523.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Open-source licences</text>
+<rect x='24' y='552' width='312' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='579.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Map data</text>
+<text x='16' y='630' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Version is the release's date version (YYYY.MM.DD.NNN).</text>
+<text x='16' y='644' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Each button opens the Licences screen.</text>
+</svg>

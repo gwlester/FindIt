@@ -2,6 +2,18 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Help, About and licences
+
+Built test-first (content, licence generator, Help button, screens, layout):
+- **?** on every screen: Help for this screen, How to use FindIt (getting started plus every
+  screen), About FindIt.
+- About: icon, version (the release's date version), a short description, and buttons for the
+  FindIt licence, open-source licences (every bundled JavaScript package and the main native
+  libraries, tap for the text) and map data credits (OpenStreetMap ODbL, OpenFreeMap /
+  OpenMapTiles, USGS public domain, with links).
+- `npm run licenses -- <bundle source map>` regenerates `src/help/licenses.json`.
+- Wireframes 01 (header), 11/11b (help), 12/12b (about, licences); architecture and building docs.
+
 ## 2026-10-29: Map or satellite behind the compass search area
 
 Built test-first (zoom maths and layer choice, Compass faces, setting, compass screen):

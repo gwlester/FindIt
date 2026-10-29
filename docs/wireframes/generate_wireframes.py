@@ -108,9 +108,9 @@ class Screen:
 
 
 def places():
-    s = Screen("FindIt", header_right="Settings", back=False)
-    s.header_extra = "Files"
-    s.header_extra2 = "Map"
+    s = Screen("FindIt", header_right="?", back=False)
+    for x, label in ((W - 48, "Settings"), (W - 128, "Files"), (W - 178, "Map")):
+        s.text(x, 69, label, 15, ACCENT, "bold", "end")
     s.text(W / 2, 112, "Tap a place to find it · long-press to edit", 11, MUTED, anchor="middle")
     s.checkbox(16, 122, "Hide found places", "2 found places hidden", False)
     rows = [
@@ -577,6 +577,97 @@ def offline_maps():
     s.render("10-offline-maps")
 
 
+def help_menu():
+    s = Screen("Compass", header_right="?")
+    s.add(f"<rect x='0' y='0' width='{W}' height='{H}' rx='28' fill='#000' opacity='0.45'/>")
+    s.rect(120, 92, 224, 200, fill="#fff", stroke=LINE, r=12)
+    for i, label in enumerate(("Help for this screen", "How to use FindIt", "About FindIt", "Close")):
+        y = 92 + i * 50
+        if i:
+            s.add(f"<line x1='120' y1='{y}' x2='344' y2='{y}' stroke='{LINE}'/>")
+        s.text(136, y + 31, label, 15, MUTED if label == "Close" else INK)
+    s.note(16, 330, "Every screen has ? at the top right. “Help for this screen” opens")
+    s.note(16, 344, "that screen’s topic; “How to use FindIt” is the whole guide.")
+    s.render("11-help-menu")
+
+
+def help_topic():
+    s = Screen("Help: Compass")
+    paras = [
+        ("Compass", 18, "bold"),
+        ("The outer ring turns so N, E, S and W always point", 14, "normal"),
+        ("the real way; the arrow points at the place. Hold the", 14, "normal"),
+        ("phone flat. If it asks for calibration, move it in a", 14, "normal"),
+        ("figure-8.", 14, "normal"),
+        ("", 8, "normal"),
+        ("Below the compass: the distance, and the uncertainty", 14, "normal"),
+        ("radius, which combines your GPS accuracy and the", 14, "normal"),
+        ("place’s. The satellite line shows how many are used.", 14, "normal"),
+        ("", 8, "normal"),
+        ("Close to the place, the middle becomes a map: you at", 14, "normal"),
+        ("the centre, the shaded search circle, and scale rings…", 14, "normal"),
+    ]
+    y = 120
+    for text, size, weight in paras:
+        if text:
+            s.text(16, y, text, size, INK, weight)
+        y += size + 8
+    s.button(16, 400, W - 32, "How to use FindIt (all topics)", filled=False)
+    s.note(16, 470, "Without a topic (“How to use FindIt”): Getting started, then")
+    s.note(16, 484, "every screen’s topic in order.")
+    s.render("11b-help-topic")
+
+
+def about():
+    s = Screen("About FindIt")
+    s.add("<circle cx='180' cy='160' r='48' fill='#1F6FB2'/>")
+    s.add("<path d='M180 200 L156 165 A30 30 0 1 1 204 165 Z' fill='#00AE58'/>")
+    s.add("<polygon points='180,128 186,148 200,152 186,156 180,176 174,156 160,152 174,148' fill='#fff'/>")
+    s.text(W / 2, 236, "FindIt", 26, INK, "bold", "middle")
+    s.text(W / 2, 258, "Version 2026.10.29.001", 13, MUTED, anchor="middle")
+    for i, line in enumerate((
+        "FindIt is a simple geocache-style app: save named",
+        "places, then let the compass, the distance and the",
+        "uncertainty radius guide you back to them. It works",
+        "offline, keeps everything on your phone, and shares",
+        "places with FindIt users nearby over Bluetooth. Maps",
+        "come from OpenStreetMap and, in the United States,",
+        "USGS satellite imagery.",
+    )):
+        s.text(24, 292 + i * 19, line, 14)
+    for i, label in enumerate(("FindIt licence", "Open-source licences", "Map data")):
+        s.button(24, 440 + i * 56, W - 48, label, filled=False)
+    s.note(16, 630, "Version is the release's date version (YYYY.MM.DD.NNN).")
+    s.note(16, 644, "Each button opens the Licences screen.")
+    s.render("12-about")
+
+
+def licences():
+    s = Screen("Open-source licences")
+    s.text(16, 114, "FindIt is built with these open-source projects. Tap", 12, MUTED)
+    s.text(16, 129, "one to read its licence.", 12, MUTED)
+    s.text(16, 158, "Bundled JavaScript packages", 16, weight="bold")
+    rows = ["@maplibre/maplibre-react-native 11.5.0, MIT", "expo 58.0.21, MIT", "fast-xml-parser 5.11.2, MIT",
+            "react-native 0.88.1, MIT"]
+    y = 168
+    for r in rows:
+        s.text(16, y + 24, r, 14)
+        s.add(f"<line x1='16' y1='{y + 38}' x2='{W-16}' y2='{y + 38}' stroke='{LINE}'/>")
+        y += 40
+        if r.startswith("react-native"):
+            s.rect(16, y + 4, W - 32, 112, fill="#fafafa", stroke=LINE, r=6)
+            for i, t in enumerate(("MIT License", "", "Copyright (c) Meta Platforms, Inc. and", "affiliates.", "Permission is hereby granted, free of…")):
+                s.text(26, y + 24 + i * 18, t, 11, INK)
+            y += 120
+    s.text(16, y + 30, "Native libraries", 16, weight="bold")
+    for i, r in enumerate(("MapLibre Native (Android), BSD-2-Clause ↗", "Hermes JavaScript engine, MIT ↗", "OkHttp and Okio, Apache-2.0")):
+        s.text(16, y + 62 + i * 34, r, 14, ACCENT if "↗" in r else INK, "bold" if "↗" in r else "normal")
+    s.note(16, 700, "Generated from the app bundle by scripts/generate-licenses.js.")
+    s.note(16, 714, "“Map data”: OpenStreetMap (ODbL), OpenFreeMap /")
+    s.note(16, 728, "OpenMapTiles, USGS (public domain), each with a link.")
+    s.render("12b-licences")
+
+
 def files():
     s = Screen("Import / Export")
     s.rect(16, 104, W - 32, 124, fill=FILL, r=12)
@@ -663,6 +754,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, map_screen, offline_maps, compass_map_behind, settings_end, settings, settings_more, files, files_import):
+    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, map_screen, offline_maps, compass_map_behind, settings_end, help_menu, help_topic, about, licences, settings, settings_more, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

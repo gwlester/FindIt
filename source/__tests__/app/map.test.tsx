@@ -90,6 +90,9 @@ describe('offline maps', () => {
     await renderApp(<MapScreen />);
     await user.press(screen.getByRole('button', { name: 'Offline maps' }));
     expect(router.push).toHaveBeenLastCalledWith('/offline-maps');
+    await user.press(screen.getByRole('button', { name: 'Help' }));
+    await user.press(screen.getByRole('button', { name: 'Help for this screen' }));
+    expect(router.push).toHaveBeenLastCalledWith({ pathname: '/help', params: { topic: 'map' } });
   });
 
   it('downloads the area on screen for the current layer, showing progress', async () => {

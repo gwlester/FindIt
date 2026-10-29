@@ -39,6 +39,9 @@ test('lists places by name with source and distance, and navigates', async () =>
   expect(router.push).toHaveBeenLastCalledWith('/share');
   await user.press(screen.getByRole('button', { name: 'Map' }));
   expect(router.push).toHaveBeenLastCalledWith('/map');
+  await user.press(screen.getByRole('button', { name: 'Help' }));
+  await user.press(screen.getByRole('button', { name: 'Help for this screen' }));
+  expect(router.push).toHaveBeenLastCalledWith({ pathname: '/help', params: { topic: 'places' } });
   await user.press(screen.getByRole('button', { name: 'Files' }));
   expect(router.push).toHaveBeenLastCalledWith('/files');
   await user.press(screen.getByRole('button', { name: 'Settings' }));
