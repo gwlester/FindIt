@@ -130,13 +130,20 @@ To make a release, merge to `master` (or run the workflow by hand on `master` fr
 Every other build is only in the Actions tab: open the run, download the artifact
 (you need to be signed in to GitHub), unzip it, and open the `.apk` on the phone.
 
-### Keeping Actions storage clean
+### Keeping branches and Actions storage clean
 
 - Artifacts expire after 7 days. They're stored uncompressed, since APKs are already compressed.
 - The Gradle cache is written only from the default branch, and stale entries are removed
   after every run (`cache-cleanup: always`). Newer pushes cancel builds still in progress.
-- `.github/workflows/cleanup.yml` deletes a PR's caches when it closes and a branch's caches
-  when it is deleted. Once a week it also deletes artifacts older than 7 days, caches for
-  branches that are gone, and workflow runs (and their logs) older than 30 days.
-  Scheduled and branch-delete events only run workflows from the default branch, so this
-  starts working once it is merged to `master`. It can also be run by hand from the Actions tab.
+- `.github/workflows/cleanup.yml`:
+  - when a PR from this repo is **merged**, deletes its **branch** and the branch's caches;
+  - when a PR closes, deletes the PR's caches; when a branch is deleted, deletes its caches;
+  - weekly: deletes **stale branches** that were missed (latest commit belongs to a merged PR,
+    no open PR; never `master`), artifacts older than 7 days, caches for branches that are
+    gone, and workflow runs (and their logs) older than 30 days.
+
+  Scheduled and branch-delete events only run workflows from the default branch. The weekly
+  sweep can also be run by hand from the Actions tab.
+- Optionally, also tick Settings → General → Pull Requests → **Automatically delete head
+  branches**. It does the same as the merged-branch job; whichever runs second finds the
+  branch already gone.

@@ -12,8 +12,8 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
       including several places, long notes, and two receivers at once.
 
 ## Improvements
-- [ ] Repo owner: add the required `build` status check to the `master` ruleset once the
-      trigger fix is merged (see "Branch protection" in docs/building.md).
+- [ ] Optional, repo owner: Settings → General → Pull Requests → "Automatically delete head
+      branches" (the cleanup workflow already deletes merged branches).
 - [ ] Android tests for the Kotlin module (`GnssMonitor.kt`, `ShareServer.kt`); not covered by the Jest suite.
 - [ ] Try importing a real geocaching.com pocket-query GPX and a GPX exported from a Garmin unit.
 - [ ] Release signing with a real keystore (GitHub secret) instead of the debug key.
