@@ -2,7 +2,9 @@ import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
 import PlacesScreen from '../../src/app/index';
-import { listPlaces } from '../../src/db/locations';
+import { recordFind } from '../../src/db/finds';
+import { addPlace, listPlaces } from '../../src/db/locations';
+import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../src/db/settings';
 import { SettingsProvider } from '../../src/hooks/useSettings';
 import { emitPosition } from '../helpers/expoLocationMock';
 import { setCurrentDb } from '../helpers/expoSqliteMock';
@@ -71,4 +73,48 @@ test('reports load failures', async () => {
   );
   await act(async () => {});
   expect(alert.message('Could not load places')).toBe('Error: disk');
+});
+
+describe('found places', () => {
+  async function withFinds(settings = DEFAULT_SETTINGS) {
+    const db = await createTestDb();
+    for (const name of ['Ash', 'Elm', 'Oak']) await addPlace(db as never, place(name));
+    await recordFind(db as never, 1, { foundAt: new Date(2026, 9, 20).getTime(), comment: '' }, 'log');
+    await recordFind(db as never, 1, { foundAt: new Date(2026, 9, 21).getTime(), comment: '' }, 'log');
+    await recordFind(db as never, 2, { foundAt: new Date(2026, 9, 22).getTime(), comment: '', finder: 'Alex' }, 'log');
+    await saveSettings(db as never, settings);
+    setCurrentDb(db);
+    await render(
+      <SettingsProvider>
+        <PlacesScreen />
+      </SettingsProvider>,
+    );
+    await act(async () => {});
+    return db;
+  }
+
+  it('marks found places in the list', async () => {
+    await withFinds();
+    expect(screen.getByText('✓ Found 2 times, last 2026-10-21')).toBeOnTheScreen();
+    expect(screen.getByText('✓ Found by Alex 2026-10-22')).toBeOnTheScreen();
+  });
+
+  it('can hide the places I found, and remembers that', async () => {
+    const user = userEvent.setup();
+    const db = await withFinds();
+    await user.press(screen.getByRole('checkbox', { name: /Hide found places/ }));
+    expect(screen.queryByText('Ash')).not.toBeOnTheScreen();
+    expect(screen.getByText('Elm')).toBeOnTheScreen(); // found by someone else, not me
+    expect(screen.getByText('1 found place hidden')).toBeOnTheScreen();
+    expect((await loadSettings(db as never)).hideFound).toBe(true);
+    await user.press(screen.getByRole('checkbox', { name: /Hide found places/ }));
+    expect(screen.getByText('Ash')).toBeOnTheScreen();
+  });
+
+  it('shows nothing about finds when marking found is off', async () => {
+    await withFinds({ ...DEFAULT_SETTINGS, findMode: 'off', hideFound: true });
+    expect(screen.getByText('Ash')).toBeOnTheScreen();
+    expect(screen.queryByText(/Found/)).not.toBeOnTheScreen();
+    expect(screen.queryByRole('checkbox', { name: /Hide found places/ })).not.toBeOnTheScreen();
+  });
 });

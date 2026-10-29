@@ -1,11 +1,18 @@
-import { act, screen, userEvent } from '@testing-library/react-native';
+import { act, render, screen, userEvent } from '@testing-library/react-native';
 import * as Location from 'expo-location';
 import { useLocalSearchParams } from 'expo-router';
 
 import CompassScreen from '../../src/app/compass/[id]';
+import { listFinds, recordFind } from '../../src/db/finds';
+import { addPlace } from '../../src/db/locations';
+import { DEFAULT_SETTINGS } from '../../src/db/settings';
+import { SettingsProvider } from '../../src/hooks/useSettings';
+import { formatDate } from '../../src/lib/format';
 import { emitHeading, emitPosition, emitPositionError } from '../helpers/expoLocationMock';
 import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
+import { setCurrentDb } from '../helpers/expoSqliteMock';
 import { svgTexts } from '../helpers/svg';
+import { createTestDb } from '../helpers/testDb';
 import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
 import { place, renderApp } from '../helpers/renderApp';
 
@@ -60,7 +67,7 @@ test('distance, uncertainty, bearing, heading and satellites', async () => {
 test('inside the uncertainty radius, magnetic heading needing calibration, imperial', async () => {
   await renderApp(<CompassScreen />, {
     places: [place('Here', { accuracy: null })],
-    settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50 },
+    settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false },
   });
   await act(async () => emitPosition({ latitude: 30.4352, longitude: -91.1903, accuracy: 6 }));
   expect(screen.getByText('You’re in the search area — look around!')).toBeOnTheScreen();
@@ -154,7 +161,7 @@ describe('search area', () => {
   it('follows the setting, in the chosen units, and can be turned off', async () => {
     await renderApp(<CompassScreen />, {
       places: [OAK],
-      settings: { displayName: 'x', units: 'imperial', highAccuracyGps: true, searchAreaDistanceM: 20 },
+      settings: { displayName: 'x', units: 'imperial', highAccuracyGps: true, searchAreaDistanceM: 20, findMode: 'once' as const, hideFound: false },
     });
     await act(async () => south(30));
     expect(svgTexts(screen.toJSON()).some((t) => t.endsWith(' ft'))).toBe(false);
@@ -167,9 +174,78 @@ describe('search area', () => {
 
     await renderApp(<CompassScreen />, {
       places: [OAK],
-      settings: { displayName: 'x', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: null },
+      settings: { displayName: 'x', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false },
     });
     await act(async () => south(5));
     expect(svgTexts(screen.toJSON())).not.toContain('10 m');
+  });
+});
+
+describe('mark found', () => {
+  const today = () => formatDate(Date.now());
+
+  it('records a find with an optional comment', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<CompassScreen />, { places: [OAK] });
+    await user.press(screen.getByRole('button', { name: 'Mark found' }));
+    expect(screen.getByText('Mark as found')).toBeOnTheScreen();
+    await user.type(screen.getByPlaceholderText('Comment (optional)'), 'Easy');
+    await user.press(screen.getByRole('button', { name: 'Save find' }));
+    expect(screen.queryByText('Mark as found')).not.toBeOnTheScreen();
+    expect(screen.getByText(`✓ Found ${today()}`)).toBeOnTheScreen();
+    expect(screen.getByText('“Easy”')).toBeOnTheScreen();
+    expect(await listFinds(db as never, 1)).toHaveLength(1);
+  });
+
+  it('in once mode updates the find; in log mode adds one', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<CompassScreen />, { places: [OAK] });
+    await user.press(screen.getByRole('button', { name: 'Mark found' }));
+    await user.press(screen.getByRole('button', { name: 'Save find' }));
+    await user.press(screen.getByRole('button', { name: 'Mark found' }));
+    expect(screen.getByText('Update find')).toBeOnTheScreen();
+    await user.type(screen.getByPlaceholderText('Comment (optional)'), 'Again');
+    await user.press(screen.getByRole('button', { name: 'Save find' }));
+    expect(await listFinds(db as never, 1)).toHaveLength(1);
+    expect(screen.getByText('“Again”')).toBeOnTheScreen();
+    await screen.unmount();
+
+    const logDb = await renderApp(<CompassScreen />, {
+      places: [OAK],
+      settings: { ...DEFAULT_SETTINGS, findMode: 'log' },
+    });
+    for (let i = 0; i < 2; i++) {
+      await user.press(screen.getByRole('button', { name: 'Mark found' }));
+      expect(screen.getByText('Mark as found')).toBeOnTheScreen();
+      await user.press(screen.getByRole('button', { name: 'Save find' }));
+    }
+    expect(await listFinds(logDb as never, 1)).toHaveLength(2);
+    expect(screen.getByText(`✓ Found 2 times, last ${today()}`)).toBeOnTheScreen();
+  });
+
+  it('cancel records nothing; finds by others are labelled; off hides it', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<CompassScreen />, { places: [OAK] });
+    await user.press(screen.getByRole('button', { name: 'Mark found' }));
+    await user.press(screen.getByRole('button', { name: 'Cancel' }));
+    expect(await listFinds(db as never, 1)).toEqual([]);
+    expect(screen.queryByText(/Found/)).not.toBeOnTheScreen();
+    await screen.unmount();
+
+    const other = await createTestDb();
+    await addPlace(other as never, OAK);
+    await recordFind(other as never, 1, { foundAt: new Date(2026, 9, 20).getTime(), comment: '', finder: 'Alex' }, 'log');
+    setCurrentDb(other);
+    await render(
+      <SettingsProvider>
+        <CompassScreen />
+      </SettingsProvider>,
+    );
+    await act(async () => {});
+    expect(screen.getByText('✓ Found by Alex 2026-10-20')).toBeOnTheScreen();
+    await screen.unmount();
+
+    await renderApp(<CompassScreen />, { places: [OAK], settings: { ...DEFAULT_SETTINGS, findMode: 'off' } });
+    expect(screen.queryByRole('button', { name: 'Mark found' })).not.toBeOnTheScreen();
   });
 });

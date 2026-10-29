@@ -12,7 +12,10 @@ Orange text is annotation, not UI.
 The list of known places, sorted by name, with the distance from your current GPS fix.
 Tap a place to open the compass; long-press it to edit or delete. Places received from
 someone else show who they came from. The list scrolls when there are more places than fit;
-the **Add place** / **Share nearby** buttons stay fixed at the bottom. **Files** (header) opens
+the **Add place** / **Share nearby** buttons stay fixed at the bottom. Found places show a
+✓ line ("Found 2026-10-29", "Found 3 times, last …", or "Found by Sam …" for someone else's
+find). **Hide found places** hides the ones *you've* found and says how many are hidden; the
+choice is remembered. Neither appears when Settings → Found places is **Off**. **Files** (header) opens
 Import / Export.
 
 ![Places](wireframes/01-places.svg)
@@ -50,6 +53,15 @@ Fixes worse than 30 m are ignored.
 - Heading and position are smoothed over a few seconds, so the rose and the distance don't jitter.
 
 ![Compass](wireframes/03-compass.svg)
+
+## 3e. Compass: mark found
+
+**Mark found** asks for an optional comment, then records the find with today's date; the
+compass shows "✓ Found <date>" and the comment. With **Once per place**, marking again shows
+"Update find" and replaces the date and comment; with **Keep a log**, every find is kept.
+Exporting or sharing places that have been found asks **Include found information?**
+
+![Mark found](wireframes/03e-compass-mark-found.svg)
 
 ## 3b. Compass: averaging my position
 
@@ -130,3 +142,8 @@ area**: the distance at which the compass switches from the arrow to the search-
 units), or **Always show the arrow**.
 
 ![Settings](wireframes/06-settings.svg)
+
+Further down: **Found places**: Off, Once per place (default), or Keep a log. Switching from a
+log to "once" keeps all entries; the latest one is shown.
+
+![Settings, scrolled](wireframes/06b-settings-more.svg)

@@ -1,11 +1,13 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { Compass } from '../../components/Compass';
+import { FoundDialog } from '../../components/FoundDialog';
 import { KeepAwake } from '../../components/KeepAwake';
 import { Button } from '../../components/ui';
+import { foundLabel, listFinds, recordFind, summarizeFinds, type Find } from '../../db/finds';
 import { getPlace, type Place } from '../../db/locations';
 import { useAveragePosition } from '../../hooks/useAveragePosition';
 import { useGnssStatus } from '../../hooks/useGnssStatus';
@@ -37,9 +39,27 @@ export default function CompassScreen() {
     ? { latitude: average.latitude, longitude: average.longitude, accuracy: average.accuracy }
     : position;
 
+  const [finds, setFinds] = useState<Find[]>([]);
+  const [marking, setMarking] = useState(false);
+
   useEffect(() => {
     getPlace(db, Number(id)).then(setPlace);
   }, [db, id]);
+
+  const loadFinds = useCallback(() => listFinds(db, Number(id)).then(setFinds), [db, id]);
+  useEffect(() => {
+    loadFinds();
+  }, [loadFinds]);
+
+  const saveFind = async (comment: string) => {
+    setMarking(false);
+    // The button is only shown when finds are tracked (once or log).
+    await recordFind(db, Number(id), { foundAt: Date.now(), comment }, settings.findMode === 'log' ? 'log' : 'once');
+    await loadFinds();
+  };
+
+  const summary = summarizeFinds(finds);
+  const foundLine = foundLabel(summary);
 
   const distance = here && place ? distanceMeters(here, place) : null;
   const bearing = here && place ? bearingDegrees(here, place) : null;
@@ -79,6 +99,8 @@ export default function CompassScreen() {
       {place ? (
         <Text style={[styles.coords, { color: theme.muted }]}>{formatLatLon(place.latitude, place.longitude)}</Text>
       ) : null}
+      {foundLine ? <Text style={[styles.found, { color: theme.accent }]}>{`✓ ${foundLine}`}</Text> : null}
+      {summary?.lastComment ? <Text style={[styles.small, { color: theme.muted }]}>{`“${summary.lastComment}”`}</Text> : null}
 
       <View style={styles.compass}>
         <Compass
@@ -121,6 +143,18 @@ export default function CompassScreen() {
         )}
       </View>
 
+      {settings.findMode !== 'off' ? (
+        <View style={styles.averaging}>
+          <Button title="Mark found" onPress={() => setMarking(true)} />
+        </View>
+      ) : null}
+      <FoundDialog
+        visible={marking}
+        updating={settings.findMode === 'once' && (summary?.myCount ?? 0) > 0}
+        onSave={saveFind}
+        onCancel={() => setMarking(false)}
+      />
+
       <View style={[styles.details, { borderColor: theme.border, backgroundColor: theme.surface }]}>
         {bearing != null ? (
           <Text style={[styles.detail, { color: theme.text }]}>
@@ -162,6 +196,7 @@ const styles = StyleSheet.create({
   uncertainty: { fontSize: 16 },
   close: { fontSize: 15, fontWeight: '600', marginTop: 6, textAlign: 'center' },
   averaging: { alignSelf: 'stretch', marginTop: 12 },
+  found: { fontSize: 15, fontWeight: '700', marginBottom: 2 },
   averagingPanel: { borderWidth: 2, borderRadius: 10, padding: 10, gap: 4 },
   details: { alignSelf: 'stretch', borderWidth: 1, borderRadius: 12, padding: 12, marginTop: 16, gap: 4 },
   detail: { fontSize: 15 },

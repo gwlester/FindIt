@@ -22,3 +22,10 @@ export function formatCoordinate(value: number, positive: string, negative: stri
 export function formatLatLon(latitude: number, longitude: number): string {
   return `${formatCoordinate(latitude, 'N', 'S')}, ${formatCoordinate(longitude, 'E', 'W')}`;
 }
+
+/** Local calendar date as YYYY-MM-DD. */
+export function formatDate(ms: number): string {
+  const d = new Date(ms);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}

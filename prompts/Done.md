@@ -2,6 +2,21 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Mark places as found
+
+Built test-first (data layer, formats, then screens):
+- `finds` table (schema v2) with who found it ('' = me); deleting a place deletes its finds.
+- Compass: **Mark found** with an optional comment ("Update find" in once mode); shows
+  "✓ Found <date>" / "Found N times, last <date>" / "Found by <name> <date>" and the comment.
+- Places list: ✓ line per found place; **Hide found places** (remembered) hides places I found.
+- Settings → Found places: Off / Once per place (default) / Keep a log; switching to "once"
+  keeps the log and shows the latest.
+- Export and Bluetooth sharing ask **Include found information?** GPX: `Geocache Found` symbol +
+  FindIt find extensions (round-trips; other apps' "Geocache Found" imports as one find);
+  GeoJSON: `finds` list; Bluetooth: `f` array, oldest dropped first to fit, sender's own finds
+  stored as "found by <sender>".
+- Wireframes 01, 03, 03e (dialog), 06b (settings, scrolled).
+
 ## 2026-10-29: Compass search area, with a switch-distance setting
 
 Built test-first (`lib/searchArea.ts`, settings, Compass component, compass screen):

@@ -1,6 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 import type { Units } from '../lib/format';
+import type { FindMode } from './finds';
 import { DEFAULT_SEARCH_AREA_M } from '../lib/searchArea';
 
 export type Settings = {
@@ -11,6 +12,10 @@ export type Settings = {
   highAccuracyGps: boolean;
   /** Within this distance (m) the compass shows the search area instead of the arrow; null = always the arrow. */
   searchAreaDistanceM: number | null;
+  /** Mark as found: off, once per place, or a log of every find. */
+  findMode: FindMode;
+  /** Hide places I've found from the list. */
+  hideFound: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -18,7 +23,11 @@ export const DEFAULT_SETTINGS: Settings = {
   units: 'metric',
   highAccuracyGps: true,
   searchAreaDistanceM: DEFAULT_SEARCH_AREA_M,
+  findMode: 'once',
+  hideFound: false,
 };
+
+const FIND_MODES: FindMode[] = ['off', 'once', 'log'];
 
 function parseSearchArea(value: string | undefined): number | null {
   if (value === 'off') return null;
@@ -34,6 +43,8 @@ export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
     units: map.units === 'imperial' ? 'imperial' : 'metric',
     highAccuracyGps: map.highAccuracyGps !== 'false',
     searchAreaDistanceM: parseSearchArea(map.searchAreaDistanceM),
+    findMode: FIND_MODES.includes(map.findMode as FindMode) ? (map.findMode as FindMode) : 'once',
+    hideFound: map.hideFound === 'true',
   };
 }
 

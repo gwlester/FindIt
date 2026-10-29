@@ -1,3 +1,4 @@
+import type { ExchangeFind } from '../formats/types';
 import { utf8ByteLength as utf8Length } from '../lib/base64';
 
 // Must match ShareServer.kt in modules/findit-native.
@@ -18,9 +19,12 @@ export type SharedPlace = {
   longitude: number;
   accuracy: number | null;
   notes: string;
+  /** Finds, newest first ('' finder = the sender). Only sent when the sender chose to. */
+  finds?: ExchangeFind[];
 };
 
-type WireItem = { n: string; la: number; lo: number; a: number | null; t: string };
+type WireFind = [number, string] | [number, string, string];
+type WireItem = { n: string; la: number; lo: number; a: number | null; t: string; f?: WireFind[] };
 
 
 export function encodeInfo(name: string, count: number): string {
@@ -42,7 +46,15 @@ export function encodeItem(place: SharedPlace): string {
     a: place.accuracy == null ? null : Math.round(place.accuracy * 10) / 10,
     t: place.notes,
   };
+  const finds = [...(place.finds ?? [])].sort((x, y) => y.foundAt - x.foundAt);
+  if (finds.length) item.f = finds.map((f): WireFind => (f.finder ? [f.foundAt, f.comment, f.finder] : [f.foundAt, f.comment]));
   let json = JSON.stringify(item);
+  // Make it fit: drop the oldest finds first, then trim notes, then the name.
+  while (utf8Length(json) > MAX_ITEM_BYTES && item.f?.length) {
+    item.f.pop();
+    if (item.f.length === 0) delete item.f;
+    json = JSON.stringify(item);
+  }
   while (utf8Length(json) > MAX_ITEM_BYTES && item.t.length > 0) {
     item.t = item.t.slice(0, Math.max(0, item.t.length - 16));
     json = JSON.stringify(item);
@@ -65,5 +77,12 @@ export function decodeItem(json: string): SharedPlace {
     longitude: item.lo,
     accuracy: typeof item.a === 'number' ? item.a : null,
     notes: typeof item.t === 'string' ? item.t : '',
+    finds: (Array.isArray(item.f) ? item.f : [])
+      .filter((f): f is WireFind => Array.isArray(f) && typeof f[0] === 'number')
+      .map((f) => ({
+        foundAt: f[0],
+        comment: typeof f[1] === 'string' ? f[1] : '',
+        finder: typeof f[2] === 'string' ? f[2] : '',
+      })),
   };
 }

@@ -5,6 +5,7 @@ import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Button, Checkbox, Field, Section, Stepper } from '../components/ui';
 import { DEFAULT_SEARCH_AREA_M, searchAreaRange, stepSearchDistance, toDisplayDistance } from '../lib/searchArea';
 import { useSettings } from '../hooks/useSettings';
+import type { FindMode } from '../db/finds';
 import type { Units } from '../lib/format';
 import { useTheme } from '../lib/theme';
 
@@ -25,11 +26,14 @@ function SettingsForm() {
   // Kept in metres whatever the units, so switching units converts the shown value.
   const [searchDistance, setSearchDistance] = useState(settings.searchAreaDistanceM ?? DEFAULT_SEARCH_AREA_M);
   const [alwaysArrow, setAlwaysArrow] = useState(settings.searchAreaDistanceM === null);
+  const [findMode, setFindMode] = useState<FindMode>(settings.findMode);
 
   const save = async () => {
     const name = displayName.trim();
     if (!name) return Alert.alert('Name required', 'Nearby users need a name to recognise you.');
     await updateSettings({
+      ...settings,
+      findMode,
       displayName: name,
       units,
       highAccuracyGps,
@@ -78,6 +82,26 @@ function SettingsForm() {
             />
           </>
         )}
+      </Section>
+      <Section title="Found places">
+        <Checkbox
+          checked={findMode === 'off'}
+          label="Off"
+          sublabel="Don't track which places I've found."
+          onToggle={() => setFindMode('off')}
+        />
+        <Checkbox
+          checked={findMode === 'once'}
+          label="Once per place"
+          sublabel="Marking found again updates the date and comment."
+          onToggle={() => setFindMode('once')}
+        />
+        <Checkbox
+          checked={findMode === 'log'}
+          label="Keep a log"
+          sublabel="Every find is kept, with its date and comment."
+          onToggle={() => setFindMode('log')}
+        />
       </Section>
       <View>
         <Button title="Save" onPress={save} />

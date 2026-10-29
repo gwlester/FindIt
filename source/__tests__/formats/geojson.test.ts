@@ -18,7 +18,11 @@ test('toGeoJson writes Point features with longitude first, and round-trips', ()
     createdAt: '2026-10-28T00:00:00.000Z',
   });
   expect(data.features[1].properties.createdAt).toBeNull();
-  expect(parseGeoJson(json)).toEqual({ format: 'geojson', places: PLACES, skipped: 0 });
+  expect(parseGeoJson(json)).toEqual({
+    format: 'geojson',
+    places: PLACES.map((p) => ({ ...p, finds: [] })),
+    skipped: 0,
+  });
 });
 
 describe('parseGeoJson', () => {

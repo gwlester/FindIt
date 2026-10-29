@@ -1,5 +1,8 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
+import type { ExchangeFind, ExchangePlace } from '../formats/types';
+import { listFinds, recordFind } from './finds';
+
 export type Place = {
   id: number;
   name: string;
@@ -75,7 +78,10 @@ export async function updatePlace(db: SQLiteDatabase, id: number, place: NewPlac
 }
 
 export async function deletePlace(db: SQLiteDatabase, id: number): Promise<void> {
-  await db.runAsync('DELETE FROM locations WHERE id = ?', id);
+  await db.withTransactionAsync(async () => {
+    await db.runAsync('DELETE FROM finds WHERE place_id = ?', id);
+    await db.runAsync('DELETE FROM locations WHERE id = ?', id);
+  });
 }
 
 /** True if a place with the same name already exists within ~1 m of these coordinates. */
@@ -92,21 +98,51 @@ export async function hasDuplicate(db: SQLiteDatabase, place: Pick<Place, 'name'
 /**
  * Adds places received from elsewhere (Bluetooth or a file), skipping ones that are
  * already saved (same name and coordinates). `source` records where they came from.
+ * Their finds are recorded too; finds marked as the sender's own ('' finder) are
+ * attributed to `ownFindsBy` ('' = me, as when re-importing my own export).
  */
 export async function importPlaces(
   db: SQLiteDatabase,
-  places: Omit<NewPlace, 'source'>[],
+  places: (Omit<NewPlace, 'source'> & { finds?: ExchangeFind[] })[],
   source: string,
+  { ownFindsBy = '' }: { ownFindsBy?: string } = {},
 ): Promise<{ added: number; skipped: number }> {
   let added = 0;
   let skipped = 0;
-  for (const place of places) {
+  for (const { finds = [], ...place } of places) {
     if (await hasDuplicate(db, place)) {
       skipped++;
       continue;
     }
-    await addPlace(db, { ...place, source });
+    const id = await addPlace(db, { ...place, source });
+    for (const f of finds) {
+      await recordFind(db, id, { foundAt: f.foundAt, comment: f.comment, finder: f.finder || ownFindsBy }, 'log');
+    }
     added++;
   }
   return { added, skipped };
+}
+
+/** Places ready to export, with their finds (newest first) if `includeFinds`. */
+export async function placesForExport(
+  db: SQLiteDatabase,
+  places: Place[],
+  includeFinds: boolean,
+): Promise<ExchangePlace[]> {
+  const out: ExchangePlace[] = [];
+  for (const p of places) {
+    const base: ExchangePlace = {
+      name: p.name,
+      latitude: p.latitude,
+      longitude: p.longitude,
+      accuracy: p.accuracy,
+      notes: p.notes,
+      createdAt: p.createdAt,
+    };
+    if (includeFinds) {
+      base.finds = (await listFinds(db, p.id)).map(({ foundAt, comment, finder }) => ({ foundAt, comment, finder }));
+    }
+    out.push(base);
+  }
+  return out;
 }

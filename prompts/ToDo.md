@@ -3,10 +3,6 @@
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
 ## Current wave (agreed 2026-10-29; one PR each, built test-first)
-- [ ] Mark places as found: a "Mark found" button on the compass that asks for an optional
-      comment; a setting for "once" or "log" (switching to "once" keeps the latest entry); ✓ and
-      date in the list with a "hide found places" filter; export and Bluetooth sharing ask
-      whether to include found information (GPX `<sym>Geocache Found</sym>` + FindIt extension).
 - [ ] Sharing history with names: the receiving phone sends its "name for sharing" (BLE
       protocol v2, older versions shown as "FindIt user"); the sharing phone keeps a history
       (when, who, how many places) with a retention setting, including "forever".

@@ -19,6 +19,17 @@ const MIGRATIONS: string[] = [
     value TEXT NOT NULL
   );
   `,
+  // 2: finds (mark as found). finder '' = me, otherwise who it came from.
+  `
+  CREATE TABLE finds (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    place_id INTEGER NOT NULL,
+    found_at INTEGER NOT NULL,
+    comment TEXT NOT NULL DEFAULT '',
+    finder TEXT NOT NULL DEFAULT ''
+  );
+  CREATE INDEX finds_by_place ON finds (place_id, found_at);
+  `,
 ];
 
 /** Runs any migrations newer than the database's `user_version`. */

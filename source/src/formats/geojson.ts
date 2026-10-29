@@ -1,7 +1,7 @@
 // GeoJSON (RFC 7946) import and export. Places are Point features; coordinates are
 // [longitude, latitude] (longitude first!).
 
-import { FormatError, isValidCoordinate, type ExchangePlace, type ParseResult } from './types';
+import { FormatError, isValidCoordinate, type ExchangeFind, type ExchangePlace, type ParseResult } from './types';
 
 export const GEOJSON_MIME = 'application/geo+json';
 
@@ -18,6 +18,15 @@ export function toGeoJson(places: ExchangePlace[]): string {
         notes: p.notes,
         accuracy: p.accuracy,
         createdAt: p.createdAt == null ? null : new Date(p.createdAt).toISOString(),
+        ...(p.finds?.length
+          ? {
+              finds: p.finds.map((f) => ({
+                foundAt: new Date(f.foundAt).toISOString(),
+                comment: f.comment,
+                finder: f.finder,
+              })),
+            }
+          : {}),
       },
     })),
   };
@@ -52,7 +61,25 @@ function parseFeature(feature: Json, index: number): ExchangePlace | null {
     accuracy: typeof accuracy === 'number' && Number.isFinite(accuracy) && accuracy >= 0 ? accuracy : null,
     notes: firstString(props, ['notes', 'description', 'desc']),
     createdAt: Number.isFinite(created) ? created : null,
+    finds: parseFinds(props.finds),
   };
+}
+
+function parseFinds(value: unknown): ExchangeFind[] {
+  if (!Array.isArray(value)) return [];
+  const finds: ExchangeFind[] = [];
+  for (const v of value) {
+    const f = object(v);
+    const foundAt = typeof f?.foundAt === 'string' ? Date.parse(f.foundAt) : NaN;
+    if (f && Number.isFinite(foundAt)) {
+      finds.push({
+        foundAt,
+        comment: typeof f.comment === 'string' ? f.comment : '',
+        finder: typeof f.finder === 'string' ? f.finder : '',
+      });
+    }
+  }
+  return finds;
 }
 
 /** Reads Point features from a FeatureCollection, a single Feature or a bare Point. */
