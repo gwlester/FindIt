@@ -1,0 +1,31 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Add place</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='16' y='116' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='bold' text-anchor='start'>Name</text>
+<rect x='16' y='122' width='328' height='40' rx='8' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<text x='28' y='147.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Old oak tree cache</text>
+<rect x='16' y='180' width='328' height='400' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='206' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Coordinates</text>
+<rect x='30' y='218' width='300' height='262' rx='10' fill='#fff' stroke='#555' stroke-width='2'/>
+<circle cx='52' cy='244' r='9' fill='none' stroke='#555' stroke-width='3' stroke-dasharray='14 6'/>
+<text x='70' y='249' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='bold' text-anchor='start'>Averaging — keep the phone still</text>
+<text x='44' y='276' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='normal' text-anchor='start'>84 fixes · 1:24 (2 poor fixes ignored)</text>
+<text x='44' y='316' font-family='Helvetica, Arial, sans-serif' font-size='30' fill='#555' font-weight='bold' text-anchor='start'>± 2.1 m</text>
+<text x='44' y='338' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>estimated accuracy · fixes wander ± 3.4 m</text>
+<text x='44' y='362' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Satellites: 18 used · 27 in view · full tracking</text>
+<text x='44' y='384' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#888' font-weight='normal' text-anchor='start'>Longer is better: aim for 1–2 minutes with a</text>
+<text x='44' y='398' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#888' font-weight='normal' text-anchor='start'>clear view of the sky.</text>
+<rect x='44' y='414' width='128' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='108.0' y='441.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Cancel</text>
+<rect x='184' y='414' width='132' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
+<text x='250.0' y='441.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Use average</text>
+<text x='30' y='504' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Latitude / Longitude fields (filled on “Use average”)</text>
+<text x='30' y='528' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#888' font-weight='normal' text-anchor='start'>Recorded accuracy ± 2.1 m</text>
+<text x='16' y='606' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Averages many fixes (better fixes weigh more; fixes worse than</text>
+<text x='16' y='620' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>30 m are ignored). Accuracy is conservative because GPS errors</text>
+<text x='16' y='634' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>drift slowly; see docs/architecture.md.</text>
+</svg>

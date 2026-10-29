@@ -2,9 +2,12 @@ package expo.modules.findit
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.GnssMeasurementRequest
+import android.location.GnssMeasurementsEvent
 import android.location.GnssStatus
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 
@@ -14,6 +17,11 @@ import android.os.Looper
  *
  * GnssStatus only reports while the GPS engine is running, so this also requests
  * (and ignores) GPS provider location updates for as long as it is observing.
+ *
+ * With full tracking (Android 12+), it also registers for raw GNSS measurements with
+ * GnssMeasurementRequest.setFullTracking(true). That stops the chipset from duty cycling,
+ * so it keeps tracking every satellite continuously, which can keep more satellites in
+ * the fix at the cost of battery.
  */
 class GnssMonitor(
   private val context: Context,
@@ -25,6 +33,7 @@ class GnssMonitor(
   private var running = false
 
   private val keepGpsOn = LocationListener { }
+  private var fullTrackingCallback: GnssMeasurementsEvent.Callback? = null
 
   private val callback = object : GnssStatus.Callback() {
     override fun onSatelliteStatusChanged(status: GnssStatus) {
@@ -54,29 +63,53 @@ class GnssMonitor(
     }
   }
 
-  // Callers must hold ACCESS_FINE_LOCATION; the module checks before calling.
+  /**
+   * Starts reporting (or changes full tracking on an already-started monitor).
+   * Returns whether full tracking was requested, i.e. asked for and Android 12+.
+   * Callers must hold ACCESS_FINE_LOCATION; the module checks before calling.
+   */
   @SuppressLint("MissingPermission")
-  fun start() {
-    if (running) return
+  fun start(fullTracking: Boolean): Boolean {
+    val useFullTracking = fullTracking && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     handler.post {
-      if (running) return@post
-      locationManager.registerGnssStatusCallback(callback, handler)
-      if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-        locationManager.requestLocationUpdates(
-          LocationManager.GPS_PROVIDER, 1000L, 0f, keepGpsOn, Looper.getMainLooper()
-        )
+      if (!running) {
+        locationManager.registerGnssStatusCallback(callback, handler)
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+          locationManager.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER, 1000L, 0f, keepGpsOn, Looper.getMainLooper()
+          )
+        }
+        running = true
       }
-      running = true
+      if (useFullTracking) startFullTracking() else stopFullTracking()
     }
+    return useFullTracking
   }
 
   fun stop() {
     handler.post {
       if (!running) return@post
+      stopFullTracking()
       locationManager.unregisterGnssStatusCallback(callback)
       locationManager.removeUpdates(keepGpsOn)
       running = false
     }
+  }
+
+  @SuppressLint("MissingPermission")
+  private fun startFullTracking() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || fullTrackingCallback != null) return
+    // The measurements themselves aren't needed; registering is what enables full tracking.
+    val measurements = object : GnssMeasurementsEvent.Callback() {}
+    val request = GnssMeasurementRequest.Builder().setFullTracking(true).build()
+    if (locationManager.registerGnssMeasurementsCallback(request, context.mainExecutor, measurements)) {
+      fullTrackingCallback = measurements
+    }
+  }
+
+  private fun stopFullTracking() {
+    fullTrackingCallback?.let { locationManager.unregisterGnssMeasurementsCallback(it) }
+    fullTrackingCallback = null
   }
 
   private fun constellationName(type: Int): String = when (type) {

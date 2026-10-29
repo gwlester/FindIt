@@ -2,6 +2,20 @@
 
 Completed work, newest first.
 
+## 2026-10-29: More accuracy from GPS
+
+Request: use more of the satellites in view to improve accuracy. Apps can't choose which
+satellites the chipset uses, so instead:
+
+- **Position averaging** on Add/Edit place: an "Average position" button collects fixes, shows a
+  live count, duration, estimated accuracy, spread and satellites, and "Use average" fills in the
+  coordinates and recorded accuracy. The accuracy estimate was calibrated with a Monte Carlo
+  simulation of drifting GPS errors (see `docs/architecture.md`).
+- **Full GNSS tracking** (Android 12+) while the compass or averaging panel is open, via
+  `GnssMeasurementRequest.setFullTracking(true)`; new **High-accuracy GPS** setting (default on).
+- **Smoothing** of the compass heading (circular) and position (exponential, with reset on gaps/jumps).
+- Wireframes (new 02b averaging screen, settings, compass) and docs updated.
+
 ## 2026-10-29: Merged and first release; manifest warning
 
 - Merged [gwlester/FindIt#1](https://github.com/gwlester/FindIt/pull/1) into `master`; the first

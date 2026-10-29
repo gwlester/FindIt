@@ -65,6 +65,38 @@ To change the schema, append a new migration to the list; never edit an old one.
 - Rose rotation = −heading. Arrow rotation = bearing − heading.
 - Uncertainty radius = √(GPS accuracy² + recorded place accuracy²).
 
+## Getting the most accuracy from GPS
+
+The phone's GNSS chipset decides which satellites go into a fix; apps can't add satellites
+to it. Satellites that are in view but unused usually have too weak or reflected a signal,
+are too low in the sky, or haven't had their orbit data (ephemeris) downloaded yet. FindIt
+improves accuracy in three ways:
+
+**Position averaging** (`src/lib/averaging.ts`, Add/Edit place). It averages the fixes collected
+while standing still, weighting each by 1/accuracy² and ignoring fixes worse than 30 m. GPS
+errors drift slowly, so a minute of 1 Hz fixes holds only a few independent samples. The
+reported accuracy is therefore the largest of:
+- the typical fix accuracy (or the spread of the fixes, if larger) divided by
+  √(duration / 45 s);
+- a batch-means estimate: how much the averages of six consecutive blocks of fixes disagree;
+- a third of the best single fix, because systematic errors such as multipath don't average out.
+
+The 45 s figure was tuned by simulating GPS errors that drift over time. The true error lands
+within the reported accuracy about 88–97 % of the time in open sky and 75–85 % under trees.
+Errors that drift over several minutes (strong multipath) can't be seen in a short session,
+so there the estimate is optimistic. Averaging for longer helps.
+
+**Full GNSS tracking** (`GnssMonitor.kt`, Android 12+, setting *High-accuracy GPS*). While the
+compass or averaging panel is open, the app registers for raw GNSS measurements with
+`GnssMeasurementRequest.setFullTracking(true)`. This stops the chipset duty-cycling, so it keeps
+tracking every satellite continuously. That tends to keep more satellites in the fix and the fix
+steadier, at the cost of battery. How much it helps depends on the phone.
+
+**Display smoothing** (`src/lib/smoothing.ts`, compass). The heading is smoothed on the circle
+(so 359° and 1° average to 0°) and the position exponentially. Smoothing restarts after a
+10 s gap or a jump of more than 3× the reported accuracy, so it never lags far behind. It
+steadies the display; it doesn't make the fix itself more accurate.
+
 ## Satellites
 
 `GnssMonitor.kt` registers a `GnssStatus.Callback` and (because status only flows while the GPS

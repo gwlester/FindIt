@@ -136,7 +136,8 @@ def place():
     s.field(116, "Name", "e.g. Old oak tree cache")
     s.rect(16, 180, W - 32, 330, fill=FILL, r=12)
     s.text(30, 206, "Coordinates", 17, weight="bold")
-    s.button(30, 218, W - 60, "Use my current position", filled=False)
+    s.button(30, 218, 142, "Use current", filled=False)
+    s.button(188, 218, 142, "Average position", filled=False)
     s.text(30, 280, "GPS accuracy now ± 4 m", 12, MUTED)
     for i, (label, value) in enumerate([("Latitude", "N 30° 26.112"), ("Longitude", "W 091° 11.418")]):
         y = 304 + i * 70
@@ -151,6 +152,30 @@ def place():
     s.text(28, 570, "Hints, description…", 15, MUTED)
     s.button(16, 654, W - 32, "Save")
     s.render("02-add-edit-place")
+
+
+def averaging():
+    s = Screen("Add place")
+    s.field(116, "Name", "Old oak tree cache")
+    s.rect(16, 180, W - 32, 400, fill=FILL, r=12)
+    s.text(30, 206, "Coordinates", 17, weight="bold")
+    s.rect(30, 218, W - 60, 262, fill="#fff", stroke=ACCENT, r=10, sw=2)
+    s.add(f"<circle cx='52' cy='244' r='9' fill='none' stroke='{ACCENT}' stroke-width='3' stroke-dasharray='14 6'/>")
+    s.text(70, 249, "Averaging — keep the phone still", 15, weight="bold")
+    s.text(44, 276, "84 fixes · 1:24 (2 poor fixes ignored)", 13)
+    s.text(44, 316, "± 2.1 m", 30, ACCENT, "bold")
+    s.text(44, 338, "estimated accuracy · fixes wander ± 3.4 m", 12, MUTED)
+    s.text(44, 362, "Satellites: 18 used · 27 in view · full tracking", 12, MUTED)
+    s.text(44, 384, "Longer is better: aim for 1–2 minutes with a", 11, MUTED)
+    s.text(44, 398, "clear view of the sky.", 11, MUTED)
+    s.button(44, 414, 128, "Cancel", filled=False)
+    s.button(184, 414, 132, "Use average")
+    s.text(30, 504, "Latitude / Longitude fields (filled on “Use average”)", 12, MUTED)
+    s.text(30, 528, "Recorded accuracy ± 2.1 m", 13, MUTED)
+    s.note(16, 606, "Averages many fixes (better fixes weigh more; fixes worse than")
+    s.note(16, 620, "30 m are ignored). Accuracy is conservative because GPS errors")
+    s.note(16, 634, "drift slowly; see docs/architecture.md.")
+    s.render("02b-averaging")
 
 
 def compass_svg(cx, cy, r_out, heading, bearing):
@@ -190,20 +215,21 @@ def compass():
     s.add(compass_svg(W / 2, 270, 140, heading=30, bearing=75))
     s.text(W / 2, 470, "≈ 125 m", 40, INK, "bold", "middle")
     s.text(W / 2, 494, "uncertainty radius ± 6 m", 15, MUTED, anchor="middle")
-    s.rect(16, 512, W - 32, 136, fill=FILL, r=12)
+    s.rect(16, 512, W - 32, 152, fill=FILL, r=12)
     lines = [
         ("Bearing 075° E", INK, 14),
         ("Heading 030° true", INK, 14),
         ("GPS accuracy ± 4 m · place recorded ± 5 m", INK, 14),
         ("Satellites: 14 used · 22 in view · 31 known", INK, 14),
         ("GPS 7 · Galileo 4 · GLONASS 2 · BeiDou 1", MUTED, 12),
+        ("Full GNSS tracking on (High-accuracy GPS)", MUTED, 12),
     ]
     for i, (t, c, sz) in enumerate(lines):
         s.text(30, 538 + i * 24, t, sz, c, "bold" if i == 3 else "normal")
-    s.text(16, 676, "Under the roots on the north side.", 13, MUTED)
-    s.note(16, 698, "Rose rotates so N/E/S/W match real directions; ▲ = phone heading;")
-    s.note(16, 712, "arrow points at the target. Inside the radius → “look around!”")
-    s.note(16, 726, "Low compass calibration → figure-8 prompt.")
+    s.text(16, 686, "Under the roots on the north side.", 13, MUTED)
+    s.note(16, 706, "Rose: N/E/S/W stay true; ▲ = phone heading; arrow → target.")
+    s.note(16, 720, "Heading/position smoothed. Inside radius → “look around!”")
+    s.note(16, 734, "Low compass calibration → figure-8 prompt.")
     s.render("03-compass")
 
 
@@ -275,12 +301,16 @@ def settings():
     s.text(30, 230, "Distance units", 17, weight="bold")
     s.checkbox(30, 244, "Metric", "metres / kilometres", True)
     s.checkbox(30, 290, "Imperial", "feet / miles", False)
-    s.button(16, 350, W - 32, "Save")
-    s.note(16, 420, "Stored in the local SQLite database (settings table).")
+    s.rect(16, 346, W - 32, 112, fill=FILL, r=12)
+    s.text(30, 372, "GPS", 17, weight="bold")
+    s.checkbox(30, 386, "High-accuracy GPS", "Keep tracking every satellite while finding", True)
+    s.text(64, 429, "or averaging a place (Android 12+). More battery.", 12, MUTED)
+    s.button(16, 476, W - 32, "Save")
+    s.note(16, 546, "Stored in the local SQLite database (settings table).")
     s.render("06-settings")
 
 
 if __name__ == "__main__":
-    for fn in (places, place, compass, share, receive, settings):
+    for fn in (places, place, averaging, compass, share, receive, settings):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

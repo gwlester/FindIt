@@ -21,7 +21,11 @@ type FindItNativeEvents = {
 };
 
 declare class FindItNativeModule extends NativeModule<FindItNativeEvents> {
-  startGnssStatus(): Promise<void>;
+  /**
+   * Start satellite status events. With `fullTracking` (Android 12+) the GNSS chipset is
+   * asked to track all satellites continuously. Resolves to whether full tracking was requested.
+   */
+  startGnssStatus(fullTracking: boolean): Promise<boolean>;
   stopGnssStatus(): Promise<void>;
   /**
    * Start the BLE GATT server and advertise it.

@@ -21,9 +21,10 @@ export default function CompassScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [place, setPlace] = useState<Place | null>(null);
 
-  const { position, permission, error } = usePosition();
+  // Smoothed position/heading steady the display; the accuracy shown is still per fix.
+  const { position, permission, error } = usePosition({ smooth: true });
   const heading = useHeading();
-  const gnss = useGnssStatus();
+  const gnss = useGnssStatus({ fullTracking: settings.highAccuracyGps });
 
   useEffect(() => {
     getPlace(db, Number(id)).then(setPlace);
@@ -97,6 +98,9 @@ export default function CompassScreen() {
         </Text>
         <Text style={[styles.detail, { color: theme.text }]}>{satelliteLine}</Text>
         {constellations ? <Text style={[styles.small, { color: theme.muted }]}>{constellations}</Text> : null}
+        {gnss.fullTrackingOn ? (
+          <Text style={[styles.small, { color: theme.muted }]}>Full GNSS tracking on (High-accuracy GPS)</Text>
+        ) : null}
       </View>
 
       {place?.notes ? <Text style={[styles.notes, { color: theme.muted }]}>{place.notes}</Text> : null}

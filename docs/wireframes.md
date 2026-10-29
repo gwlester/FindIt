@@ -18,12 +18,22 @@ the **Add place** / **Share nearby** buttons stay fixed at the bottom.
 
 ## 2. Add / edit place
 
-Name, coordinates and notes. **Use my current position** fills in the coordinates and
-records the GPS accuracy at that moment (used later in the uncertainty radius). Coordinates
+Name, coordinates and notes. **Use current** fills in the coordinates from the latest fix and
+records its GPS accuracy (used later in the uncertainty radius). **Average position** collects
+fixes while you stand still (next screen) for more accurate coordinates. Coordinates
 can also be typed as decimal degrees (`30.4352`), degrees and decimal minutes
 (`N 30° 26.112`, the usual geocaching format) or degrees/minutes/seconds.
 
 ![Add / edit place](wireframes/02-add-edit-place.svg)
+
+## 2b. Add / edit place: averaging
+
+While averaging, the panel shows how many fixes have been collected and for how long, the
+estimated accuracy of the average (it shrinks as fixes accumulate), how much the fixes wander,
+and the satellites in use. **Use average** fills in the coordinates and the recorded accuracy.
+Fixes worse than 30 m are ignored.
+
+![Averaging](wireframes/02b-averaging.svg)
 
 ## 3. Compass ("Find it")
 
@@ -35,7 +45,8 @@ can also be typed as decimal degrees (`30.4352`), degrees and decimal minutes
   combined 1-sigma error of your GPS fix and the accuracy recorded with the place
   (√(gps² + place²)). When you are inside that radius the app tells you to look around.
 - Details: bearing, heading, GPS accuracy, and **satellites used / in view / known**, with
-  the used satellites broken down by constellation.
+  the used satellites broken down by constellation, plus whether full GNSS tracking is on.
+- Heading and position are smoothed over a few seconds, so the rose and the distance don't jitter.
 
 ![Compass](wireframes/03-compass.svg)
 
@@ -61,6 +72,7 @@ coordinates) are skipped.
 
 ## 6. Settings
 
-Your display name (what others see when you share) and distance units.
+Your display name (what others see when you share), distance units, and **High-accuracy GPS**
+(full GNSS tracking on the compass and averaging screens; on by default).
 
 ![Settings](wireframes/06-settings.svg)
