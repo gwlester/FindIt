@@ -6,7 +6,9 @@ import {
   decodeItem,
   INDEX_UUID,
   INFO_UUID,
+  encodeName,
   ITEM_UUID,
+  NAME_UUID,
   SERVICE_UUID,
   type SharedPlace,
 } from './protocol';
@@ -69,12 +71,19 @@ export function scanForNearbyUsers(
 export async function fetchSharedPlaces(
   deviceId: string,
   onProgress?: (done: number, total: number) => void,
+  myName?: string,
 ): Promise<{ from: string; places: SharedPlace[] }> {
   const ble = getManager();
   await ble.stopDeviceScan().catch(() => {});
   const device = await ble.connectToDevice(deviceId, { requestMTU: 512, timeout: 15000 });
   try {
     await device.discoverAllServicesAndCharacteristics();
+    // Protocol v2: say who is downloading. Older FindIt versions lack the characteristic.
+    if (myName?.trim()) {
+      await device
+        .writeCharacteristicWithResponseForService(SERVICE_UUID, NAME_UUID, textToBase64(encodeName(myName)))
+        .catch(() => {});
+    }
     const infoChar = await device.readCharacteristicForService(SERVICE_UUID, INFO_UUID);
     const info = decodeInfo(base64ToText(infoChar.value ?? ''));
     const places: SharedPlace[] = [];

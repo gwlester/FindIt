@@ -6,9 +6,12 @@ export const SERVICE_UUID = '5c0a7f10-2b7e-4d1a-9a37-f1d17000c0de';
 export const INFO_UUID = '5c0a7f11-2b7e-4d1a-9a37-f1d17000c0de';
 export const INDEX_UUID = '5c0a7f12-2b7e-4d1a-9a37-f1d17000c0de';
 export const ITEM_UUID = '5c0a7f13-2b7e-4d1a-9a37-f1d17000c0de';
+/** v2: the receiver writes its display name here so the sharer can keep a history. */
+export const NAME_UUID = '5c0a7f14-2b7e-4d1a-9a37-f1d17000c0de';
 
-export const PROTOCOL_VERSION = 1;
+export const PROTOCOL_VERSION = 2;
 const MAX_ITEM_BYTES = 500;
+const MAX_NAME_BYTES = 40;
 
 export type ShareInfo = { v: number; name: string; count: number };
 
@@ -26,6 +29,15 @@ export type SharedPlace = {
 type WireFind = [number, string] | [number, string, string];
 type WireItem = { n: string; la: number; lo: number; a: number | null; t: string; f?: WireFind[] };
 
+/** The receiver's name for the NAME characteristic: trimmed, at most 40 UTF-8 bytes, whole characters only. */
+export function encodeName(name: string): string {
+  let out = '';
+  for (const ch of name.trim()) {
+    if (utf8Length(out + ch) > MAX_NAME_BYTES) break;
+    out += ch;
+  }
+  return out;
+}
 
 export function encodeInfo(name: string, count: number): string {
   return JSON.stringify({ v: PROTOCOL_VERSION, name, count } satisfies ShareInfo);

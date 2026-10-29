@@ -13,6 +13,10 @@ export type GnssStatus = {
 export type SharePeerEvent = {
   address: string;
   state: 'connected' | 'disconnected';
+  /** On disconnect (protocol v2): the receiver's display name, if it sent one. */
+  name?: string;
+  /** On disconnect: how many distinct shared places the receiver read. */
+  itemsRead?: number;
 };
 
 type FindItNativeEvents = {

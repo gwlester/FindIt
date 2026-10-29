@@ -1,4 +1,4 @@
-import { encodeInfo, encodeItem, INDEX_UUID, INFO_UUID, ITEM_UUID, SERVICE_UUID } from '../../src/ble/protocol';
+import { encodeInfo, encodeItem, INDEX_UUID, INFO_UUID, ITEM_UUID, NAME_UUID, SERVICE_UUID } from '../../src/ble/protocol';
 import { base64ToText, textToBase64 } from '../../src/lib/base64';
 import { bleState, managerMethods, setBluetoothState } from '../helpers/bleMock';
 
@@ -9,7 +9,7 @@ const loadClient = () => clientModule;
 
 function fakeDevice(items: string[], name = 'Alex') {
   let index = 0;
-  return {
+  const device = {
     discoverAllServicesAndCharacteristics: jest.fn(async () => {}),
     readCharacteristicForService: jest.fn(async (service: string, char: string) => {
       expect(service).toBe(SERVICE_UUID);
@@ -17,12 +17,23 @@ function fakeDevice(items: string[], name = 'Alex') {
       expect(char).toBe(ITEM_UUID);
       return { value: textToBase64(items[index]) };
     }),
-    writeCharacteristicWithResponseForService: jest.fn(async (_s: string, char: string, value: string) => {
+    writtenName: null as string | null,
+    writeCharacteristicWithResponseForService: jest.fn(async function (
+      this: { writtenName: string | null },
+      _s: string,
+      char: string,
+      value: string,
+    ) {
+      if (char === NAME_UUID) {
+        device.writtenName = base64ToText(value);
+        return;
+      }
       expect(char).toBe(INDEX_UUID);
       index = Number(base64ToText(value));
     }),
     cancelConnection: jest.fn(async () => {}),
   };
+  return device;
 }
 
 test('bluetoothState and onBluetoothStateChange', async () => {
@@ -121,5 +132,27 @@ describe('fetchSharedPlaces', () => {
     bleState.device = device;
     await expect(client.fetchSharedPlaces('d1')).rejects.toThrow();
     expect(device.cancelConnection).toHaveBeenCalled();
+  });
+});
+
+describe('sending my name (protocol v2)', () => {
+  it('tells the sharing phone who is downloading', async () => {
+    const client = loadClient();
+    const device = fakeDevice([]);
+    bleState.device = device;
+    await client.fetchSharedPlaces('d1', undefined, '  Gerald ');
+    expect(device.writtenName).toBe('Gerald');
+  });
+
+  it('still works with an older FindIt that has no name characteristic', async () => {
+    const client = loadClient();
+    const device = fakeDevice([encodeItem({ name: 'A', latitude: 1, longitude: 2, accuracy: null, notes: '' })]);
+    const original = device.writeCharacteristicWithResponseForService.getMockImplementation()!;
+    device.writeCharacteristicWithResponseForService.mockImplementation(async (s: string, char: string, value: string) => {
+      if (char === NAME_UUID) throw new Error('Characteristic not found');
+      return original.call(device, s, char, value);
+    });
+    bleState.device = device;
+    await expect(client.fetchSharedPlaces('d1', undefined, 'Gerald')).resolves.toMatchObject({ from: 'Alex' });
   });
 });

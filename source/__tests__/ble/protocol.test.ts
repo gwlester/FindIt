@@ -1,4 +1,4 @@
-import { decodeInfo, decodeItem, encodeInfo, encodeItem, PROTOCOL_VERSION } from '../../src/ble/protocol';
+import { decodeInfo, decodeItem, encodeInfo, encodeItem, encodeName, NAME_UUID, PROTOCOL_VERSION } from '../../src/ble/protocol';
 
 const PLACE = { name: 'Old oak 🌳', latitude: 30.4352, longitude: -91.1903, accuracy: 4.26, notes: 'roots' };
 
@@ -41,5 +41,19 @@ describe('items', () => {
     expect(() => decodeItem('{"n":"A","la":"1","lo":2}')).toThrow('Invalid shared location');
     expect(() => decodeItem('{"la":1,"lo":2}')).toThrow('Invalid shared location');
     expect(() => decodeItem('{"n":"A","la":1}')).toThrow('Invalid shared location');
+  });
+});
+
+describe('protocol v2: receiver name', () => {
+  it('has a NAME characteristic and is version 2', () => {
+    expect(NAME_UUID).toBe('5c0a7f14-2b7e-4d1a-9a37-f1d17000c0de');
+    expect(PROTOCOL_VERSION).toBe(2);
+  });
+
+  it('encodes the name as trimmed UTF-8, at most 40 bytes, without splitting characters', () => {
+    expect(encodeName('  Gerald ')).toBe('Gerald');
+    expect(Buffer.byteLength(encodeName('é'.repeat(30)))).toBe(40);
+    expect(Buffer.byteLength(encodeName('🧭'.repeat(11)))).toBe(40);
+    expect(encodeName('🧭'.repeat(11))).toBe('🧭'.repeat(10));
   });
 });
