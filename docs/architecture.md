@@ -129,6 +129,11 @@ within the reported accuracy about 88–97 % of the time in open sky and 75–85
 Errors that drift over several minutes (strong multipath) can't be seen in a short session,
 so there the estimate is optimistic. Averaging for longer helps.
 
+The same averaging is available on the compass screen (**Average my position**). There it
+replaces the live position while you stand still, and stops automatically when a fix lands
+more than 3× its accuracy (at least 10 m) from the average (`hasMovedAway`). Movement is only
+judged once 3 fixes have been collected.
+
 **Full GNSS tracking** (`GnssMonitor.kt`, Android 12+, setting *High-accuracy GPS*). While the
 compass or averaging panel is open, the app registers for raw GNSS measurements with
 `GnssMeasurementRequest.setFullTracking(true)`. This stops the chipset duty-cycling, so it keeps

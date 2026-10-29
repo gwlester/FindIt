@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { Compass } from '../../components/Compass';
+import { Button } from '../../components/ui';
 import { getPlace, type Place } from '../../db/locations';
+import { useAveragePosition } from '../../hooks/useAveragePosition';
 import { useGnssStatus } from '../../hooks/useGnssStatus';
 import { useHeading } from '../../hooks/useHeading';
 import { usePosition } from '../../hooks/usePosition';
@@ -25,14 +27,21 @@ export default function CompassScreen() {
   const { position, permission, error } = usePosition({ smooth: true });
   const heading = useHeading();
   const gnss = useGnssStatus({ fullTracking: settings.highAccuracyGps });
+  // While standing still the user can average their position for a steadier distance
+  // and a tighter uncertainty radius; it stops by itself if they walk away.
+  const averager = useAveragePosition({ stopWhenMoving: true });
+  const average = averager.running ? averager.average : null;
+  const here = average
+    ? { latitude: average.latitude, longitude: average.longitude, accuracy: average.accuracy }
+    : position;
 
   useEffect(() => {
     getPlace(db, Number(id)).then(setPlace);
   }, [db, id]);
 
-  const distance = position && place ? distanceMeters(position, place) : null;
-  const bearing = position && place ? bearingDegrees(position, place) : null;
-  const uncertainty = combinedUncertainty(position?.accuracy ?? null, place?.accuracy ?? null);
+  const distance = here && place ? distanceMeters(here, place) : null;
+  const bearing = here && place ? bearingDegrees(here, place) : null;
+  const uncertainty = combinedUncertainty(here?.accuracy ?? null, place?.accuracy ?? null);
   const withinUncertainty = distance != null && uncertainty != null && distance <= uncertainty;
   const fmt = (m: number) => formatDistance(m, settings.units);
 
@@ -71,10 +80,32 @@ export default function CompassScreen() {
       <Text style={[styles.distance, { color: theme.text }]}>{distance != null ? `≈ ${fmt(distance)}` : '—'}</Text>
       <Text style={[styles.uncertainty, { color: theme.muted }]}>
         {uncertainty != null ? `uncertainty radius ± ${fmt(uncertainty)}` : 'uncertainty unknown'}
+        {average ? ` · averaged over ${average.count} fixes` : ''}
       </Text>
       {withinUncertainty ? (
         <Text style={[styles.close, { color: theme.accent }]}>You’re within the uncertainty radius — look around!</Text>
       ) : null}
+
+      <View style={styles.averaging}>
+        {averager.running ? (
+          <View style={[styles.averagingPanel, { borderColor: theme.accent }]}>
+            <Text style={[styles.detail, { color: theme.text, fontWeight: '700' }]}>
+              Averaging your position — stand still
+            </Text>
+            <Text style={[styles.detail, { color: theme.muted }]}>
+              {average ? `${average.count} fixes · ± ${fmt(average.accuracy)}` : 'Waiting for GPS fixes…'}
+            </Text>
+            <Button title="Stop averaging" variant="secondary" onPress={averager.reset} />
+          </View>
+        ) : (
+          <>
+            {averager.movedAway ? (
+              <Text style={[styles.small, { color: theme.muted }]}>Stopped averaging because you moved.</Text>
+            ) : null}
+            <Button title="Average my position" variant="secondary" onPress={averager.start} disabled={!position} />
+          </>
+        )}
+      </View>
 
       <View style={[styles.details, { borderColor: theme.border, backgroundColor: theme.surface }]}>
         {bearing != null ? (
@@ -116,6 +147,8 @@ const styles = StyleSheet.create({
   distance: { fontSize: 44, fontWeight: '800', marginTop: 8 },
   uncertainty: { fontSize: 16 },
   close: { fontSize: 15, fontWeight: '600', marginTop: 6, textAlign: 'center' },
+  averaging: { alignSelf: 'stretch', marginTop: 12 },
+  averagingPanel: { borderWidth: 2, borderRadius: 10, padding: 10, gap: 4 },
   details: { alignSelf: 'stretch', borderWidth: 1, borderRadius: 12, padding: 12, marginTop: 16, gap: 4 },
   detail: { fontSize: 15 },
   small: { fontSize: 13 },

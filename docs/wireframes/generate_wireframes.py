@@ -214,13 +214,10 @@ def compass_svg(cx, cy, r_out, heading, bearing):
     return "\n".join(parts)
 
 
-def compass():
-    s = Screen("Old oak tree cache")
-    s.text(W / 2, 112, "30.43520° N, 91.19030° W", 13, MUTED, anchor="middle")
-    s.add(compass_svg(W / 2, 270, 140, heading=30, bearing=75))
-    s.text(W / 2, 470, "≈ 125 m", 40, INK, "bold", "middle")
-    s.text(W / 2, 494, "uncertainty radius ± 6 m", 15, MUTED, anchor="middle")
-    s.rect(16, 512, W - 32, 152, fill=FILL, r=12)
+def compass_details(s, top):
+    """The details box below the distance; clipped at the bottom of the screen."""
+    s.clip_start(f"details-{top}", 0, top, W, 712 - top)
+    s.rect(16, top, W - 32, 152, fill=FILL, r=12)
     lines = [
         ("Bearing 075° E", INK, 14),
         ("Heading 030° true", INK, 14),
@@ -230,12 +227,37 @@ def compass():
         ("Full GNSS tracking on (High-accuracy GPS)", MUTED, 12),
     ]
     for i, (t, c, sz) in enumerate(lines):
-        s.text(30, 538 + i * 24, t, sz, c, "bold" if i == 3 else "normal")
-    s.text(16, 686, "Under the roots on the north side.", 13, MUTED)
-    s.note(16, 706, "Rose: N/E/S/W stay true; ▲ = phone heading; arrow → target.")
-    s.note(16, 720, "Heading/position smoothed. Inside radius → “look around!”")
-    s.note(16, 734, "Low compass calibration → figure-8 prompt.")
+        s.text(30, top + 26 + i * 24, t, sz, c, "bold" if i == 3 else "normal")
+    s.clip_end()
+
+
+def compass():
+    s = Screen("Old oak tree cache")
+    s.text(W / 2, 112, "30.43520° N, 91.19030° W", 13, MUTED, anchor="middle")
+    s.add(compass_svg(W / 2, 270, 140, heading=30, bearing=75))
+    s.text(W / 2, 466, "≈ 125 m", 40, INK, "bold", "middle")
+    s.text(W / 2, 490, "uncertainty radius ± 6 m", 15, MUTED, anchor="middle")
+    s.button(16, 502, W - 32, "Average my position", filled=False, h=40)
+    compass_details(s, 554)
+    s.note(16, 730, "Rose: N/E/S/W stay true; ▲ = phone heading; arrow → target.")
+    s.note(16, 744, "Smoothed heading/position. Inside radius → “look around!”")
     s.render("03-compass")
+
+
+def compass_averaging():
+    s = Screen("Old oak tree cache")
+    s.text(W / 2, 112, "30.43520° N, 91.19030° W", 13, MUTED, anchor="middle")
+    s.add(compass_svg(W / 2, 270, 140, heading=30, bearing=75))
+    s.text(W / 2, 466, "≈ 121 m", 40, INK, "bold", "middle")
+    s.text(W / 2, 490, "uncertainty radius ± 3 m · averaged over 96 fixes", 14, MUTED, anchor="middle")
+    s.rect(16, 502, W - 32, 112, fill="#fff", stroke=ACCENT, r=10, sw=2)
+    s.text(30, 526, "Averaging your position — stand still", 14, weight="bold")
+    s.text(30, 548, "96 fixes · ± 2 m", 14, MUTED)
+    s.button(30, 560, W - 60, "Stop averaging", filled=False, h=40)
+    compass_details(s, 626)
+    s.note(16, 730, "Distance, arrow and radius use your averaged position. Walking")
+    s.note(16, 744, "away stops it: “Stopped averaging because you moved.”")
+    s.render("03b-compass-averaging")
 
 
 def share_section(s, top, bottom, scroll_id):
@@ -375,6 +397,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, share, receive, settings, files, files_import):
+    for fn in (places, place, averaging, compass, compass_averaging, share, receive, settings, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

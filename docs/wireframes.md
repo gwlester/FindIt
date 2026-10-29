@@ -51,6 +51,16 @@ Fixes worse than 30 m are ignored.
 
 ![Compass](wireframes/03-compass.svg)
 
+## 3b. Compass: averaging my position
+
+**Average my position** is for when you're standing still near the cache. Your fixes are
+averaged, and the distance, arrow and uncertainty radius use the average, so they stop jumping
+and the radius shrinks over a minute or two. **Stop averaging** returns to live readings.
+Walking away stops it by itself: a fix more than 3× its accuracy (at least 10 m) from the
+average shows "Stopped averaging because you moved." Nothing is saved.
+
+![Compass averaging](wireframes/03b-compass-averaging.svg)
+
 ## 4. Share nearby
 
 Two independent halves. **Receive from nearby** scans for phones that are sharing and lists

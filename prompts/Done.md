@@ -2,6 +2,18 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Average my position on the compass
+
+Request: "use average" on the compass page, chosen as a steadier distance (nothing saved).
+Built test-first (red → green → refactor at each step):
+- `hasMovedAway()` in `lib/averaging.ts`: a fix more than 3× its accuracy (at least 10 m) from the
+  average.
+- `useAveragePosition({ stopWhenMoving })`: stops, leaves the far fix out, and sets `movedAway`.
+  It only judges movement after 3 fixes.
+- Compass: **Average my position** / **Stop averaging**. While averaging, the distance, bearing and
+  uncertainty radius use the average ("· averaged over N fixes"); walking away stops it with a note.
+- 207 tests; the changed files are at 100% coverage. Wireframes 03 and 03b updated.
+
 ## 2026-10-29: Delete stale branches
 
 Request: delete branches once they're stale (merged). The repo setting can't be changed from the

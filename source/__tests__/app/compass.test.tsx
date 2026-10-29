@@ -1,4 +1,4 @@
-import { act, screen } from '@testing-library/react-native';
+import { act, screen, userEvent } from '@testing-library/react-native';
 import * as Location from 'expo-location';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -80,4 +80,51 @@ test('location permission denied', async () => {
   jest.mocked(Location.requestForegroundPermissionsAsync).mockResolvedValue({ granted: false } as never);
   await renderApp(<CompassScreen />, { places: [OAK] });
   expect(screen.getByText('Location permission denied')).toBeOnTheScreen();
+});
+
+describe('averaging my position', () => {
+  const south = (m: number, t: number, accuracy = 6) =>
+    emitPosition({ latitude: 30.4352 - m / M_LAT, longitude: -91.1903, accuracy }, t * 1000);
+
+  it('is offered once there is a fix', async () => {
+    await renderApp(<CompassScreen />, { places: [OAK] });
+    expect(screen.getByRole('button', { name: 'Average my position' })).toBeDisabled();
+    await act(async () => south(500, 0));
+    expect(screen.getByRole('button', { name: 'Average my position' })).toBeEnabled();
+  });
+
+  it('uses the averaged position and its tighter accuracy, until stopped', async () => {
+    const user = userEvent.setup();
+    await renderApp(<CompassScreen />, { places: [OAK] });
+    await act(async () => south(500, 0));
+    expect(screen.getByText('uncertainty radius ± 7 m')).toBeOnTheScreen(); // √(6² + 4²)
+
+    await user.press(screen.getByRole('button', { name: 'Average my position' }));
+    expect(screen.getByText('Averaging your position — stand still')).toBeOnTheScreen();
+    await act(async () => {
+      for (let t = 1; t <= 120; t++) south(500, t);
+    });
+    expect(screen.getByText('120 fixes · ± 4 m')).toBeOnTheScreen();
+    expect(screen.getByText('uncertainty radius ± 5 m · averaged over 120 fixes')).toBeOnTheScreen();
+    expect(screen.getByText(/^≈ 50\d m$/)).toBeOnTheScreen();
+
+    await user.press(screen.getByRole('button', { name: 'Stop averaging' }));
+    expect(screen.getByText('uncertainty radius ± 7 m')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Average my position' })).toBeOnTheScreen();
+  });
+
+  it('stops by itself when the user walks away', async () => {
+    const user = userEvent.setup();
+    await renderApp(<CompassScreen />, { places: [OAK] });
+    await act(async () => south(500, 0));
+    await user.press(screen.getByRole('button', { name: 'Average my position' }));
+    await act(async () => {
+      for (let t = 1; t <= 5; t++) south(500, t);
+    });
+    await act(async () => south(400, 6));
+    expect(screen.getByText('Stopped averaging because you moved.')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Average my position' })).toBeOnTheScreen();
+    expect(screen.queryByText(/averaged over/)).not.toBeOnTheScreen();
+    expect(screen.getByText(/^≈ 40\d m$/)).toBeOnTheScreen();
+  });
 });

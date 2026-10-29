@@ -102,3 +102,48 @@ test('drops a subscription that arrives after stop, and fixes from an old sessio
   await unmount();
   expect(positionWatcherCount()).toBe(0);
 });
+
+describe('stopWhenMoving', () => {
+  const at = (northMeters: number, t: number) =>
+    emitPosition({ latitude: 30 + northMeters / 110574, longitude: -91, accuracy: 4 }, t * 1000);
+
+  it('stops when the user walks away, says so, and leaves the far fix out', async () => {
+    const { result } = await renderHook(() => useAveragePosition({ stopWhenMoving: true }));
+    await act(() => result.current.start());
+    await act(async () => {
+      for (let t = 0; t < 5; t++) at(t % 2, t);
+    });
+    expect(result.current.movedAway).toBe(false);
+    await act(async () => at(50, 6));
+    expect(result.current.running).toBe(false);
+    expect(result.current.movedAway).toBe(true);
+    expect(result.current.fixes).toBe(5);
+    expect(positionWatcherCount()).toBe(0);
+
+    await act(() => result.current.start());
+    expect(result.current.movedAway).toBe(false);
+  });
+
+  it('waits for 3 fixes before judging movement', async () => {
+    const { result } = await renderHook(() => useAveragePosition({ stopWhenMoving: true }));
+    await act(() => result.current.start());
+    await act(async () => {
+      at(0, 0);
+      at(50, 1);
+    });
+    expect(result.current.running).toBe(true);
+    expect(result.current.fixes).toBe(2);
+  });
+
+  it('keeps averaging far fixes without the option', async () => {
+    const { result } = await renderHook(() => useAveragePosition());
+    await act(() => result.current.start());
+    await act(async () => {
+      for (let t = 0; t < 5; t++) at(0, t);
+      at(50, 6);
+    });
+    expect(result.current.running).toBe(true);
+    expect(result.current.movedAway).toBe(false);
+    expect(result.current.fixes).toBe(6);
+  });
+});
