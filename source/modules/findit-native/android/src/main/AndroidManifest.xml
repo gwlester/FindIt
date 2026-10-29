@@ -2,8 +2,8 @@
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
   <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
   <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-  <!-- Pre-Android 12 Bluetooth permissions -->
-  <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+  <!-- Legacy BLUETOOTH / BLUETOOTH_ADMIN (needed up to Android 11) come from
+       react-native-ble-plx; declaring them here with a different maxSdkVersion
+       only causes a manifest-merge conflict. -->
   <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
 </manifest>

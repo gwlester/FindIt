@@ -3,8 +3,7 @@
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
 ## Verify on hardware
-- [ ] Install the APK (Actions artifact, or the first release once merged) on a phone.
-- [ ] Merge to `master` so the first release is published and the README download link works.
+- [ ] Install the latest release APK (README download link) on a phone.
 - [ ] Check the compass on a real phone: rose orientation, arrow direction, true vs magnetic heading.
 - [ ] Check satellite counts against a GNSS test app (e.g. GPSTest).
 - [ ] Test Bluetooth sharing between two Android phones (Android 12+ and, if possible, ≤ 11),
