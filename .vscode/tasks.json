@@ -1,0 +1,10 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Test", "type": "shell", "command": "npm test", "options": { "cwd": "${workspaceFolder}/source" }, "group": "test" },
+    { "label": "Typecheck", "type": "shell", "command": "npm run typecheck", "options": { "cwd": "${workspaceFolder}/source" }, "problemMatcher": "$tsc" },
+    { "label": "Lint", "type": "shell", "command": "npm run lint", "options": { "cwd": "${workspaceFolder}/source" } },
+    { "label": "Coverage", "type": "shell", "command": "npm run test:coverage", "options": { "cwd": "${workspaceFolder}/source" } },
+    { "label": "Start Metro", "type": "shell", "command": "npm start", "options": { "cwd": "${workspaceFolder}/source" }, "isBackground": true, "problemMatcher": [] }
+  ]
+}
