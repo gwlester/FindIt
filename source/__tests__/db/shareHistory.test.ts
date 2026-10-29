@@ -1,4 +1,11 @@
-import { addShare, clearShareHistory, listShareHistory, pruneShareHistory } from '../../src/db/shareHistory';
+import {
+  addShare,
+  clearShareHistory,
+  HISTORY_RETENTION_OPTIONS,
+  listShareHistory,
+  pruneShareHistory,
+  retentionLabel,
+} from '../../src/db/shareHistory';
 import { createTestDb, type TestDb } from '../helpers/testDb';
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -38,4 +45,10 @@ test('clears the history', async () => {
   await addShare(db as never, { at: 1, name: 'Alex', places: 2 });
   await clearShareHistory(db as never);
   expect(await listShareHistory(db as never)).toEqual([]);
+});
+
+test('retention options and labels', () => {
+  expect(HISTORY_RETENTION_OPTIONS).toEqual([7, 30, 90, 365, null]);
+  expect(HISTORY_RETENTION_OPTIONS.map(retentionLabel)).toEqual(['7 days', '30 days', '90 days', '1 year', 'Forever']);
+  expect(retentionLabel(1)).toBe('1 day');
 });

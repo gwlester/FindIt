@@ -31,3 +31,12 @@ export async function pruneShareHistory(db: SQLiteDatabase, days: number | null,
 export async function clearShareHistory(db: SQLiteDatabase): Promise<void> {
   await db.runAsync('DELETE FROM share_history');
 }
+
+/** Choices for how long to keep the history (days; null = forever). */
+export const HISTORY_RETENTION_OPTIONS: (number | null)[] = [7, 30, 90, 365, null];
+
+export function retentionLabel(days: number | null): string {
+  if (days == null) return 'Forever';
+  if (days === 365) return '1 year';
+  return `${days} day${days === 1 ? '' : 's'}`;
+}
