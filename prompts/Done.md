@@ -2,6 +2,14 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Merged and first release; manifest warning
+
+- Merged [gwlester/FindIt#1](https://github.com/gwlester/FindIt/pull/1) into `master`; the first
+  release `2026.10.28.001` was published with `findit.apk`, and the README download link works.
+- Fixed the `expoReleaseOverrideMaxSdkConflicts` build warning: `findit-native` no longer
+  declares `BLUETOOTH` / `BLUETOOTH_ADMIN` (with `maxSdkVersion=30`), which conflicted with the
+  same permissions from react-native-ble-plx / the app manifest.
+
 ## 2026-10-28: Releases and download link
 
 Requests: a link on the main README to the latest release; date-based versions like `2026.10.28.001`.
