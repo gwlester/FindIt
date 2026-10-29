@@ -4,6 +4,8 @@ const PER_FILE = { branches: 90, functions: 90, lines: 90, statements: 90 };
 module.exports = {
   preset: 'jest-expo',
   clearMocks: true,
+  // On GitHub Actions, failing tests are also reported as annotations on the run.
+  reporters: process.env.GITHUB_ACTIONS ? ['default', 'github-actions'] : ['default'],
   setupFilesAfterEnv: ['<rootDir>/__tests__/helpers/setup.ts'],
   testMatch: ['<rootDir>/__tests__/**/*.test.{ts,tsx}'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', 'modules/findit-native/index.ts'],

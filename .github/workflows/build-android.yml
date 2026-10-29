@@ -63,7 +63,20 @@ jobs:
 
       # Fails if any source file drops below 90% statement/branch/function/line coverage.
       - name: Unit tests (90% coverage per file)
-        run: npm run test:coverage
+        shell: bash
+        run: npm run test:coverage 2>&1 | tee test-output.log
+
+      # Surface the end of the test output (failures, coverage shortfalls) as an annotation,
+      # so it can be read from the run summary and the API without downloading logs.
+      - name: Report test failures
+        if: failure()
+        shell: bash
+        run: |
+          [ -f test-output.log ] || exit 0
+          summary=$(grep -E '●|✕|threshold|Tests:|Test Suites:' test-output.log | tail -60)
+          summary=${summary//'%'/'%25'}
+          summary=${summary//$'\n'/'%0A'}
+          echo "::error title=Unit tests failed::${summary}"
 
       # Release builds (master) get a date-based version YYYY.MM.DD.NNN (UTC), where NNN
       # counts that day's releases. versionCode is YYMMDDNNN so every release installs
