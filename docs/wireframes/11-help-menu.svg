@@ -1,0 +1,20 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Compass</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='340' y='69' font-family='Helvetica, Arial, sans-serif' font-size='15' font-weight='bold' fill='#555' text-anchor='end'>?</text>
+<rect x='0' y='0' width='360' height='760' rx='28' fill='#000' opacity='0.45'/>
+<rect x='120' y='92' width='224' height='200' rx='12' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<text x='136' y='123' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Help for this screen</text>
+<line x1='120' y1='142' x2='344' y2='142' stroke='#bbb'/>
+<text x='136' y='173' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>How to use FindIt</text>
+<line x1='120' y1='192' x2='344' y2='192' stroke='#bbb'/>
+<text x='136' y='223' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>About FindIt</text>
+<line x1='120' y1='242' x2='344' y2='242' stroke='#bbb'/>
+<text x='136' y='273' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#888' font-weight='normal' text-anchor='start'>Close</text>
+<text x='16' y='330' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Every screen has ? at the top right. “Help for this screen” opens</text>
+<text x='16' y='344' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>that screen’s topic; “How to use FindIt” is the whole guide.</text>
+</svg>

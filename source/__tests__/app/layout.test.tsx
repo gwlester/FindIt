@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react-native';
+import { render, screen, within } from '@testing-library/react-native';
 
 import RootLayout from '../../src/app/_layout';
 import { setCurrentDb } from '../helpers/expoSqliteMock';
@@ -10,9 +10,13 @@ test('migrates the database, then renders every route', async () => {
   setCurrentDb(db);
   await render(<RootLayout />);
   await flush();
-  for (const name of ['index', 'place', 'compass/[id]', 'share', 'share-history', 'map', 'offline-maps', 'files', 'settings']) {
+  for (const name of ['index', 'place', 'compass/[id]', 'share', 'share-history', 'map', 'offline-maps', 'help', 'about', 'licenses', 'files', 'settings']) {
     expect(screen.getByTestId(`screen-${name}`)).toBeOnTheScreen();
   }
   expect(screen.getByText('title:Import / Export')).toBeOnTheScreen();
+  // Screens without their own header buttons get the help button from the layout.
+  for (const name of ['place', 'compass/[id]', 'share', 'share-history', 'offline-maps', 'files', 'settings']) {
+    expect(within(screen.getByTestId(`screen-${name}`)).getByRole('button', { name: 'Help' })).toBeOnTheScreen();
+  }
   expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 3 });
 });

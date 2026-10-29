@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View, type NativeSyntheticEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { HelpButton } from '../components/HelpButton';
 import { Button } from '../components/ui';
 import { findSummaries } from '../db/finds';
 import { listPlaces, type Place } from '../db/locations';
@@ -100,9 +101,12 @@ export default function MapScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Pressable accessibilityRole="button" onPress={() => router.push('/offline-maps')} hitSlop={12}>
-              <Text style={[styles.headerButton, { color: theme.accent }]}>Offline maps</Text>
-            </Pressable>
+            <View style={styles.headerButtons}>
+              <Pressable accessibilityRole="button" onPress={() => router.push('/offline-maps')} hitSlop={12}>
+                <Text style={[styles.headerButton, { color: theme.accent }]}>Offline maps</Text>
+              </Pressable>
+              <HelpButton topic="map" />
+            </View>
           ),
         }}
       />
@@ -189,6 +193,7 @@ const downloading = (download: number | null) => download != null && download < 
 
 const styles = StyleSheet.create({
   headerButton: { fontSize: 16, fontWeight: '600' },
+  headerButtons: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   download: { position: 'absolute', top: 12, right: 60, borderRadius: 8, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 8 },
   progress: { position: 'absolute', top: 104, left: 12, right: 12, padding: 8, borderRadius: 8, textAlign: 'center' },
   screen: { flex: 1 },

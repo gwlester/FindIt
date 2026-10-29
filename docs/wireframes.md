@@ -16,7 +16,7 @@ the **Add place** / **Share nearby** buttons stay fixed at the bottom. Found pla
 ✓ line ("Found 2026-10-29", "Found 3 times, last …", or "Found by Sam …" for someone else's
 find). **Hide found places** hides the ones *you've* found and says how many are hidden; the
 choice is remembered. Neither appears when Settings → Found places is **Off**. **Map** (header) opens the map;
-**Files** opens Import / Export. Long-press also offers **Show on map**.
+**Files** opens Import / Export; **?** opens help. Long-press also offers **Show on map**.
 
 ![Places](wireframes/01-places.svg)
 
@@ -155,6 +155,27 @@ size. **Delete** asks first. Downloads cover zooms 10–14 for Map and 10–16 f
 (US only); an area needing more than about 6,000 tiles is refused with a hint to zoom in.
 
 ![Offline maps](wireframes/10-offline-maps.svg)
+
+## 11. Help
+
+Every screen has **?** at the top right. It opens a small menu: **Help for this screen**
+(that screen's topic), **How to use FindIt** (getting started, then every screen's topic), and
+**About FindIt**. The help text is in `source/src/help/content.ts`.
+
+![Help menu](wireframes/11-help-menu.svg)
+
+![Help topic](wireframes/11b-help-topic.svg)
+
+## 12. About and licences
+
+The app icon, name and version (the release's date version), a short description, and three
+buttons: **FindIt licence** (BSD 2-Clause), **Open-source licences** (every JavaScript package in
+the app and the main native libraries; tap one for its licence text) and **Map data**
+(OpenStreetMap, OpenFreeMap / OpenMapTiles, USGS, with links).
+
+![About](wireframes/12-about.svg)
+
+![Licences](wireframes/12b-licences.svg)
 
 ## 7. Import / Export
 

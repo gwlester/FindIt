@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { HelpButton } from '../components/HelpButton';
 import { Button, Checkbox } from '../components/ui';
 import { findSummaries, foundLabel, type FindSummary } from '../db/finds';
 import { deletePlace, listPlaces, type Place } from '../db/locations';
@@ -71,6 +72,7 @@ export default function PlacesScreen() {
               <Pressable accessibilityRole="button" onPress={() => router.push('/settings')} hitSlop={12}>
                 <Text style={[styles.headerButton, { color: theme.accent }]}>Settings</Text>
               </Pressable>
+              <HelpButton topic="places" />
             </View>
           ),
         }}

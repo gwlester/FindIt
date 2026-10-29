@@ -62,6 +62,19 @@ of editing it.
 
 Use `npx expo install <package>` so versions match the Expo SDK.
 
+## Licences shown in the app
+
+After adding or upgrading a package, regenerate the licence list for About → Open-source
+licences (a test fails when a main library's version no longer matches):
+
+```bash
+npx expo export --platform android --source-maps --output-dir /tmp/findit-bundle
+npm run licenses -- /tmp/findit-bundle/_expo/static/js/android/*.map
+```
+
+Only packages in the app bundle are listed; edit `scripts/native-licenses.json` for native
+libraries.
+
 ## Continuous integration (GitHub Actions)
 
 `.github/workflows/build-android.yml` runs on **every pull request** (including docs-only

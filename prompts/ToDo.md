@@ -2,10 +2,6 @@
 
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
-## Map wave (started 2026-10-29; map screen done)
-- [ ] Help: a help menu with About (version, short description, licence buttons), help for each
-      screen, and an overall "how to use FindIt" guide.
-
 ## Verify on hardware
 - [ ] Map screen: OpenFreeMap street tiles and USGS satellite tiles load, markers and the blue
       dot appear, and the ⓘ attribution opens (tile hosts can't be reached from the build sandbox).
