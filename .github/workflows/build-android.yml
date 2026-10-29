@@ -28,6 +28,9 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
+      pull-requests: write # coverage comment
     env:
       CI: 1
       IS_RELEASE: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' }}
@@ -65,6 +68,34 @@ jobs:
       - name: Unit tests (90% coverage per file)
         shell: bash
         run: npm run test:coverage 2>&1 | tee test-output.log
+
+      # Coverage table on the run's summary page; written even when tests fail so a
+      # shortfall is visible. Also saved for the pull request comment below.
+      - name: Coverage summary
+        if: always() && hashFiles('source/coverage/coverage-summary.json') != ''
+        run: >
+          node scripts/coverage-report.js coverage/coverage-summary.json
+          --root "$PWD" --title "Test coverage"
+          --footer "Commit ${GITHUB_SHA::7} · [run $GITHUB_RUN_NUMBER]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+          --append "$GITHUB_STEP_SUMMARY" > coverage-report.md
+
+      # Branch builds with an open pull request: post the report as a PR comment, updating
+      # the same comment on later pushes instead of adding new ones.
+      - name: Coverage comment on the pull request
+        if: always() && github.event_name == 'push' && github.ref != 'refs/heads/master' && hashFiles('source/coverage-report.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          pr=$(gh pr list --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number // empty')
+          if [ -z "$pr" ]; then echo "No open pull request for $GITHUB_REF_NAME"; exit 0; fi
+          id=$(gh api --paginate "repos/$GH_REPO/issues/$pr/comments" \
+            --jq '.[] | select(.body | startswith("<!-- findit-coverage -->")) | .id' | head -1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$GH_REPO/issues/comments/$id" -F body=@coverage-report.md > /dev/null
+          else
+            gh pr comment "$pr" --body-file coverage-report.md
+          fi
 
       # Surface the end of the test output (failures, coverage shortfalls) as an annotation,
       # so it can be read from the run summary and the API without downloading logs.

@@ -2,6 +2,14 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Coverage on GitHub (run summary, PR comment); flaky CI fix
+
+- `scripts/coverage-report.js` (written test-first) turns Jest's coverage summary into a
+  Markdown table. CI adds it to each run's summary page and upserts it as a PR comment.
+- Fixed intermittent CI test failures: screen tests could exceed Jest's 5 s timeout on a busy
+  runner with coverage on. Reproduced locally (3 of 9 stressed runs failed), then the timeout
+  was raised to 30 s (9 of 9 pass). CI now also reports failing tests as annotations.
+
 ## 2026-10-29: Test-driven development
 
 Request: use TDD from now on. Recorded in the root `CLAUDE.md` (red → green → refactor, bug

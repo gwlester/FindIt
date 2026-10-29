@@ -73,6 +73,15 @@ from forks), and can be started by hand from the Actions tab once it is on `mast
    signed with the debug key so it can be sideloaded;
 3. uploads the APK as the artifact `findit-<commit>`, kept for **7 days**.
 
+### Test coverage reports
+
+- **Run summary:** every build adds a coverage table (totals plus every file, ✅/❌ against
+  the 90% minimum) to its summary page in the Actions tab.
+- **Pull requests:** builds of a branch with an open pull request post the same table as a PR
+  comment. Later pushes update that one comment.
+- The table is produced by `source/scripts/coverage-report.js` from Jest's
+  `coverage/coverage-summary.json`, and is tested like the rest of the code.
+
 ### Releases
 
 Every successful build of `master` is published as a GitHub Release with a **date-based

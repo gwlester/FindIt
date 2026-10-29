@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["jest", "node"]
   },
-  "include": ["**/*", "../src/**/*", "../modules/**/*", "../expo-env.d.ts"],
+  "include": ["**/*", "../src/**/*", "../scripts/**/*", "../modules/**/*", "../expo-env.d.ts"],
   "exclude": []
 }

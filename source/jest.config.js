@@ -11,11 +11,12 @@ module.exports = {
   reporters: process.env.GITHUB_ACTIONS ? ['default', 'github-actions'] : ['default'],
   setupFilesAfterEnv: ['<rootDir>/__tests__/helpers/setup.ts'],
   testMatch: ['<rootDir>/__tests__/**/*.test.{ts,tsx}'],
-  collectCoverageFrom: ['src/**/*.{ts,tsx}', 'modules/findit-native/index.ts'],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', 'scripts/**/*.js', 'modules/findit-native/index.ts'],
   coverageReporters: ['text', 'text-summary', 'json-summary'],
   // A glob key applies the threshold to every matching file individually.
   coverageThreshold: {
     './src/**/*.{ts,tsx}': PER_FILE,
+    './scripts/**/*.js': PER_FILE,
     './modules/findit-native/index.ts': PER_FILE,
   },
 };
