@@ -477,7 +477,7 @@ def share_history():
 
 
 def map_screen():
-    s = Screen("Map")
+    s = Screen("Map", header_right="Offline maps")
     top, bottom = 89, H - 2
     s.clip_start("map", 2, top, W - 4, bottom - top - 24)
     s.add(f"<rect x='0' y='{top}' width='{W}' height='{bottom - top}' fill='#eef1ea'/>")
@@ -498,6 +498,10 @@ def map_screen():
     s.rect(14, 102, 60, 36, fill=ACCENT, stroke=ACCENT, r=8)
     s.text(44, 125, "Map", 14, "#fff", "bold", "middle")
     s.text(124, 125, "Satellite", 14, INK, "bold", "middle")
+    s.rect(184, 102, 110, 36, fill="#fff", stroke=LINE, r=8)
+    s.text(239, 125, "⤓ Download", 14, ACCENT, "bold", "middle")
+    s.rect(14, 148, W - 28, 30, fill="#fff", stroke="none", r=8)
+    s.text(W / 2, 168, "Downloading for offline use… 42%", 13, INK, anchor="middle")
     s.add(f"<circle cx='{W - 36}' cy='120' r='16' fill='#fff' stroke='{LINE}'/>")
     s.text(W - 36, 125, "N", 13, INK, "bold", "middle")
     # selected place card
@@ -509,6 +513,27 @@ def map_screen():
     s.text(W - 14, H - 12, "© OpenFreeMap © OpenStreetMap ⓘ", 9, MUTED, anchor="end")
     s.note(14, 578, "Satellite: USGS imagery, US only (a note says so outside it).")
     s.render("09-map")
+
+
+def offline_maps():
+    s = Screen("Offline maps")
+    s.text(16, 114, "Saved areas work with no connection, even in airplane", 12, MUTED)
+    s.text(16, 130, "mode. To add one, open the map, show the area and tap", 12, MUTED)
+    s.text(16, 146, "Download (once for Map, once for Satellite).", 12, MUTED)
+    s.text(16, 174, "3 areas · 48.6 MB", 14, weight="bold")
+    rows = [("Near Old oak tree cache", "Satellite · 31.2 MB · downloading 42% · 2026-10-29"),
+            ("Near Old oak tree cache", "Map · 6.1 MB · ready · 2026-10-29"),
+            ("Near Zoo gate", "Map · 11.3 MB · ready · 2026-10-12")]
+    for i, (n, d) in enumerate(rows):
+        y = 186 + i * 60
+        s.text(16, y + 24, n, 16, weight="bold")
+        s.text(16, y + 44, d, 12, MUTED)
+        s.text(W - 16, y + 32, "Delete", 14, "#c62828", "bold", "end")
+        s.add(f"<line x1='16' y1='{y + 58}' x2='{W - 16}' y2='{y + 58}' stroke='{LINE}'/>")
+    s.note(16, 400, "Map → Download saves the area on screen for the current layer")
+    s.note(16, 414, "(Map: zooms 10–14; Satellite: 10–16, US only). Areas over ~6,000")
+    s.note(16, 428, "tiles are refused: zoom in first. Delete asks to confirm.")
+    s.render("10-offline-maps")
 
 
 def files():
@@ -597,6 +622,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, map_screen, settings, settings_more, files, files_import):
+    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, map_screen, offline_maps, settings, settings_more, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

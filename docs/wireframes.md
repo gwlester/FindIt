@@ -133,7 +133,18 @@ from **Show on map**, or following you when there are no places. Tap a place for
 its distance and **Find it** (opens the compass). The layer choice is remembered. Map data
 credits are behind the ⓘ button.
 
+**⤓ Download** saves the area on screen, for the current layer, for use with no connection;
+progress shows under the buttons. **Offline maps** (header) lists the saved areas.
+
 ![Map](wireframes/09-map.svg)
+
+## 10. Offline maps
+
+Saved areas, newest first, with layer, size and state (downloading N% or ready), and the total
+size. **Delete** asks first. Downloads cover zooms 10–14 for Map and 10–16 for Satellite
+(US only); an area needing more than about 6,000 tiles is refused with a hint to zoom in.
+
+![Offline maps](wireframes/10-offline-maps.svg)
 
 ## 7. Import / Export
 

@@ -2,6 +2,17 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Offline maps
+
+Built test-first (tile maths, offline module, map screen, new screen):
+- Map → **⤓ Download** saves the area on screen for the current layer (Map zooms 10–14,
+  Satellite 10–16, US only), named "Near <place>"; progress shows on the map. Areas over about
+  6,000 tiles are refused with a hint to zoom in.
+- **Offline maps** screen: saved areas with layer, size, state and date, live progress for
+  running downloads, total size, and Delete (confirmed).
+- Satellite downloads use a saved copy of the USGS style (offline packs need a style URL).
+- Wireframes 09 (download) and 10 (offline maps); architecture section.
+
 ## 2026-10-29: Map screen
 
 Built test-first (map sources, initial view, setting, screen):
