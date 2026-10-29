@@ -2,6 +2,20 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Sharing history with names (Bluetooth protocol v2)
+
+Built test-first (protocol, client, database, screens; Kotlin compiled by CI):
+- Protocol v2: a new NAME characteristic. The receiver writes its "name for sharing" (trimmed,
+  ≤ 40 UTF-8 bytes) before reading; errors are ignored so v1 servers still work.
+- `ShareServer.kt` remembers each receiver's name and the distinct places it read, and reports
+  both in the disconnect event.
+- `share_history` table (schema v3). The Share screen records who downloaded how many places
+  (older versions: "FindIt user"; connect-only visits aren't recorded) and links to
+  **Sharing history (N)**: a new screen, newest first, with **Clear history** (confirmed).
+- Settings → Sharing history: 7 / 30 / 90 (default) days, 1 year, or Forever; old entries are
+  pruned when the Share or history screen opens.
+- Wireframes 04 (link), 06b (setting), new 08; `ble-protocol.md` and architecture updated.
+
 ## 2026-10-29: Mark places as found
 
 Built test-first (data layer, formats, then screens):

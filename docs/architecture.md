@@ -65,7 +65,19 @@ CREATE TABLE finds (
   comment TEXT NOT NULL DEFAULT '',
   finder TEXT NOT NULL DEFAULT ''      -- '' = me, otherwise the FindIt user it came from
 );
+-- v3
+CREATE TABLE share_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  at INTEGER NOT NULL,                 -- ms since epoch, when they disconnected
+  name TEXT NOT NULL,                  -- receiver's name, or 'FindIt user' (older versions)
+  places INTEGER NOT NULL              -- distinct places they downloaded
+);
 ```
+
+Sharing history (`src/db/shareHistory.ts`): the Share screen records a row when a receiver that
+downloaded at least one place disconnects (protocol v2, see [ble-protocol.md](ble-protocol.md)).
+Rows older than the `shareHistoryDays` setting (7, 30, 90 (default) or 365 days; `off` =
+forever) are pruned when the Share or Sharing history screen opens.
 
 Finds (`src/db/finds.ts`): in **once** mode, marking again updates my latest find; in **log**
 mode a find is added. Finds travel in exports and Bluetooth sharing only when the user says so:
