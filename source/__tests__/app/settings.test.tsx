@@ -98,12 +98,12 @@ describe('search-area distance', () => {
 describe('found places', () => {
   it('chooses off, once or log, and keeps the list filter', async () => {
     const user = userEvent.setup();
-    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const } });
+    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const } });
     expect(screen.getByRole('checkbox', { name: /Once per place/ })).toBeChecked();
     await user.press(screen.getByRole('checkbox', { name: /Keep a log/ }));
     expect(screen.getByRole('checkbox', { name: /Once per place/ })).not.toBeChecked();
     await user.press(screen.getByRole('button', { name: 'Save' }));
-    expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const });
+    expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const });
   });
 
   it('can turn marking found off', async () => {
@@ -133,5 +133,24 @@ describe('sharing history', () => {
     await user.press(screen.getByRole('checkbox', { name: /7 days/ }));
     await user.press(screen.getByRole('button', { name: 'Save' }));
     expect((await loadSettings(db as never)).shareHistoryDays).toBe(7);
+  });
+});
+
+describe('search area background', () => {
+  it('chooses plain, map or satellite', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<SettingsScreen />);
+    expect(screen.getByRole('checkbox', { name: /Plain/ })).toBeChecked();
+    await user.press(screen.getByRole('checkbox', { name: /Satellite/ }));
+    await user.press(screen.getByRole('button', { name: 'Save' }));
+    expect((await loadSettings(db as never)).compassBackground).toBe('satellite');
+  });
+
+  it('can show the street map', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, compassBackground: 'satellite' } });
+    await user.press(screen.getByRole('checkbox', { name: /^Map/ }));
+    await user.press(screen.getByRole('button', { name: 'Save' }));
+    expect((await loadSettings(db as never)).compassBackground).toBe('streets');
   });
 });

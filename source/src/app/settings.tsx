@@ -6,11 +6,18 @@ import { Button, Checkbox, Field, Section, Stepper } from '../components/ui';
 import { DEFAULT_SEARCH_AREA_M, searchAreaRange, stepSearchDistance, toDisplayDistance } from '../lib/searchArea';
 import { useSettings } from '../hooks/useSettings';
 import type { FindMode } from '../db/finds';
+import type { CompassBackground } from '../lib/compassMap';
 import { HISTORY_RETENTION_OPTIONS, retentionLabel } from '../db/shareHistory';
 import type { Units } from '../lib/format';
 import { useTheme } from '../lib/theme';
 
 const MAX_DISPLAY_NAME = 40;
+
+const BACKGROUND_OPTIONS: { value: CompassBackground; label: string; sublabel: string }[] = [
+  { value: 'plain', label: 'Plain', sublabel: 'Just the rings and the search circle.' },
+  { value: 'streets', label: 'Map', sublabel: 'A street map, turning with you.' },
+  { value: 'satellite', label: 'Satellite', sublabel: 'Aerial imagery (US only; the map elsewhere).' },
+];
 
 export default function SettingsScreen() {
   const { loaded } = useSettings();
@@ -29,6 +36,7 @@ function SettingsForm() {
   const [alwaysArrow, setAlwaysArrow] = useState(settings.searchAreaDistanceM === null);
   const [findMode, setFindMode] = useState<FindMode>(settings.findMode);
   const [historyDays, setHistoryDays] = useState(settings.shareHistoryDays);
+  const [background, setBackground] = useState<CompassBackground>(settings.compassBackground);
 
   const save = async () => {
     const name = displayName.trim();
@@ -37,6 +45,7 @@ function SettingsForm() {
       ...settings,
       findMode,
       shareHistoryDays: historyDays,
+      compassBackground: background,
       displayName: name,
       units,
       highAccuracyGps,
@@ -83,6 +92,16 @@ function SettingsForm() {
               decreaseLabel="Decrease distance"
               increaseLabel="Increase distance"
             />
+            <Text style={[styles.label, { color: theme.muted }]}>Behind the search area</Text>
+            {BACKGROUND_OPTIONS.map(({ value, label, sublabel }) => (
+              <Checkbox
+                key={value}
+                checked={background === value}
+                label={label}
+                sublabel={sublabel}
+                onToggle={() => setBackground(value)}
+              />
+            ))}
           </>
         )}
       </Section>

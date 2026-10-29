@@ -118,7 +118,7 @@ describe('found places', () => {
   });
 
   it('shows nothing about finds when marking found is off', async () => {
-    await withFinds({ ...DEFAULT_SETTINGS, findMode: 'off', hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const });
+    await withFinds({ ...DEFAULT_SETTINGS, findMode: 'off', hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const });
     expect(screen.getByText('Ash')).toBeOnTheScreen();
     expect(screen.queryByText(/Found/)).not.toBeOnTheScreen();
     expect(screen.queryByRole('checkbox', { name: /Hide found places/ })).not.toBeOnTheScreen();

@@ -2,6 +2,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 
 import type { Units } from '../lib/format';
 import type { FindMode } from './finds';
+import type { CompassBackground } from '../lib/compassMap';
 import type { MapLayer } from '../lib/mapSources';
 import { DEFAULT_SEARCH_AREA_M } from '../lib/searchArea';
 
@@ -21,6 +22,8 @@ export type Settings = {
   shareHistoryDays: number | null;
   /** Last layer chosen on the map screen. */
   mapLayer: MapLayer;
+  /** What to draw behind the compass's search-area view. */
+  compassBackground: CompassBackground;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -32,9 +35,11 @@ export const DEFAULT_SETTINGS: Settings = {
   hideFound: false,
   shareHistoryDays: 90,
   mapLayer: 'streets',
+  compassBackground: 'plain',
 };
 
 const FIND_MODES: FindMode[] = ['off', 'once', 'log'];
+const BACKGROUNDS: CompassBackground[] = ['plain', 'streets', 'satellite'];
 
 function parseSearchArea(value: string | undefined): number | null {
   if (value === 'off') return null;
@@ -60,6 +65,9 @@ export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
     hideFound: map.hideFound === 'true',
     shareHistoryDays: parseHistoryDays(map.shareHistoryDays),
     mapLayer: map.mapLayer === 'satellite' ? 'satellite' : 'streets',
+    compassBackground: BACKGROUNDS.includes(map.compassBackground as CompassBackground)
+      ? (map.compassBackground as CompassBackground)
+      : 'plain',
   };
 }
 

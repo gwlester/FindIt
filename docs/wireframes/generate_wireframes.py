@@ -237,7 +237,7 @@ def compass_details(s, top):
     s.clip_end()
 
 
-def compass_close_svg(cx, cy, r_out, heading, bearing, distance_m, radius_m, you_m, scale_m):
+def compass_close_svg(cx, cy, r_out, heading, bearing, distance_m, radius_m, you_m, scale_m, backdrop=None):
     """Close-range compass: the rose as usual, the inner circle becomes a top-down map with
     you at the centre and the search area (shaded) around the cache, heading-up."""
     parts = []
@@ -263,6 +263,22 @@ def compass_close_svg(cx, cy, r_out, heading, bearing, distance_m, radius_m, you
     # map disc + half-scale ring
     parts.append(f"<clipPath id='map-{distance_m}'><circle cx='{cx}' cy='{cy}' r='{r_in}'/></clipPath>")
     parts.append(f"<circle cx='{cx}' cy='{cy}' r='{r_in}' fill='#eef3ee' stroke='{LINE}' stroke-width='2'/>")
+    if backdrop:
+        # A heading-up map (streets or satellite) behind the search area, turning with the phone.
+        m = [f"<g clip-path='url(#map-{distance_m})'><g transform='rotate({-heading} {cx} {cy})'>"]
+        if backdrop == "satellite":
+            m.append(f"<rect x='{cx-r_in}' y='{cy-r_in}' width='{2*r_in}' height='{2*r_in}' fill='#5d7046'/>")
+            for i, (dx, dy, rr, col) in enumerate(((-40, -30, 38, '#46593a'), (30, 20, 30, '#6f8250'), (-10, 50, 26, '#3e5034'), (50, -45, 22, '#7d8a5e'))):
+                m.append(f"<circle cx='{cx+dx}' cy='{cy+dy}' r='{rr}' fill='{col}'/>")
+            m.append(f"<path d='M{cx-r_in} {cy+10} C {cx-30} {cy-10} {cx+20} {cy+30} {cx+r_in} {cy+5}' stroke='#b9ab8c' stroke-width='6' fill='none'/>")
+        else:
+            m.append(f"<rect x='{cx-r_in}' y='{cy-r_in}' width='{2*r_in}' height='{2*r_in}' fill='#eef1ea'/>")
+            m.append(f"<rect x='{cx+12}' y='{cy-70}' width='60' height='44' fill='#d7e8cf'/>")
+            m.append(f"<path d='M{cx-r_in} {cy+40} C {cx-20} {cy+20} {cx+30} {cy+70} {cx+r_in} {cy+40}' stroke='#b9d3ea' stroke-width='10' fill='none'/>")
+            for x1, y1, x2, y2, w in ((-r_in, -10, r_in, -20, 7), (-30, -r_in, -20, r_in, 6)):
+                m.append(f"<line x1='{cx+x1}' y1='{cy+y1}' x2='{cx+x2}' y2='{cy+y2}' stroke='#fff' stroke-width='{w}'/>")
+        m.append("</g></g>")
+        parts += m
     parts.append(f"<circle cx='{cx}' cy='{cy}' r='{r_in/2}' fill='none' stroke='{LINE}' stroke-dasharray='3 4'/>")
     rel = math.radians(bearing - heading)
     tx, ty = cx + distance_m * px * math.sin(rel), cy - distance_m * px * math.cos(rel)
@@ -317,6 +333,20 @@ def compass_in_search_area():
     s.note(16, 714, "the circle around you. Averaging shrinks your halo and the circle.")
     s.note(16, 730, "Map zooms in as you get closer (here inner ring = 10 m).")
     s.render("03d-compass-in-search-area")
+
+
+def compass_map_behind():
+    s = Screen("Old oak tree cache")
+    s.text(W / 2, 112, "30.43520° N, 91.19030° W", 13, MUTED, anchor="middle")
+    s.add(compass_close_svg(W / 2, 270, 140, heading=30, bearing=75, distance_m=14, radius_m=6, you_m=4, scale_m=20, backdrop="streets"))
+    s.text(W / 2, 424, "Map © OpenStreetMap contributors, OpenFreeMap", 10, MUTED, anchor="middle")
+    s.text(W / 2, 466, "≈ 14 m", 40, INK, "bold", "middle")
+    s.text(W / 2, 490, "uncertainty radius ± 6 m · search area shaded", 14, MUTED, anchor="middle")
+    s.button(16, 502, W - 32, "Average my position", filled=False, h=40)
+    compass_details(s, 554)
+    s.note(16, 738, "Settings → Behind the search area: Plain, Map or Satellite (US).")
+    s.note(16, 751, "Heading-up, same scale as the rings; uses saved offline maps.")
+    s.render("03f-compass-map-behind")
 
 
 def compass():
@@ -434,7 +464,7 @@ def receive():
 def settings_more():
     s = Screen("Settings")
     s.text(W / 2, 108, "(scrolled down)", 11, MUTED, anchor="middle")
-    s.rect(16, 118, W - 32, 150, fill=FILL, r=12)
+    s.rect(16, 118, W - 32, 330, fill=FILL, r=12)
     s.text(30, 144, "Search area", 17, weight="bold")
     s.checkbox(30, 156, "Always show the arrow", "Otherwise, close to the cache the compass", False)
     s.text(64, 199, "shows a map of the search area.", 12, MUTED)
@@ -443,18 +473,29 @@ def settings_more():
         s.add(f"<circle cx='{x+22}' cy='248' r='16' fill='none' stroke='{ACCENT}' stroke-width='2'/>")
         s.text(x + 22, 255, sym, 20, ACCENT, "bold", "middle")
     s.text(156, 255, "50 m", 18, weight="bold", anchor="middle")
-    s.rect(16, 282, W - 32, 176, fill=FILL, r=12)
-    s.text(30, 308, "Found places", 17, weight="bold")
-    s.checkbox(30, 320, "Off", "Don’t track which places I’ve found.", False)
-    s.checkbox(30, 364, "Once per place", "Marking found again updates the date and comment.", True)
-    s.checkbox(30, 408, "Keep a log", "Every find is kept, with its date and comment.", False)
-    s.rect(16, 470, W - 32, 214, fill=FILL, r=12)
-    s.text(30, 496, "Sharing history", 17, weight="bold")
-    s.text(30, 518, "Remember who downloaded my places for", 12, MUTED, "bold")
-    for i, (label, ch) in enumerate((("7 days", False), ("30 days", False), ("90 days", True), ("1 year", False), ("Forever", False))):
-        s.checkbox(30, 528 + i * 30, label, checked=ch)
-    s.button(16, 696, W - 32, "Save")
+    s.text(30, 290, "Behind the search area", 12, MUTED, "bold")
+    s.checkbox(30, 300, "Plain", "Just the rings and the search circle.", False)
+    s.checkbox(30, 344, "Map", "A street map, turning with you.", True)
+    s.checkbox(30, 388, "Satellite", "Aerial imagery (US only; the map elsewhere).", False)
+    s.rect(16, 462, W - 32, 176, fill=FILL, r=12)
+    s.text(30, 488, "Found places", 17, weight="bold")
+    s.checkbox(30, 500, "Off", "Don’t track which places I’ve found.", False)
+    s.checkbox(30, 544, "Once per place", "Marking found again updates the date and comment.", True)
+    s.checkbox(30, 588, "Keep a log", "Every find is kept, with its date and comment.", False)
+    s.note(16, 666, "Continues below: Sharing history, Save.")
     s.render("06b-settings-more")
+
+
+def settings_end():
+    s = Screen("Settings")
+    s.text(W / 2, 108, "(scrolled to the end)", 11, MUTED, anchor="middle")
+    s.rect(16, 118, W - 32, 214, fill=FILL, r=12)
+    s.text(30, 144, "Sharing history", 17, weight="bold")
+    s.text(30, 166, "Remember who downloaded my places for", 12, MUTED, "bold")
+    for i, (label, ch) in enumerate((("7 days", False), ("30 days", False), ("90 days", True), ("1 year", False), ("Forever", False))):
+        s.checkbox(30, 176 + i * 30, label, checked=ch)
+    s.button(16, 346, W - 32, "Save")
+    s.render("06c-settings-end")
 
 
 def share_history():
@@ -622,6 +663,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, map_screen, offline_maps, settings, settings_more, files, files_import):
+    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, map_screen, offline_maps, compass_map_behind, settings_end, settings, settings_more, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

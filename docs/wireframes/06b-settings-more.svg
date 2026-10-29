@@ -6,7 +6,7 @@
 <text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Settings</text>
 <text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
 <text x='180.0' y='108' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#888' font-weight='normal' text-anchor='middle'>(scrolled down)</text>
-<rect x='16' y='118' width='328' height='150' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<rect x='16' y='118' width='328' height='330' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
 <text x='30' y='144' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Search area</text>
 <rect x='30' y='156' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
 <text x='64' y='167' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Always show the arrow</text>
@@ -18,32 +18,28 @@
 <circle cx='252' cy='248' r='16' fill='none' stroke='#555' stroke-width='2'/>
 <text x='252' y='255' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' font-weight='bold' text-anchor='middle'>+</text>
 <text x='156' y='255' font-family='Helvetica, Arial, sans-serif' font-size='18' fill='#333' font-weight='bold' text-anchor='middle'>50 m</text>
-<rect x='16' y='282' width='328' height='176' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
-<text x='30' y='308' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Found places</text>
-<rect x='30' y='320' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
-<text x='64' y='331' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Off</text>
-<text x='64' y='347' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Don’t track which places I’ve found.</text>
-<rect x='30' y='364' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
-<path d='M35 375 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
-<text x='64' y='375' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Once per place</text>
-<text x='64' y='391' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Marking found again updates the date and comment.</text>
-<rect x='30' y='408' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
-<text x='64' y='419' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Keep a log</text>
-<text x='64' y='435' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Every find is kept, with its date and comment.</text>
-<rect x='16' y='470' width='328' height='214' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
-<text x='30' y='496' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Sharing history</text>
-<text x='30' y='518' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='bold' text-anchor='start'>Remember who downloaded my places for</text>
-<rect x='30' y='528' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
-<text x='64' y='544' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>7 days</text>
-<rect x='30' y='558' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
-<text x='64' y='574' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>30 days</text>
-<rect x='30' y='588' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
-<path d='M35 599 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
-<text x='64' y='604' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>90 days</text>
-<rect x='30' y='618' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
-<text x='64' y='634' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>1 year</text>
-<rect x='30' y='648' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
-<text x='64' y='664' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Forever</text>
-<rect x='16' y='696' width='328' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
-<text x='180.0' y='723.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Save</text>
+<text x='30' y='290' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='bold' text-anchor='start'>Behind the search area</text>
+<rect x='30' y='300' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='311' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Plain</text>
+<text x='64' y='327' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Just the rings and the search circle.</text>
+<rect x='30' y='344' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 355 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='355' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Map</text>
+<text x='64' y='371' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>A street map, turning with you.</text>
+<rect x='30' y='388' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='399' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Satellite</text>
+<text x='64' y='415' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Aerial imagery (US only; the map elsewhere).</text>
+<rect x='16' y='462' width='328' height='176' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='488' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Found places</text>
+<rect x='30' y='500' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='511' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Off</text>
+<text x='64' y='527' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Don’t track which places I’ve found.</text>
+<rect x='30' y='544' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 555 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='555' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Once per place</text>
+<text x='64' y='571' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Marking found again updates the date and comment.</text>
+<rect x='30' y='588' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='599' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Keep a log</text>
+<text x='64' y='615' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Every find is kept, with its date and comment.</text>
+<text x='16' y='666' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Continues below: Sharing history, Save.</text>
 </svg>

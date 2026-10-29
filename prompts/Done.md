@@ -2,6 +2,16 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Map or satellite behind the compass search area
+
+Built test-first (zoom maths and layer choice, Compass faces, setting, compass screen):
+- Settings → Search area → **Behind the search area**: Plain (default), Map, or Satellite
+  (US only; the street map elsewhere).
+- Inside the search area a round, non-interactive MapLibre map sits under the compass rings:
+  heading-up, centred on you, zoomed so the rings match the ground; the rose becomes a ring so
+  the map shows through. Map credits under the compass.
+- Wireframes 03f (compass with map), 06b/06c (settings split); architecture section.
+
 ## 2026-10-29: Offline maps
 
 Built test-first (tile maths, offline module, map screen, new screen):

@@ -95,6 +95,16 @@ When you're inside the shaded circle, a banner says you're in the search area. W
 
 ![In the search area](wireframes/03d-compass-in-search-area.svg)
 
+## 3f. Compass: map behind the search area
+
+Optional (Settings → **Behind the search area**: Plain, Map or Satellite). Inside the search
+area a round street map or satellite image sits under the rings, heading-up and at the same
+scale, so the search circle lands on real paths and trees. Satellite is US only; elsewhere the
+street map is used. Map credits show under the compass. Saved offline maps are used with no
+connection.
+
+![Map behind the search area](wireframes/03f-compass-map-behind.svg)
+
 ## 4. Share nearby
 
 Two independent halves. **Receive from nearby** scans for phones that are sharing and lists
@@ -170,7 +180,8 @@ Your display name (what others see when you share), distance units, and **High-a
 (full GNSS tracking on the compass and averaging screens; on by default), and **Search
 area**: the distance at which the compass switches from the arrow to the search-area map
 (stored in metres, shown in your units rounded to 5 m / 10 ft, converted when you change
-units), or **Always show the arrow**.
+units), or **Always show the arrow**; and what's **behind the search area**: Plain (default),
+Map, or Satellite (US only).
 
 ![Settings](wireframes/06-settings.svg)
 
@@ -179,3 +190,5 @@ log to "once" keeps all entries; the latest one is shown. **Sharing history**: h
 remember who downloaded my places: 7 days, 30 days, 90 days (default), 1 year, or Forever.
 
 ![Settings, scrolled](wireframes/06b-settings-more.svg)
+
+![Settings, end](wireframes/06c-settings-end.svg)

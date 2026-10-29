@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 
-import { Compass } from '../../src/components/Compass';
+import { Compass, innerRadius } from '../../src/components/Compass';
 import { svgTexts } from '../helpers/svg';
 
 // react-native-svg turns rotation props into a transform matrix [cos, sin, -sin, cos, tx, ty]
@@ -66,6 +66,31 @@ describe('search-area view', () => {
     expect(rotations(toJSON())).not.toContain(45); // no arrow
   });
 
+  it('leaves the face clear when a map is drawn behind it', async () => {
+    const draw = async (mapBehind?: boolean) =>
+      circles(
+        (
+          await render(
+            <Compass
+              size={300}
+              heading={0}
+              bearing={0}
+              mapBehind={mapBehind}
+              searchArea={{ distanceM: 10, radiusM: 5, youM: 0, scale: SCALE }}
+            />,
+          )
+        ).toJSON(),
+      );
+    const plain = await draw();
+    expect(plain.find((p) => p.r === 90)!.fillOpacity).not.toBe(0);
+    expect(plain.find((p) => p.r === 136)!.fillOpacity).not.toBe(0);
+    const withMap = await draw(true);
+    expect(withMap.find((p) => p.r === 90)!.fillOpacity).toBe(0); // search-area face
+    expect(withMap.find((p) => p.r === 136)!.fillOpacity).toBe(0); // rose face
+    // The rose is a ring from the inner circle out to the edge instead.
+    expect(withMap.find((p) => p.r === 113)).toMatchObject({ fillOpacity: 0, strokeWidth: 46 });
+  });
+
   it('is north-up without a heading', async () => {
     const { toJSON } = await render(
       <Compass size={300} heading={null} bearing={90} searchArea={{ distanceM: 10, radiusM: 5, youM: 0, scale: SCALE }} />,
@@ -74,4 +99,8 @@ describe('search-area view', () => {
     expect(search.cx as number).toBeCloseTo(195, 1);
     expect(search.cy as number).toBeCloseTo(150, 1);
   });
+});
+
+test('the inner circle radius, for placing a map behind it', () => {
+  expect(innerRadius(300)).toBe(90);
 });

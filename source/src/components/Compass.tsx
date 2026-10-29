@@ -18,7 +18,17 @@ type Props = {
     youM: number;
     scale: { meters: number; label: string; halfLabel: string };
   };
+  /** A map is drawn behind the search area: keep the faces inside the rose clear. */
+  mapBehind?: boolean;
 };
+
+const EDGE = 14;
+const ROSE_WIDTH = 46;
+
+/** Radius of the inner circle (the arrow / search-area map) for a compass of this size. */
+export function innerRadius(size: number) {
+  return size / 2 - EDGE - ROSE_WIDTH;
+}
 
 const CARDINALS = [
   { label: 'N', deg: 0 },
@@ -32,11 +42,11 @@ const CARDINALS = [
  * directions; the inner arrow points at the target. With `searchArea`, the inner circle
  * is instead a heading-up map (north-up without a heading) with you at the centre.
  */
-export function Compass({ size, heading, bearing, searchArea }: Props) {
+export function Compass({ size, heading, bearing, searchArea, mapBehind = false }: Props) {
   const theme = useTheme();
   const c = size / 2;
-  const outer = c - 14;
-  const inner = outer - 46;
+  const outer = c - EDGE;
+  const inner = innerRadius(size);
   const roseRotation = heading == null ? 0 : -heading;
   const arrowRotation = heading == null || bearing == null ? null : bearing - heading;
 
@@ -77,7 +87,18 @@ export function Compass({ size, heading, bearing, searchArea }: Props) {
       <Polygon points={`${c - 8},2 ${c + 8},2 ${c},14`} fill={theme.accent} />
 
       <G rotation={roseRotation} origin={`${c}, ${c}`}>
-        <Circle cx={c} cy={c} r={outer} fill={theme.roseFace} stroke={theme.roseRing} strokeWidth={3} />
+        {mapBehind ? (
+          <Circle cx={c} cy={c} r={(outer + inner) / 2} fill="none" fillOpacity={0} stroke={theme.roseFace} strokeWidth={ROSE_WIDTH} />
+        ) : null}
+        <Circle
+          cx={c}
+          cy={c}
+          r={outer}
+          fill={theme.roseFace}
+          fillOpacity={mapBehind ? 0 : 1}
+          stroke={theme.roseRing}
+          strokeWidth={3}
+        />
         {ticks}
         {degreeLabels}
         {CARDINALS.map(({ label, deg }) => (
@@ -97,7 +118,7 @@ export function Compass({ size, heading, bearing, searchArea }: Props) {
       </G>
 
       {searchArea && bearing != null ? (
-        <SearchAreaMap c={c} inner={inner} relativeBearing={bearing - (heading ?? 0)} {...searchArea} />
+        <SearchAreaMap c={c} inner={inner} relativeBearing={bearing - (heading ?? 0)} clear={mapBehind} {...searchArea} />
       ) : (
         <Circle cx={c} cy={c} r={inner} fill="none" stroke={theme.border} strokeWidth={2} />
       )}
@@ -125,7 +146,8 @@ function SearchAreaMap({
   radiusM,
   youM,
   scale,
-}: { c: number; inner: number; relativeBearing: number } & NonNullable<Props['searchArea']>) {
+  clear,
+}: { c: number; inner: number; relativeBearing: number; clear: boolean } & NonNullable<Props['searchArea']>) {
   const theme = useTheme();
   const px = inner / scale.meters;
   const angle = (relativeBearing * Math.PI) / 180;
@@ -133,7 +155,7 @@ function SearchAreaMap({
   const ty = c - distanceM * px * Math.cos(angle);
   return (
     <G>
-      <Circle cx={c} cy={c} r={inner} fill={theme.mapFace} stroke={theme.border} strokeWidth={2} />
+      <Circle cx={c} cy={c} r={inner} fill={theme.mapFace} fillOpacity={clear ? 0 : 1} stroke={theme.border} strokeWidth={2} />
       <Circle cx={c} cy={c} r={inner / 2} fill="none" stroke={theme.border} strokeWidth={1} strokeDasharray="3 4" />
       <SvgText x={c} y={c + inner / 2 + 14} fontSize={10} fill={theme.muted} textAnchor="middle">
         {scale.halfLabel}

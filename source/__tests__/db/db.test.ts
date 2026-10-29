@@ -88,7 +88,7 @@ describe('settings', () => {
     expect(await loadSettings(db as never)).toEqual(DEFAULT_SETTINGS);
   });
   it('saves and reloads every setting', async () => {
-    const next = { displayName: 'Gerald', units: 'imperial' as const, highAccuracyGps: false, searchAreaDistanceM: 48.768, findMode: 'once' as const, hideFound: false, shareHistoryDays: 30, mapLayer: 'satellite' as const };
+    const next = { displayName: 'Gerald', units: 'imperial' as const, highAccuracyGps: false, searchAreaDistanceM: 48.768, findMode: 'once' as const, hideFound: false, shareHistoryDays: 30, mapLayer: 'satellite' as const, compassBackground: 'plain' as const };
     await saveSettings(db as never, next);
     expect(await loadSettings(db as never)).toEqual(next);
     await saveSettings(db as never, { ...next, units: 'metric', highAccuracyGps: true });
@@ -96,10 +96,19 @@ describe('settings', () => {
   });
   it('stores the search-area distance in metres, or off', async () => {
     expect((await loadSettings(db as never)).searchAreaDistanceM).toBe(50);
-    await saveSettings(db as never, { ...DEFAULT_SETTINGS, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const });
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const });
     expect((await loadSettings(db as never)).searchAreaDistanceM).toBeNull();
     await db.runAsync("UPDATE settings SET value = 'garbage' WHERE key = 'searchAreaDistanceM'");
     expect((await loadSettings(db as never)).searchAreaDistanceM).toBe(50);
+  });
+  it('remembers what goes behind the compass search area, plain by default', async () => {
+    expect((await loadSettings(db as never)).compassBackground).toBe('plain');
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, compassBackground: 'satellite' });
+    expect((await loadSettings(db as never)).compassBackground).toBe('satellite');
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, compassBackground: 'streets' });
+    expect((await loadSettings(db as never)).compassBackground).toBe('streets');
+    await db.runAsync("UPDATE settings SET value = 'garbage' WHERE key = 'compassBackground'");
+    expect((await loadSettings(db as never)).compassBackground).toBe('plain');
   });
   it('remembers the map layer, streets by default', async () => {
     expect((await loadSettings(db as never)).mapLayer).toBe('streets');
