@@ -61,6 +61,26 @@ average shows "Stopped averaging because you moved." Nothing is saved.
 
 ![Compass averaging](wireframes/03b-compass-averaging.svg)
 
+## 3c. Compass: search area (proposal)
+
+*Proposal, not built yet.* Within about 50 m of the cache, the inner circle of the compass
+becomes a small heading-up map:
+- **you:** a blue dot at the centre, with a faint halo for your own GPS uncertainty;
+- **the cache:** ⊕ in the direction of the arrow, at scaled distance;
+- **the search area:** a shaded circle around the cache, as big as the uncertainty radius;
+- **scale:** dashed rings with labels ("10 m", "20 m"). The map zooms in as you get closer.
+
+Further away, the compass shows the arrow as before.
+
+![Search area](wireframes/03c-compass-search-area.svg)
+
+## 3d. Compass: inside the search area (proposal)
+
+When you're inside the shaded circle, a banner says you're in the search area. With
+**Average my position** running, your halo and the circle shrink as fixes accumulate.
+
+![In the search area](wireframes/03d-compass-in-search-area.svg)
+
 ## 4. Share nearby
 
 Two independent halves. **Receive from nearby** scans for phones that are sharing and lists

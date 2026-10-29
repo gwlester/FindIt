@@ -231,6 +231,88 @@ def compass_details(s, top):
     s.clip_end()
 
 
+def compass_close_svg(cx, cy, r_out, heading, bearing, distance_m, radius_m, you_m, scale_m):
+    """Close-range compass: the rose as usual, the inner circle becomes a top-down map with
+    you at the centre and the search area (shaded) around the cache, heading-up."""
+    parts = []
+    r_in = r_out - 46
+    px = r_in / scale_m
+    parts.append(f"<polygon points='{cx-8},{cy-r_out-14} {cx+8},{cy-r_out-14} {cx},{cy-r_out-2}' fill='{ACCENT}'/>")
+    rose = [f"<g transform='rotate({-heading} {cx} {cy})'>"]
+    rose.append(f"<circle cx='{cx}' cy='{cy}' r='{r_out}' fill='#fff' stroke='{INK}' stroke-width='3'/>")
+    for deg in range(0, 360, 5):
+        ln = 14 if deg % 90 == 0 else 10 if deg % 30 == 0 else 5
+        sw = 2 if deg % 30 == 0 else 1
+        rose.append(
+            f"<line x1='{cx}' y1='{cy-r_out}' x2='{cx}' y2='{cy-r_out+ln}' stroke='{INK}' stroke-width='{sw}' "
+            f"transform='rotate({deg} {cx} {cy})'/>"
+        )
+    for label, deg in (("N", 0), ("E", 90), ("S", 180), ("W", 270)):
+        rose.append(
+            f"<text x='{cx}' y='{cy-r_out+36}' {FONT} font-size='{20 if label=='N' else 17}' font-weight='bold' "
+            f"fill='{'#c00' if label=='N' else INK}' text-anchor='middle' transform='rotate({deg} {cx} {cy})'>{label}</text>"
+        )
+    rose.append("</g>")
+    parts += rose
+    # map disc + half-scale ring
+    parts.append(f"<clipPath id='map-{distance_m}'><circle cx='{cx}' cy='{cy}' r='{r_in}'/></clipPath>")
+    parts.append(f"<circle cx='{cx}' cy='{cy}' r='{r_in}' fill='#eef3ee' stroke='{LINE}' stroke-width='2'/>")
+    parts.append(f"<circle cx='{cx}' cy='{cy}' r='{r_in/2}' fill='none' stroke='{LINE}' stroke-dasharray='3 4'/>")
+    rel = math.radians(bearing - heading)
+    tx, ty = cx + distance_m * px * math.sin(rel), cy - distance_m * px * math.cos(rel)
+    parts.append(f"<g clip-path='url(#map-{distance_m})'>")
+    parts.append(f"<line x1='{cx}' y1='{cy}' x2='{tx:.1f}' y2='{ty:.1f}' stroke='{ACCENT}' stroke-width='2' stroke-dasharray='5 4'/>")
+    parts.append(
+        f"<circle cx='{tx:.1f}' cy='{ty:.1f}' r='{radius_m*px:.1f}' fill='{ACCENT}' fill-opacity='0.22' "
+        f"stroke='{ACCENT}' stroke-width='2' stroke-dasharray='6 4'/>"
+    )
+    parts.append(f"<circle cx='{cx}' cy='{cy}' r='{you_m*px:.1f}' fill='#3a6ea5' fill-opacity='0.18'/>")
+    parts.append("</g>")
+    # cache marker (crosshair) and you
+    parts.append(f"<circle cx='{tx:.1f}' cy='{ty:.1f}' r='7' fill='#fff' stroke='{INK}' stroke-width='2.5'/>")
+    parts.append(f"<line x1='{tx-11:.1f}' y1='{ty:.1f}' x2='{tx+11:.1f}' y2='{ty:.1f}' stroke='{INK}' stroke-width='2'/>")
+    parts.append(f"<line x1='{tx:.1f}' y1='{ty-11:.1f}' x2='{tx:.1f}' y2='{ty+11:.1f}' stroke='{INK}' stroke-width='2'/>")
+    parts.append(f"<circle cx='{cx}' cy='{cy}' r='6' fill='#3a6ea5' stroke='#fff' stroke-width='2'/>")
+    parts.append(f"<text x='{cx}' y='{cy + r_in/2 + 14}' {FONT} font-size='10' fill='{MUTED}' text-anchor='middle'>{scale_m//2} m</text>")
+    parts.append(f"<text x='{cx}' y='{cy + r_in - 6}' {FONT} font-size='10' fill='{MUTED}' text-anchor='middle'>{scale_m} m</text>")
+    return "\n".join(parts)
+
+
+def compass_search_area():
+    s = Screen("Old oak tree cache")
+    s.text(W / 2, 112, "30.43520° N, 91.19030° W", 13, MUTED, anchor="middle")
+    s.add(compass_close_svg(W / 2, 270, 140, heading=30, bearing=75, distance_m=14, radius_m=6, you_m=4, scale_m=20))
+    s.text(W / 2, 466, "≈ 14 m", 40, INK, "bold", "middle")
+    s.text(W / 2, 490, "uncertainty radius ± 6 m · search area shaded", 14, MUTED, anchor="middle")
+    s.button(16, 502, W - 32, "Average my position", filled=False, h=40)
+    compass_details(s, 554)
+    s.note(8, 148, "● you (blue halo = your")
+    s.note(8, 161, "  GPS uncertainty)")
+    s.note(262, 148, "⊕ cache; shaded")
+    s.note(262, 161, "  = search area")
+    s.note(16, 730, "Within ~50 m the inner circle becomes a heading-up map; scale")
+    s.note(16, 744, "adjusts (here inner ring = 20 m). Further away: the arrow, as now.")
+    s.render("03c-compass-search-area")
+
+
+def compass_in_search_area():
+    s = Screen("Old oak tree cache")
+    s.text(W / 2, 112, "30.43520° N, 91.19030° W", 13, MUTED, anchor="middle")
+    s.add(compass_close_svg(W / 2, 270, 140, heading=30, bearing=75, distance_m=3, radius_m=4, you_m=2, scale_m=10))
+    s.text(W / 2, 466, "≈ 3 m", 40, INK, "bold", "middle")
+    s.text(W / 2, 490, "uncertainty radius ± 4 m · averaged over 96 fixes", 14, MUTED, anchor="middle")
+    s.rect(16, 502, W - 32, 44, fill="#e7f3ec", stroke=ACCENT, r=10, sw=2)
+    s.text(W / 2, 529, "You’re in the search area — look around!", 15, ACCENT, "bold", "middle")
+    s.rect(16, 554, W - 32, 112, fill="#fff", stroke=ACCENT, r=10, sw=2)
+    s.text(30, 578, "Averaging your position — stand still", 14, weight="bold")
+    s.text(30, 600, "96 fixes · ± 2 m", 14, MUTED)
+    s.button(30, 612, W - 60, "Stop averaging", filled=False, h=40)
+    s.note(16, 700, "You’re inside the shaded circle: the cache is most likely within")
+    s.note(16, 714, "the circle around you. Averaging shrinks your halo and the circle.")
+    s.note(16, 730, "Map zooms in as you get closer (here inner ring = 10 m).")
+    s.render("03d-compass-in-search-area")
+
+
 def compass():
     s = Screen("Old oak tree cache")
     s.text(W / 2, 112, "30.43520° N, 91.19030° W", 13, MUTED, anchor="middle")
@@ -397,6 +479,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, compass_averaging, share, receive, settings, files, files_import):
+    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, share, receive, settings, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))
