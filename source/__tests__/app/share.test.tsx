@@ -39,7 +39,7 @@ describe('sharing my places', () => {
     const u = userEvent.setup();
     await renderApp(<ShareScreen />, {
       places: [place('Oak'), place('Elm')],
-      settings: { displayName: 'Gerald', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50 },
+      settings: { displayName: 'Gerald', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false },
     });
     expect(screen.getByText(/see you as “Gerald”/)).toBeOnTheScreen();
     await u.press(screen.getByRole('checkbox', { name: /Elm/ }));

@@ -14,5 +14,5 @@ test('migrates the database, then renders every route', async () => {
     expect(screen.getByTestId(`screen-${name}`)).toBeOnTheScreen();
   }
   expect(screen.getByText('title:Import / Export')).toBeOnTheScreen();
-  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 1 });
+  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 2 });
 });

@@ -60,7 +60,7 @@ test('distance, uncertainty, bearing, heading and satellites', async () => {
 test('inside the uncertainty radius, magnetic heading needing calibration, imperial', async () => {
   await renderApp(<CompassScreen />, {
     places: [place('Here', { accuracy: null })],
-    settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50 },
+    settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false },
   });
   await act(async () => emitPosition({ latitude: 30.4352, longitude: -91.1903, accuracy: 6 }));
   expect(screen.getByText('You’re in the search area — look around!')).toBeOnTheScreen();
@@ -154,7 +154,7 @@ describe('search area', () => {
   it('follows the setting, in the chosen units, and can be turned off', async () => {
     await renderApp(<CompassScreen />, {
       places: [OAK],
-      settings: { displayName: 'x', units: 'imperial', highAccuracyGps: true, searchAreaDistanceM: 20 },
+      settings: { displayName: 'x', units: 'imperial', highAccuracyGps: true, searchAreaDistanceM: 20, findMode: 'once' as const, hideFound: false },
     });
     await act(async () => south(30));
     expect(svgTexts(screen.toJSON()).some((t) => t.endsWith(' ft'))).toBe(false);
@@ -167,7 +167,7 @@ describe('search area', () => {
 
     await renderApp(<CompassScreen />, {
       places: [OAK],
-      settings: { displayName: 'x', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: null },
+      settings: { displayName: 'x', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false },
     });
     await act(async () => south(5));
     expect(svgTexts(screen.toJSON())).not.toContain('10 m');

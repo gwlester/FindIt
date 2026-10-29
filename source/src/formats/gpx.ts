@@ -6,7 +6,7 @@
 
 import { XMLParser, XMLValidator } from 'fast-xml-parser';
 
-import { FormatError, isValidCoordinate, type ExchangePlace, type ParseResult } from './types';
+import { FormatError, isValidCoordinate, type ExchangeFind, type ExchangePlace, type ParseResult } from './types';
 
 export const GPX_MIME = 'application/gpx+xml';
 export const FINDIT_GPX_NS = 'https://github.com/gwlester/findit/gpx/1';
@@ -42,10 +42,18 @@ export function toGpx(places: ExchangePlace[], now: Date = new Date()): string {
     if (p.createdAt != null) lines.push(`    <time>${new Date(p.createdAt).toISOString()}</time>`);
     lines.push(`    <name>${escapeXml(p.name)}</name>`);
     if (p.notes) lines.push(`    <desc>${escapeXml(p.notes)}</desc>`);
-    lines.push('    <sym>Geocache</sym>');
-    if (p.accuracy != null) {
+    const finds = p.finds ?? [];
+    // "Geocache Found" is the symbol geocaching apps and GPS units use for found caches.
+    lines.push(`    <sym>${finds.length ? 'Geocache Found' : 'Geocache'}</sym>`);
+    if (p.accuracy != null || finds.length) {
       lines.push('    <extensions>');
-      lines.push(`      <findit:accuracy>${Math.round(p.accuracy * 10) / 10}</findit:accuracy>`);
+      if (p.accuracy != null) lines.push(`      <findit:accuracy>${Math.round(p.accuracy * 10) / 10}</findit:accuracy>`);
+      for (const f of finds) {
+        lines.push(`      <findit:find time="${new Date(f.foundAt).toISOString()}">`);
+        if (f.comment) lines.push(`        <findit:comment>${escapeXml(f.comment)}</findit:comment>`);
+        if (f.finder) lines.push(`        <findit:finder>${escapeXml(f.finder)}</findit:finder>`);
+        lines.push('      </findit:find>');
+      }
       lines.push('    </extensions>');
     }
     lines.push('  </wpt>');
@@ -87,9 +95,24 @@ function parseWaypoint(wpt: XmlNode, index: number): ExchangePlace | null {
   const description = cacheName ? text(wpt.cmt) : text(wpt.desc) || text(wpt.cmt);
   const notes = [description, hint ? `Hint: ${hint}` : ''].filter(Boolean).join('\n');
 
+  const finds: ExchangeFind[] = [];
+  for (const f of (extensions?.find as unknown[] | undefined) ?? []) {
+    const find = node(f);
+    const foundAt = Date.parse(text(find?.['@_time']));
+    if (find && Number.isFinite(foundAt)) {
+      finds.push({ foundAt, comment: text(find.comment), finder: text(find.finder) });
+    }
+  }
+
   const accuracyText = text(extensions?.accuracy);
   const accuracy = accuracyText === '' ? NaN : Number(accuracyText);
   const time = Date.parse(text(wpt.time));
+
+  const createdAt = Number.isFinite(time) ? time : null;
+  // Another app's found cache: one find of mine, dated by the waypoint if possible.
+  if (finds.length === 0 && text(wpt.sym) === 'Geocache Found') {
+    finds.push({ foundAt: createdAt ?? Date.now(), comment: '', finder: '' });
+  }
 
   return {
     name,
@@ -97,7 +120,8 @@ function parseWaypoint(wpt: XmlNode, index: number): ExchangePlace | null {
     longitude,
     accuracy: Number.isFinite(accuracy) && accuracy >= 0 ? accuracy : null,
     notes,
-    createdAt: Number.isFinite(time) ? time : null,
+    createdAt,
+    finds,
   };
 }
 
@@ -109,7 +133,7 @@ export function parseGpx(xml: string): ParseResult {
     removeNSPrefix: true,
     parseTagValue: false,
     parseAttributeValue: false,
-    isArray: (tagName) => ['wpt', 'rte', 'trk'].includes(tagName),
+    isArray: (tagName) => ['wpt', 'rte', 'trk', 'find'].includes(tagName),
   });
   const valid = XMLValidator.validate(xml);
   if (valid !== true) throw new FormatError(`Not a valid GPX file: ${valid.err.msg} (line ${valid.err.line})`);

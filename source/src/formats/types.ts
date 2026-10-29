@@ -1,3 +1,6 @@
+/** One find of a place. finder '' = the person whose file / phone it is. */
+export type ExchangeFind = { foundAt: number; comment: string; finder: string };
+
 /** A place as read from or written to an exchange file (GPX / GeoJSON). */
 export type ExchangePlace = {
   name: string;
@@ -8,6 +11,8 @@ export type ExchangePlace = {
   notes: string;
   /** ms since epoch, if known. */
   createdAt: number | null;
+  /** Finds, newest first (only included when the user chose to export them). */
+  finds?: ExchangeFind[];
 };
 
 export type ExchangeFormat = 'gpx' | 'geojson';

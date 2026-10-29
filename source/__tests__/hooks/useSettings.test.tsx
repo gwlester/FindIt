@@ -10,15 +10,15 @@ const wrapper = ({ children }: { children: ReactNode }) => <SettingsProvider>{ch
 
 test('loads stored settings and saves updates', async () => {
   const db = await createTestDb();
-  await saveSettings(db as never, { displayName: 'Gerald', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50 });
+  await saveSettings(db as never, { displayName: 'Gerald', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false });
   setCurrentDb(db);
   const { result } = await renderHook(() => useSettings(), { wrapper });
   await act(async () => {});
   expect(result.current.loaded).toBe(true);
   expect(result.current.settings.displayName).toBe('Gerald');
 
-  await act(() => result.current.updateSettings({ displayName: 'G', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50 }));
-  expect(result.current.settings).toEqual({ displayName: 'G', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50 });
+  await act(() => result.current.updateSettings({ displayName: 'G', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false }));
+  expect(result.current.settings).toEqual({ displayName: 'G', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false });
 });
 
 test('still marks settings loaded if reading fails', async () => {

@@ -38,7 +38,10 @@ describe('toGpx', () => {
     const parsed = parseGpx(xml);
     expect(parsed.format).toBe('gpx');
     expect(parsed.skipped).toBe(0);
-    expect(parsed.places).toEqual([{ ...PLACES[0], accuracy: 2.1 }, PLACES[1]]);
+    expect(parsed.places).toEqual([
+      { ...PLACES[0], accuracy: 2.1, finds: [] },
+      { ...PLACES[1], finds: [] },
+    ]);
   });
 
   it('defaults the export time to now', () => {
@@ -72,6 +75,7 @@ describe('parseGpx', () => {
         accuracy: null,
         notes: 'Hint: Under the roots',
         createdAt: Date.UTC(2020, 0, 2),
+        finds: [],
       },
     ]);
   });

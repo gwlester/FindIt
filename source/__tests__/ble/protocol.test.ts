@@ -14,7 +14,7 @@ describe('info', () => {
 
 describe('items', () => {
   it('round-trips, rounding accuracy to 0.1 m', () => {
-    expect(decodeItem(encodeItem(PLACE))).toEqual({ ...PLACE, accuracy: 4.3 });
+    expect(decodeItem(encodeItem(PLACE))).toEqual({ ...PLACE, accuracy: 4.3, finds: [] });
   });
   it('keeps a null accuracy', () => {
     expect(decodeItem(encodeItem({ ...PLACE, accuracy: null })).accuracy).toBeNull();
@@ -34,6 +34,7 @@ describe('items', () => {
       longitude: 2,
       accuracy: null,
       notes: '',
+      finds: [],
     });
   });
   it('rejects malformed items', () => {

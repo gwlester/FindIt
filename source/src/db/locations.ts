@@ -75,7 +75,10 @@ export async function updatePlace(db: SQLiteDatabase, id: number, place: NewPlac
 }
 
 export async function deletePlace(db: SQLiteDatabase, id: number): Promise<void> {
-  await db.runAsync('DELETE FROM locations WHERE id = ?', id);
+  await db.withTransactionAsync(async () => {
+    await db.runAsync('DELETE FROM finds WHERE place_id = ?', id);
+    await db.runAsync('DELETE FROM locations WHERE id = ?', id);
+  });
 }
 
 /** True if a place with the same name already exists within ~1 m of these coordinates. */
