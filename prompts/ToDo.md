@@ -2,8 +2,6 @@
 
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
-## Map wave (started 2026-10-29; map screen done)
-
 ## Verify on hardware
 - [ ] Map screen: OpenFreeMap street tiles and USGS satellite tiles load, markers and the blue
       dot appear, and the ⓘ attribution opens (tile hosts can't be reached from the build sandbox).
