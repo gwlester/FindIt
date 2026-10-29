@@ -42,10 +42,10 @@ function advertisedName(device: Device): string {
     const name = base64ToText(data[key]).trim();
     if (name) return name;
   }
-  return 'FindIt user';
+  return 'FindCache user';
 }
 
-/** Scans for nearby devices running FindIt's share service. Call the returned function to stop. */
+/** Scans for nearby devices running FindCache's share service. Call the returned function to stop. */
 export function scanForNearbyUsers(
   onUser: (user: NearbyUser) => void,
   onError: (message: string) => void,
@@ -78,7 +78,7 @@ export async function fetchSharedPlaces(
   const device = await ble.connectToDevice(deviceId, { requestMTU: 512, timeout: 15000 });
   try {
     await device.discoverAllServicesAndCharacteristics();
-    // Protocol v2: say who is downloading. Older FindIt versions lack the characteristic.
+    // Protocol v2: say who is downloading. Older FindCache versions lack the characteristic.
     if (myName?.trim()) {
       await device
         .writeCharacteristicWithResponseForService(SERVICE_UUID, NAME_UUID, textToBase64(encodeName(myName)))

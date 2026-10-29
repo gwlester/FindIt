@@ -10,8 +10,8 @@ describe('base64', () => {
   });
 
   it('decodes base64 produced elsewhere, ignoring whitespace and padding', () => {
-    const encoded = Buffer.from('🧭 FindIt', 'utf8').toString('base64');
-    expect(base64ToText(`${encoded.slice(0, 4)}\n${encoded.slice(4)}`)).toBe('🧭 FindIt');
+    const encoded = Buffer.from('🧭 FindCache', 'utf8').toString('base64');
+    expect(base64ToText(`${encoded.slice(0, 4)}\n${encoded.slice(4)}`)).toBe('🧭 FindCache');
   });
 
   it('converts bytes both ways', () => {

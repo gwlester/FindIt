@@ -108,7 +108,7 @@ class Screen:
 
 
 def places():
-    s = Screen("FindIt", header_right="?", back=False)
+    s = Screen("FindCache", header_right="?", back=False)
     for x, label in ((W - 48, "Settings"), (W - 128, "Files"), (W - 178, "Map")):
         s.text(x, 69, label, 15, ACCENT, "bold", "end")
     s.text(W / 2, 112, "Tap a place to find it · long-press to edit", 11, MUTED, anchor="middle")
@@ -403,7 +403,7 @@ def share_section(s, top, bottom, scroll_id):
     """'Share my places': fixed title and button, scrolling checklist between them."""
     s.rect(16, top, W - 32, bottom - top, fill=FILL, r=12)
     s.text(30, top + 26, "Share my places", 17, weight="bold")
-    s.text(30, top + 48, "Nearby FindIt users will see you as “Gerald”.", 12, MUTED)
+    s.text(30, top + 48, "Nearby FindCache users will see you as “Gerald”.", 12, MUTED)
     items = [
         ("Bridge micro", "30.44102° N, 91.18311° W", True),
         ("Creek crossing", "30.42011° N, 91.15550° W", True),
@@ -501,7 +501,7 @@ def settings_end():
 def share_history():
     s = Screen("Sharing history")
     s.text(16, 116, "Kept for 90 days · change this in Settings.", 13, MUTED)
-    rows = [("Alex", "3 places · 2026-10-28"), ("FindIt user", "1 place · 2026-10-21"), ("Sam's Pixel", "4 places · 2026-10-02")]
+    rows = [("Alex", "3 places · 2026-10-28"), ("FindCache user", "1 place · 2026-10-21"), ("Sam's Pixel", "4 places · 2026-10-02")]
     for i, (n, d) in enumerate(rows):
         y = 132 + i * 58
         s.text(16, y + 22, n, 16, weight="bold")
@@ -509,7 +509,7 @@ def share_history():
         s.add(f"<line x1='16' y1='{y + 56}' x2='{W - 16}' y2='{y + 56}' stroke='{LINE}'/>")
     s.note(16, 330, "One row each time someone downloads my places, recorded when")
     s.note(16, 344, "they disconnect (connecting without downloading isn’t recorded).")
-    s.note(16, 358, "Older FindIt versions send no name: shown as “FindIt user”.")
+    s.note(16, 358, "Older FindCache versions send no name: shown as “FindCache user”.")
     s.note(16, 380, "Entries older than the Settings retention are deleted when this or the")
     s.note(16, 394, "Share screen opens. Forever keeps everything.")
     s.button(16, 696, W - 32, "Clear history", filled=False)
@@ -581,13 +581,13 @@ def help_menu():
     s = Screen("Compass", header_right="?")
     s.add(f"<rect x='0' y='0' width='{W}' height='{H}' rx='28' fill='#000' opacity='0.45'/>")
     s.rect(120, 92, 224, 200, fill="#fff", stroke=LINE, r=12)
-    for i, label in enumerate(("Help for this screen", "How to use FindIt", "About FindIt", "Close")):
+    for i, label in enumerate(("Help for this screen", "How to use FindCache", "About FindCache", "Close")):
         y = 92 + i * 50
         if i:
             s.add(f"<line x1='120' y1='{y}' x2='344' y2='{y}' stroke='{LINE}'/>")
         s.text(136, y + 31, label, 15, MUTED if label == "Close" else INK)
     s.note(16, 330, "Every screen has ? at the top right. “Help for this screen” opens")
-    s.note(16, 344, "that screen’s topic; “How to use FindIt” is the whole guide.")
+    s.note(16, 344, "that screen’s topic; “How to use FindCache” is the whole guide.")
     s.render("11-help-menu")
 
 
@@ -612,30 +612,30 @@ def help_topic():
         if text:
             s.text(16, y, text, size, INK, weight)
         y += size + 8
-    s.button(16, 400, W - 32, "How to use FindIt (all topics)", filled=False)
-    s.note(16, 470, "Without a topic (“How to use FindIt”): Getting started, then")
+    s.button(16, 400, W - 32, "How to use FindCache (all topics)", filled=False)
+    s.note(16, 470, "Without a topic (“How to use FindCache”): Getting started, then")
     s.note(16, 484, "every screen’s topic in order.")
     s.render("11b-help-topic")
 
 
 def about():
-    s = Screen("About FindIt")
+    s = Screen("About FindCache")
     s.add("<circle cx='180' cy='160' r='48' fill='#1F6FB2'/>")
     s.add("<path d='M180 200 L156 165 A30 30 0 1 1 204 165 Z' fill='#00AE58'/>")
     s.add("<polygon points='180,128 186,148 200,152 186,156 180,176 174,156 160,152 174,148' fill='#fff'/>")
-    s.text(W / 2, 236, "FindIt", 26, INK, "bold", "middle")
+    s.text(W / 2, 236, "FindCache", 26, INK, "bold", "middle")
     s.text(W / 2, 258, "Version 2026.10.29.001", 13, MUTED, anchor="middle")
     for i, line in enumerate((
-        "FindIt is a simple geocache-style app: save named",
+        "FindCache is a simple geocache-style app: save named",
         "places, then let the compass, the distance and the",
         "uncertainty radius guide you back to them. It works",
         "offline, keeps everything on your phone, and shares",
-        "places with FindIt users nearby over Bluetooth. Maps",
+        "places with FindCache users nearby over Bluetooth. Maps",
         "come from OpenStreetMap and, in the United States,",
         "USGS satellite imagery.",
     )):
         s.text(24, 292 + i * 19, line, 14)
-    for i, label in enumerate(("FindIt licence", "Open-source licences", "Map data")):
+    for i, label in enumerate(("FindCache licence", "Open-source licences", "Map data")):
         s.button(24, 440 + i * 56, W - 48, label, filled=False)
     s.note(16, 630, "Version is the release's date version (YYYY.MM.DD.NNN).")
     s.note(16, 644, "Each button opens the Licences screen.")
@@ -644,7 +644,7 @@ def about():
 
 def licences():
     s = Screen("Open-source licences")
-    s.text(16, 114, "FindIt is built with these open-source projects. Tap", 12, MUTED)
+    s.text(16, 114, "FindCache is built with these open-source projects. Tap", 12, MUTED)
     s.text(16, 129, "one to read its licence.", 12, MUTED)
     s.text(16, 158, "Bundled JavaScript packages", 16, weight="bold")
     rows = ["@maplibre/maplibre-react-native 11.5.0, MIT", "expo 58.0.21, MIT", "fast-xml-parser 5.11.2, MIT",

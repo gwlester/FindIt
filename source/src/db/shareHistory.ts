@@ -5,7 +5,7 @@ export type ShareRecord = {
   id: number;
   /** ms since epoch, when they disconnected */
   at: number;
-  /** Their display name, or 'FindIt user' for older versions that don't send one. */
+  /** Their display name, or 'FindCache user' for older versions that don't send one. */
   name: string;
   /** How many places they downloaded. */
   places: number;

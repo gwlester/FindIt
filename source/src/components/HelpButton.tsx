@@ -13,8 +13,8 @@ export function HelpButton({ topic }: { topic: string }) {
 
   const items: MenuItem[] = [
     { label: 'Help for this screen', go: () => router.push({ pathname: '/help', params: { topic } }) },
-    { label: 'How to use FindIt', go: () => router.push('/help') },
-    { label: 'About FindIt', go: () => router.push('/about') },
+    { label: 'How to use FindCache', go: () => router.push('/help') },
+    { label: 'About FindCache', go: () => router.push('/about') },
   ];
 
   return (

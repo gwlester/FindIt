@@ -45,7 +45,7 @@ server honours read offsets, so long reads work at any MTU; the client also asks
 The server remembers, per connected device, the NAME written and which ITEM indices were read
 (counted on the first chunk, offset 0, of each read). On disconnect the `onSharePeer` event
 carries `{address, state: "disconnected", name?, itemsRead}` and the app records a history
-row when `itemsRead > 0`, using "FindIt user" if no name was sent.
+row when `itemsRead > 0`, using "FindCache user" if no name was sent.
 
 The server tracks the selected INDEX per connected device, so several phones can download at once.
 

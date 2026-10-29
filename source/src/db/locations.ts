@@ -11,7 +11,7 @@ export type Place = {
   /** Horizontal accuracy (m) when the place was recorded, if known. */
   accuracy: number | null;
   notes: string;
-  /** 'local', or the name of the FindIt user it was received from. */
+  /** 'local', or the name of the FindCache user it was received from. */
   source: string;
   createdAt: number;
 };

@@ -11,7 +11,7 @@ export type Find = {
   /** ms since epoch */
   foundAt: number;
   comment: string;
-  /** Who found it: '' = me, otherwise the name of the FindIt user it came from. */
+  /** Who found it: '' = me, otherwise the name of the FindCache user it came from. */
   finder: string;
 };
 

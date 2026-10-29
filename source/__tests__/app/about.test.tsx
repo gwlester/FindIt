@@ -7,9 +7,9 @@ import { renderApp } from '../helpers/renderApp';
 
 jest.mock('expo-constants', () => ({ __esModule: true, default: { expoConfig: { version: '2026.10.29.001' } } }));
 
-test('shows the version and what FindIt is', async () => {
+test('shows the version and what FindCache is', async () => {
   await renderApp(<AboutScreen />);
-  expect(screen.getByRole('header', { name: 'FindIt' })).toBeOnTheScreen();
+  expect(screen.getByRole('header', { name: 'FindCache' })).toBeOnTheScreen();
   expect(screen.getByText('Version 2026.10.29.001')).toBeOnTheScreen();
   expect(screen.getByText(/geocache-style/)).toBeOnTheScreen();
 });
@@ -17,7 +17,7 @@ test('shows the version and what FindIt is', async () => {
 test('opens each set of licences', async () => {
   const user = userEvent.setup();
   await renderApp(<AboutScreen />);
-  await user.press(screen.getByRole('button', { name: 'FindIt licence' }));
+  await user.press(screen.getByRole('button', { name: 'FindCache licence' }));
   expect(router.push).toHaveBeenLastCalledWith({ pathname: '/licenses', params: { kind: 'app' } });
   await user.press(screen.getByRole('button', { name: 'Open-source licences' }));
   expect(router.push).toHaveBeenLastCalledWith({ pathname: '/licenses', params: { kind: 'open-source' } });

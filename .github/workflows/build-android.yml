@@ -183,7 +183,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
-          name: findit-${{ github.sha }}
+          name: findcache-${{ github.sha }}
           path: source/android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
           retention-days: 7
@@ -207,8 +207,8 @@ jobs:
         uses: actions/deploy-pages@v5
 
   # Publishes each successful master build as a GitHub Release tagged with its
-  # date-based version. The asset is always named findit.apk so
-  # https://github.com/<repo>/releases/latest/download/findit.apk works.
+  # date-based version. The asset is always named findcache.apk so
+  # https://github.com/<repo>/releases/latest/download/findcache.apk works.
   # Only the two newest releases are kept: older ones (and their tags) are deleted
   # right after publishing. Release files don't count toward Actions storage.
   release:
@@ -231,14 +231,14 @@ jobs:
     steps:
       - uses: actions/download-artifact@v8
         with:
-          name: findit-${{ github.sha }}
+          name: findcache-${{ github.sha }}
           path: apk
 
       - name: Publish release
         run: |
-          cp apk/*.apk findit.apk
-          gh release create "$VERSION" findit.apk --target "$GITHUB_SHA" \
-            --title "FindIt $VERSION" --generate-notes --latest
+          cp apk/*.apk findcache.apk
+          gh release create "$VERSION" findcache.apk --target "$GITHUB_SHA" \
+            --title "FindCache $VERSION" --generate-notes --latest
 
       - name: Delete older releases (keep the newest 2)
         run: |

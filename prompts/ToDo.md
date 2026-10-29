@@ -14,7 +14,7 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
       including several places, long notes, and two receivers at once.
 - [ ] Check the new launcher icon (round and squircle launchers, themed icons on Android 13+)
       and the navy splash screen in light and dark mode.
-- [ ] Sharing history: a v2 receiver appears by name, a v1 (older) one as "FindIt user", and a
+- [ ] Sharing history: a v2 receiver appears by name, a v1 (older) one as "FindCache user", and a
       phone that connects but downloads nothing isn't recorded.
 
 ## Improvements

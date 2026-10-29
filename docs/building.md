@@ -85,7 +85,7 @@ ones), on **every push to `master`**, and by hand from the Actions tab. Its job 
    90%-per-file coverage check;
 2. generates the Android project (`expo prebuild`) and builds a release APK for `arm64-v8a`,
    signed with the debug key so it can be sideloaded;
-3. uploads the APK as the artifact `findit-<commit>`, kept for **7 days**.
+3. uploads the APK as the artifact `findcache-<commit>`, kept for **7 days**.
 
 ### Test coverage reports
 
@@ -131,8 +131,8 @@ version** `YYYY.MM.DD.NNN` (UTC date; `NNN` counts that day's releases from `001
 `versionCode` is `YYMMDDNNN` (e.g. `261028001`), so each release installs over the previous one.
 Builds of other branches keep the version in `app.json`.
 
-The APK is attached as `findit.apk`, so the README's download link
-(`https://github.com/gwlester/findit/releases/latest/download/findit.apk`) always points at the
+The APK is attached as `findcache.apk`, so the README's download link
+(`https://github.com/gwlester/findit/releases/latest/download/findcache.apk`) always points at the
 newest release. Only the **two newest releases** are kept: right after publishing, the release
 job deletes older releases and their tags. Release files don't count toward Actions storage.
 

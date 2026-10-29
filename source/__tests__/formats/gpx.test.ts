@@ -17,7 +17,7 @@ describe('toGpx', () => {
   const xml = toGpx(PLACES, new Date(Date.UTC(2026, 9, 29)));
 
   it('writes a GPX 1.1 document with escaped text and schema-ordered children', () => {
-    expect(xml).toContain('<gpx version="1.1" creator="FindIt"');
+    expect(xml).toContain('<gpx version="1.1" creator="FindCache"');
     expect(xml).toContain('<time>2026-10-29T00:00:00.000Z</time>');
     expect(xml).toContain('<wpt lat="30.4352" lon="-91.1903">');
     expect(xml).toContain('<name>Old oak &lt;tree&gt; &amp; &quot;roots&quot;</name>');

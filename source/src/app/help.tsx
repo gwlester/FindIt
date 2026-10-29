@@ -5,7 +5,7 @@ import { Button } from '../components/ui';
 import { GUIDE_INTRO, HELP_TOPICS, helpTopic, type HelpTopic } from '../help/content';
 import { useTheme } from '../lib/theme';
 
-/** Help for one screen (`topic`), or the full "How to use FindIt" guide. */
+/** Help for one screen (`topic`), or the full "How to use FindCache" guide. */
 export default function HelpScreen() {
   const theme = useTheme();
   const { topic } = useLocalSearchParams<{ topic?: string }>();
@@ -30,12 +30,12 @@ export default function HelpScreen() {
       {one ? (
         <>
           {section(one)}
-          <Button title="How to use FindIt (all topics)" variant="secondary" onPress={() => router.push('/help')} />
+          <Button title="How to use FindCache (all topics)" variant="secondary" onPress={() => router.push('/help')} />
         </>
       ) : (
         <>
           <Text accessibilityRole="header" style={[styles.title, { color: theme.text }]}>
-            How to use FindIt
+            How to use FindCache
           </Text>
           {GUIDE_INTRO.map((p) => (
             <Text key={p} style={[styles.paragraph, { color: theme.text }]}>

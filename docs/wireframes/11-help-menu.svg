@@ -10,11 +10,11 @@
 <rect x='120' y='92' width='224' height='200' rx='12' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
 <text x='136' y='123' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Help for this screen</text>
 <line x1='120' y1='142' x2='344' y2='142' stroke='#bbb'/>
-<text x='136' y='173' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>How to use FindIt</text>
+<text x='136' y='173' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>How to use FindCache</text>
 <line x1='120' y1='192' x2='344' y2='192' stroke='#bbb'/>
-<text x='136' y='223' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>About FindIt</text>
+<text x='136' y='223' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>About FindCache</text>
 <line x1='120' y1='242' x2='344' y2='242' stroke='#bbb'/>
 <text x='136' y='273' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#888' font-weight='normal' text-anchor='start'>Close</text>
 <text x='16' y='330' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Every screen has ? at the top right. “Help for this screen” opens</text>
-<text x='16' y='344' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>that screen’s topic; “How to use FindIt” is the whole guide.</text>
+<text x='16' y='344' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>that screen’s topic; “How to use FindCache” is the whole guide.</text>
 </svg>

@@ -1,6 +1,6 @@
 // GPX 1.1 (https://www.topografix.com/GPX/1/1/) import and export.
 //
-// Places are waypoints (<wpt>). FindIt's recorded accuracy is stored in a small
+// Places are waypoints (<wpt>). FindCache's recorded accuracy is stored in a small
 // <findit:accuracy> extension that other apps ignore. On import, geocaching.com files
 // are understood too: the cache name and the hint come from their Groundspeak extension.
 
@@ -28,11 +28,11 @@ function coordinate(value: number): string {
 export function toGpx(places: ExchangePlace[], now: Date = new Date()): string {
   const lines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    `<gpx version="1.1" creator="FindIt" xmlns="http://www.topografix.com/GPX/1/1" xmlns:findit="${FINDIT_GPX_NS}"` +
+    `<gpx version="1.1" creator="FindCache" xmlns="http://www.topografix.com/GPX/1/1" xmlns:findit="${FINDIT_GPX_NS}"` +
       ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
       ' xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">',
     '  <metadata>',
-    '    <name>FindIt places</name>',
+    '    <name>FindCache places</name>',
     `    <time>${now.toISOString()}</time>`,
     '  </metadata>',
   ];

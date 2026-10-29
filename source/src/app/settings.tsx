@@ -61,7 +61,7 @@ function SettingsForm() {
         value={displayName}
         onChangeText={setDisplayName}
         maxLength={MAX_DISPLAY_NAME}
-        hint="Nearby FindIt users see the first dozen or so characters before they connect."
+        hint="Nearby FindCache users see the first dozen or so characters before they connect."
       />
       <Section title="Distance units">
         <Checkbox checked={units === 'metric'} label="Metric" sublabel="metres / kilometres" onToggle={() => setUnits('metric')} />

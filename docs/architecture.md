@@ -64,13 +64,13 @@ CREATE TABLE finds (
   place_id INTEGER NOT NULL,           -- deleted together with its place
   found_at INTEGER NOT NULL,           -- ms since epoch
   comment TEXT NOT NULL DEFAULT '',
-  finder TEXT NOT NULL DEFAULT ''      -- '' = me, otherwise the FindIt user it came from
+  finder TEXT NOT NULL DEFAULT ''      -- '' = me, otherwise the FindCache user it came from
 );
 -- v3
 CREATE TABLE share_history (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   at INTEGER NOT NULL,                 -- ms since epoch, when they disconnected
-  name TEXT NOT NULL,                  -- receiver's name, or 'FindIt user' (older versions)
+  name TEXT NOT NULL,                  -- receiver's name, or 'FindCache user' (older versions)
   places INTEGER NOT NULL              -- distinct places they downloaded
 );
 ```
@@ -173,7 +173,7 @@ A test fails if a main library's version no longer matches, so regenerate after 
 
 The phone's GNSS chipset decides which satellites go into a fix; apps can't add satellites
 to it. Satellites that are in view but unused usually have too weak or reflected a signal,
-are too low in the sky, or haven't had their orbit data (ephemeris) downloaded yet. FindIt
+are too low in the sky, or haven't had their orbit data (ephemeris) downloaded yet. FindCache
 improves accuracy in three ways:
 
 **Position averaging** (`src/lib/averaging.ts`, Add/Edit place). It averages the fixes collected

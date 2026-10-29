@@ -14,11 +14,11 @@ test('opens a help menu: this screen, the guide, or About', async () => {
   expect(screen.queryByText('Help for this screen')).not.toBeOnTheScreen();
 
   await user.press(screen.getByRole('button', { name: 'Help' }));
-  await user.press(screen.getByRole('button', { name: 'How to use FindIt' }));
+  await user.press(screen.getByRole('button', { name: 'How to use FindCache' }));
   expect(router.push).toHaveBeenLastCalledWith('/help');
 
   await user.press(screen.getByRole('button', { name: 'Help' }));
-  await user.press(screen.getByRole('button', { name: 'About FindIt' }));
+  await user.press(screen.getByRole('button', { name: 'About FindCache' }));
   expect(router.push).toHaveBeenLastCalledWith('/about');
 
   await user.press(screen.getByRole('button', { name: 'Help' }));

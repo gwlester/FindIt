@@ -1,5 +1,5 @@
 // In-app help: one topic per screen (shown by that screen's Help button) and the full
-// "How to use FindIt" guide (the intro followed by every topic).
+// "How to use FindCache" guide (the intro followed by every topic).
 
 export type HelpTopic = {
   id: string;
@@ -10,10 +10,10 @@ export type HelpTopic = {
 };
 
 export const GUIDE_INTRO: string[] = [
-  'FindIt keeps a list of named places and guides you back to them with a compass, the distance and an uncertainty radius, like geocaching. Everything is stored on your phone.',
+  'FindCache keeps a list of named places and guides you back to them with a compass, the distance and an uncertainty radius, like geocaching. Everything is stored on your phone.',
   'Getting started: tap Add place, stand where you are, and tap Use current (or type coordinates). Later, tap the place in the list and follow the arrow. When you are close, the compass turns into a map of the search area.',
   'For the best position, stand still with a clear view of the sky and use Average my position for a minute or two. Turn on High-accuracy GPS in Settings to track every satellite.',
-  'You can swap places with FindIt users nearby over Bluetooth, import and export GPX or GeoJSON files, and view places on a map, including maps saved for use without a connection.',
+  'You can swap places with FindCache users nearby over Bluetooth, import and export GPX or GeoJSON files, and view places on a map, including maps saved for use without a connection.',
 ];
 
 export const HELP_TOPICS: HelpTopic[] = [
@@ -70,8 +70,8 @@ export const HELP_TOPICS: HelpTopic[] = [
     route: 'share',
     title: 'Share nearby',
     paragraphs: [
-      'Swap places with other FindIt users close by over Bluetooth. Both phones need Bluetooth on and this screen open.',
-      'To give: tick the places and tap Share N places. To receive: tap Look for nearby FindIt users, tap a name, then choose which places to import. Places you already have are skipped.',
+      'Swap places with other FindCache users close by over Bluetooth. Both phones need Bluetooth on and this screen open.',
+      'To give: tick the places and tap Share N places. To receive: tap Look for nearby FindCache users, tap a name, then choose which places to import. Places you already have are skipped.',
       'If you have found some of the places, you are asked whether to include that. Sharing history lists who has downloaded your places.',
     ],
   },
@@ -80,7 +80,7 @@ export const HELP_TOPICS: HelpTopic[] = [
     route: 'share-history',
     title: 'Sharing history',
     paragraphs: [
-      'Who downloaded your shared places, when, and how many. Older FindIt versions do not send a name and appear as “FindIt user”.',
+      'Who downloaded your shared places, when, and how many. Older FindCache versions do not send a name and appear as “FindCache user”.',
       'Entries are kept for the time set in Settings → Sharing history (or forever). Clear history removes them all.',
     ],
   },
@@ -98,7 +98,7 @@ export const HELP_TOPICS: HelpTopic[] = [
     route: 'settings',
     title: 'Settings',
     paragraphs: [
-      'Your name for sharing is what nearby FindIt users see. Units switch between metres and feet.',
+      'Your name for sharing is what nearby FindCache users see. Units switch between metres and feet.',
       'High-accuracy GPS tracks every satellite on the compass (Android 12 and later; uses more battery). Search area sets how close you need to be before the compass shows the search-area map, and what is drawn behind it.',
       'Found places: off, once per place, or a log of every find. Sharing history: how long to remember who downloaded your places.',
     ],

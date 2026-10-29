@@ -128,8 +128,8 @@ coordinates) are skipped.
 ## 8. Sharing history
 
 Who downloaded my places and when, newest first, with how many places they took. A row is
-added when the other phone disconnects after downloading; older FindIt versions don't send a
-name and appear as "FindIt user". Entries past the retention set in Settings are removed when
+added when the other phone disconnects after downloading; older FindCache versions don't send a
+name and appear as "FindCache user". Entries past the retention set in Settings are removed when
 this screen or the Share screen opens. **Clear history** asks first.
 
 ![Sharing history](wireframes/08-share-history.svg)
@@ -159,8 +159,8 @@ size. **Delete** asks first. Downloads cover zooms 10–14 for Map and 10–16 f
 ## 11. Help
 
 Every screen has **?** at the top right. It opens a small menu: **Help for this screen**
-(that screen's topic), **How to use FindIt** (getting started, then every screen's topic), and
-**About FindIt**. The help text is in `source/src/help/content.ts`.
+(that screen's topic), **How to use FindCache** (getting started, then every screen's topic), and
+**About FindCache**. The help text is in `source/src/help/content.ts`.
 
 ![Help menu](wireframes/11-help-menu.svg)
 
@@ -169,7 +169,7 @@ Every screen has **?** at the top right. It opens a small menu: **Help for this 
 ## 12. About and licences
 
 The app icon, name and version (the release's date version), a short description, and three
-buttons: **FindIt licence** (BSD 2-Clause), **Open-source licences** (every JavaScript package in
+buttons: **FindCache licence** (BSD 2-Clause), **Open-source licences** (every JavaScript package in
 the app and the main native libraries; tap one for its licence text) and **Map data**
 (OpenStreetMap, OpenFreeMap / OpenMapTiles, USGS, with links).
 
