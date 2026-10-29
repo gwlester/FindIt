@@ -15,8 +15,8 @@ someone else show who they came from. The list scrolls when there are more place
 the **Add place** / **Share nearby** buttons stay fixed at the bottom. Found places show a
 ✓ line ("Found 2026-10-29", "Found 3 times, last …", or "Found by Sam …" for someone else's
 find). **Hide found places** hides the ones *you've* found and says how many are hidden; the
-choice is remembered. Neither appears when Settings → Found places is **Off**. **Files** (header) opens
-Import / Export.
+choice is remembered. Neither appears when Settings → Found places is **Off**. **Map** (header) opens the map;
+**Files** opens Import / Export. Long-press also offers **Show on map**.
 
 ![Places](wireframes/01-places.svg)
 
@@ -123,6 +123,17 @@ name and appear as "FindIt user". Entries past the retention set in Settings are
 this screen or the Share screen opens. **Clear history** asks first.
 
 ![Sharing history](wireframes/08-share-history.svg)
+
+## 9. Map
+
+Every place on a free street map (OpenFreeMap, built from OpenStreetMap data) or, with
+**Satellite**, USGS imagery (public domain, United States only; outside it a note says so).
+The blue dot is you. The map opens framed to fit all places, centred on one place when opened
+from **Show on map**, or following you when there are no places. Tap a place for a card with
+its distance and **Find it** (opens the compass). The layer choice is remembered. Map data
+credits are behind the ⓘ button.
+
+![Map](wireframes/09-map.svg)
 
 ## 7. Import / Export
 

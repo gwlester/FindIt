@@ -51,6 +51,7 @@ export default function PlacesScreen() {
   const showActions = (place: Place) =>
     Alert.alert(place.name, formatLatLon(place.latitude, place.longitude), [
       { text: 'Edit', onPress: () => router.push({ pathname: '/place', params: { id: String(place.id) } }) },
+      { text: 'Show on map', onPress: () => router.push({ pathname: '/map', params: { id: String(place.id) } }) },
       { text: 'Delete', style: 'destructive', onPress: () => confirmDelete(place) },
       { text: 'Cancel', style: 'cancel' },
     ]);
@@ -61,6 +62,9 @@ export default function PlacesScreen() {
         options={{
           headerRight: () => (
             <View style={styles.headerButtons}>
+              <Pressable accessibilityRole="button" onPress={() => router.push('/map')} hitSlop={12}>
+                <Text style={[styles.headerButton, { color: theme.accent }]}>Map</Text>
+              </Pressable>
               <Pressable accessibilityRole="button" onPress={() => router.push('/files')} hitSlop={12}>
                 <Text style={[styles.headerButton, { color: theme.accent }]}>Files</Text>
               </Pressable>

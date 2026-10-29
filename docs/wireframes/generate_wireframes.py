@@ -99,6 +99,10 @@ class Screen:
             frame.append(
                 f"<text x='{W-100}' y='69' {FONT} font-size='15' font-weight='bold' fill='{ACCENT}' text-anchor='end'>{escape(self.header_extra)}</text>"
             )
+        if getattr(self, "header_extra2", None):
+            frame.append(
+                f"<text x='{W-160}' y='69' {FONT} font-size='15' font-weight='bold' fill='{ACCENT}' text-anchor='end'>{escape(self.header_extra2)}</text>"
+            )
         body = frame + self.parts + ["</svg>"]
         (OUT / f"{name}.svg").write_text("\n".join(body) + "\n")
 
@@ -106,6 +110,7 @@ class Screen:
 def places():
     s = Screen("FindIt", header_right="Settings", back=False)
     s.header_extra = "Files"
+    s.header_extra2 = "Map"
     s.text(W / 2, 112, "Tap a place to find it · long-press to edit", 11, MUTED, anchor="middle")
     s.checkbox(16, 122, "Hide found places", "2 found places hidden", False)
     rows = [
@@ -471,6 +476,41 @@ def share_history():
     s.render("08-share-history")
 
 
+def map_screen():
+    s = Screen("Map")
+    top, bottom = 89, H - 2
+    s.clip_start("map", 2, top, W - 4, bottom - top - 24)
+    s.add(f"<rect x='0' y='{top}' width='{W}' height='{bottom - top}' fill='#eef1ea'/>")
+    # streets, a river and a park
+    s.add(f"<path d='M-10 520 C 80 470 140 560 380 470' stroke='#b9d3ea' stroke-width='18' fill='none'/>")
+    s.add(f"<rect x='210' y='170' width='120' height='90' rx='6' fill='#d7e8cf'/>")
+    for x1, y1, x2, y2, w in ((0, 300, 360, 260, 10), (120, 89, 160, 760, 8), (0, 640, 360, 600, 6), (260, 89, 300, 760, 6), (0, 200, 360, 210, 5)):
+        s.add(f"<line x1='{x1}' y1='{y1}' x2='{x2}' y2='{y2}' stroke='#fff' stroke-width='{w}'/>")
+    markers = [(90, 250, "Bridge micro", False), (230, 330, "Old oak tree cache", True), (200, 470, "Creek crossing ✓", False), (300, 180, "Water tower", False)]
+    for x, y, label, sel in markers:
+        s.rect(x - len(label) * 3.4, y - 34, len(label) * 6.8, 18, fill="#fff", stroke="none", r=4)
+        s.text(x, y - 21, label, 11, INK, "bold", "middle")
+        s.add(f"<circle cx='{x}' cy='{y - 7}' r='7' fill='{'#c62828' if sel else ACCENT}' stroke='#fff' stroke-width='2'/>")
+    s.add("<circle cx='160' cy='400' r='26' fill='#2f6db5' opacity='0.15'/><circle cx='160' cy='400' r='8' fill='#2f6db5' stroke='#fff' stroke-width='3'/>")
+    s.clip_end()
+    # layer switch
+    s.rect(14, 102, 160, 36, fill="#fff", stroke=LINE, r=8)
+    s.rect(14, 102, 60, 36, fill=ACCENT, stroke=ACCENT, r=8)
+    s.text(44, 125, "Map", 14, "#fff", "bold", "middle")
+    s.text(124, 125, "Satellite", 14, INK, "bold", "middle")
+    s.add(f"<circle cx='{W - 36}' cy='120' r='16' fill='#fff' stroke='{LINE}'/>")
+    s.text(W - 36, 125, "N", 13, INK, "bold", "middle")
+    # selected place card
+    s.rect(14, 588, W - 28, 130, fill="#fff", stroke=LINE, r=12)
+    s.text(28, 616, "Old oak tree cache", 18, weight="bold")
+    s.text(28, 638, "125 m away", 13, MUTED)
+    s.button(28, 656, 146, "Close", filled=False)
+    s.button(186, 656, 146, "Find it")
+    s.text(W - 14, H - 12, "© OpenFreeMap © OpenStreetMap ⓘ", 9, MUTED, anchor="end")
+    s.note(14, 578, "Satellite: USGS imagery, US only (a note says so outside it).")
+    s.render("09-map")
+
+
 def files():
     s = Screen("Import / Export")
     s.rect(16, 104, W - 32, 124, fill=FILL, r=12)
@@ -557,6 +597,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, settings, settings_more, files, files_import):
+    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, map_screen, settings, settings_more, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

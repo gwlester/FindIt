@@ -37,13 +37,15 @@ test('lists places by name with source and distance, and navigates', async () =>
   expect(router.push).toHaveBeenLastCalledWith('/place');
   await user.press(screen.getByRole('button', { name: 'Share nearby' }));
   expect(router.push).toHaveBeenLastCalledWith('/share');
+  await user.press(screen.getByRole('button', { name: 'Map' }));
+  expect(router.push).toHaveBeenLastCalledWith('/map');
   await user.press(screen.getByRole('button', { name: 'Files' }));
   expect(router.push).toHaveBeenLastCalledWith('/files');
   await user.press(screen.getByRole('button', { name: 'Settings' }));
   expect(router.push).toHaveBeenLastCalledWith('/settings');
 });
 
-test('long-press offers edit and delete', async () => {
+test('long-press offers edit, show on map and delete', async () => {
   const user = userEvent.setup();
   const alert = mockAlert();
   const db = await renderApp(<PlacesScreen />, { places: [place('Oak')] });
@@ -51,6 +53,10 @@ test('long-press offers edit and delete', async () => {
   await user.longPress(screen.getByText('Oak'));
   await alert.press('Oak', 'Edit');
   expect(router.push).toHaveBeenLastCalledWith({ pathname: '/place', params: { id: '1' } });
+
+  await user.longPress(screen.getByText('Oak'));
+  await alert.press('Oak', 'Show on map');
+  expect(router.push).toHaveBeenLastCalledWith({ pathname: '/map', params: { id: '1' } });
 
   await user.longPress(screen.getByText('Oak'));
   await alert.press('Oak', 'Delete');
@@ -112,7 +118,7 @@ describe('found places', () => {
   });
 
   it('shows nothing about finds when marking found is off', async () => {
-    await withFinds({ ...DEFAULT_SETTINGS, findMode: 'off', hideFound: true, shareHistoryDays: 90 });
+    await withFinds({ ...DEFAULT_SETTINGS, findMode: 'off', hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const });
     expect(screen.getByText('Ash')).toBeOnTheScreen();
     expect(screen.queryByText(/Found/)).not.toBeOnTheScreen();
     expect(screen.queryByRole('checkbox', { name: /Hide found places/ })).not.toBeOnTheScreen();

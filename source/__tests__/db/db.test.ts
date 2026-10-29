@@ -88,7 +88,7 @@ describe('settings', () => {
     expect(await loadSettings(db as never)).toEqual(DEFAULT_SETTINGS);
   });
   it('saves and reloads every setting', async () => {
-    const next = { displayName: 'Gerald', units: 'imperial' as const, highAccuracyGps: false, searchAreaDistanceM: 48.768, findMode: 'once' as const, hideFound: false, shareHistoryDays: 30 };
+    const next = { displayName: 'Gerald', units: 'imperial' as const, highAccuracyGps: false, searchAreaDistanceM: 48.768, findMode: 'once' as const, hideFound: false, shareHistoryDays: 30, mapLayer: 'satellite' as const };
     await saveSettings(db as never, next);
     expect(await loadSettings(db as never)).toEqual(next);
     await saveSettings(db as never, { ...next, units: 'metric', highAccuracyGps: true });
@@ -96,10 +96,17 @@ describe('settings', () => {
   });
   it('stores the search-area distance in metres, or off', async () => {
     expect((await loadSettings(db as never)).searchAreaDistanceM).toBe(50);
-    await saveSettings(db as never, { ...DEFAULT_SETTINGS, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90 });
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const });
     expect((await loadSettings(db as never)).searchAreaDistanceM).toBeNull();
     await db.runAsync("UPDATE settings SET value = 'garbage' WHERE key = 'searchAreaDistanceM'");
     expect((await loadSettings(db as never)).searchAreaDistanceM).toBe(50);
+  });
+  it('remembers the map layer, streets by default', async () => {
+    expect((await loadSettings(db as never)).mapLayer).toBe('streets');
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, mapLayer: 'satellite' });
+    expect((await loadSettings(db as never)).mapLayer).toBe('satellite');
+    await db.runAsync("UPDATE settings SET value = 'garbage' WHERE key = 'mapLayer'");
+    expect((await loadSettings(db as never)).mapLayer).toBe('streets');
   });
   it('keeps sharing history 90 days by default, or forever (null)', async () => {
     expect((await loadSettings(db as never)).shareHistoryDays).toBe(90);

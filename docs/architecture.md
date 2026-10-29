@@ -28,13 +28,14 @@ FindIt/
 | --- | --- |
 | Framework | Expo SDK 58, React Native 0.88, React 19.3, TypeScript 6 |
 | Navigation | Expo Router (`source/src/app`) |
-| Storage | `expo-sqlite` (local file `findit.db`); nothing leaves the phone except over Bluetooth sharing |
+| Storage | `expo-sqlite` (local file `findit.db`). Places leave the phone only by Bluetooth sharing or an export; the map screen fetches tiles for the area shown from OpenFreeMap / USGS |
 | GPS / heading | `expo-location` (`watchPositionAsync` at `BestForNavigation`, `watchHeadingAsync`) |
 | Satellites | `findit-native` module: Android `GnssStatus` callback |
 | Compass drawing | `react-native-svg` |
 | Screen on | `expo-keep-awake` via `<KeepAwake tag>`: compass, averaging panel, Share screen while active |
 | Import / export | GPX 1.1 and GeoJSON (`fast-xml-parser`), `expo-document-picker`, `expo-file-system`, `expo-sharing` |
 | Tests | Jest (`jest-expo`) + React Native Testing Library 14, real SQLite via Node's `node:sqlite` |
+| Maps | `@maplibre/maplibre-react-native` (MapLibre Native). Streets: OpenFreeMap vector style `liberty` (OpenStreetMap data, no key); satellite: USGS National Map `USGSImageryOnly` raster tiles (public domain, US only, to zoom 16). Sources in `src/lib/mapSources.ts` |
 | BLE, receiving side | `react-native-ble-plx` (scan, connect, read/write) |
 | BLE, sharing side | `findit-native` module: Android `BluetoothGattServer` + `BluetoothLeAdvertiser` |
 

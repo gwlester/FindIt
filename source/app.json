@@ -4,7 +4,9 @@
     "slug": "findit",
     "scheme": "findit",
     "version": "1.0.0",
-    "platforms": ["android"],
+    "platforms": [
+      "android"
+    ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -28,6 +30,7 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
+      "@maplibre/maplibre-react-native",
       [
         "expo-location",
         {

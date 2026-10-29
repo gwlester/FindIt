@@ -1,0 +1,47 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Map</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<clipPath id='map'><rect x='2' y='89' width='356' height='645'/></clipPath>
+<g clip-path='url(#map)'>
+<rect x='0' y='89' width='360' height='669' fill='#eef1ea'/>
+<path d='M-10 520 C 80 470 140 560 380 470' stroke='#b9d3ea' stroke-width='18' fill='none'/>
+<rect x='210' y='170' width='120' height='90' rx='6' fill='#d7e8cf'/>
+<line x1='0' y1='300' x2='360' y2='260' stroke='#fff' stroke-width='10'/>
+<line x1='120' y1='89' x2='160' y2='760' stroke='#fff' stroke-width='8'/>
+<line x1='0' y1='640' x2='360' y2='600' stroke='#fff' stroke-width='6'/>
+<line x1='260' y1='89' x2='300' y2='760' stroke='#fff' stroke-width='6'/>
+<line x1='0' y1='200' x2='360' y2='210' stroke='#fff' stroke-width='5'/>
+<rect x='49.2' y='216' width='81.6' height='18' rx='4' fill='#fff' stroke='none' stroke-width='1.5'/>
+<text x='90' y='229' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='bold' text-anchor='middle'>Bridge micro</text>
+<circle cx='90' cy='243' r='7' fill='#555' stroke='#fff' stroke-width='2'/>
+<rect x='168.8' y='296' width='122.39999999999999' height='18' rx='4' fill='#fff' stroke='none' stroke-width='1.5'/>
+<text x='230' y='309' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='bold' text-anchor='middle'>Old oak tree cache</text>
+<circle cx='230' cy='323' r='7' fill='#c62828' stroke='#fff' stroke-width='2'/>
+<rect x='145.6' y='436' width='108.8' height='18' rx='4' fill='#fff' stroke='none' stroke-width='1.5'/>
+<text x='200' y='449' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='bold' text-anchor='middle'>Creek crossing ✓</text>
+<circle cx='200' cy='463' r='7' fill='#555' stroke='#fff' stroke-width='2'/>
+<rect x='262.6' y='146' width='74.8' height='18' rx='4' fill='#fff' stroke='none' stroke-width='1.5'/>
+<text x='300' y='159' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='bold' text-anchor='middle'>Water tower</text>
+<circle cx='300' cy='173' r='7' fill='#555' stroke='#fff' stroke-width='2'/>
+<circle cx='160' cy='400' r='26' fill='#2f6db5' opacity='0.15'/><circle cx='160' cy='400' r='8' fill='#2f6db5' stroke='#fff' stroke-width='3'/>
+</g>
+<rect x='14' y='102' width='160' height='36' rx='8' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<rect x='14' y='102' width='60' height='36' rx='8' fill='#555' stroke='#555' stroke-width='1.5'/>
+<text x='44' y='125' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#fff' font-weight='bold' text-anchor='middle'>Map</text>
+<text x='124' y='125' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='bold' text-anchor='middle'>Satellite</text>
+<circle cx='324' cy='120' r='16' fill='#fff' stroke='#bbb'/>
+<text x='324' y='125' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='bold' text-anchor='middle'>N</text>
+<rect x='14' y='588' width='332' height='130' rx='12' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<text x='28' y='616' font-family='Helvetica, Arial, sans-serif' font-size='18' fill='#333' font-weight='bold' text-anchor='start'>Old oak tree cache</text>
+<text x='28' y='638' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#888' font-weight='normal' text-anchor='start'>125 m away</text>
+<rect x='28' y='656' width='146' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='101.0' y='683.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Close</text>
+<rect x='186' y='656' width='146' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
+<text x='259.0' y='683.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Find it</text>
+<text x='346' y='748' font-family='Helvetica, Arial, sans-serif' font-size='9' fill='#888' font-weight='normal' text-anchor='end'>© OpenFreeMap © OpenStreetMap ⓘ</text>
+<text x='14' y='578' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Satellite: USGS imagery, US only (a note says so outside it).</text>
+</svg>

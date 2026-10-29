@@ -2,6 +2,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 
 import type { Units } from '../lib/format';
 import type { FindMode } from './finds';
+import type { MapLayer } from '../lib/mapSources';
 import { DEFAULT_SEARCH_AREA_M } from '../lib/searchArea';
 
 export type Settings = {
@@ -18,6 +19,8 @@ export type Settings = {
   hideFound: boolean;
   /** Days to keep the sharing history; null = forever. */
   shareHistoryDays: number | null;
+  /** Last layer chosen on the map screen. */
+  mapLayer: MapLayer;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -28,6 +31,7 @@ export const DEFAULT_SETTINGS: Settings = {
   findMode: 'once',
   hideFound: false,
   shareHistoryDays: 90,
+  mapLayer: 'streets',
 };
 
 const FIND_MODES: FindMode[] = ['off', 'once', 'log'];
@@ -55,6 +59,7 @@ export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
     findMode: FIND_MODES.includes(map.findMode as FindMode) ? (map.findMode as FindMode) : 'once',
     hideFound: map.hideFound === 'true',
     shareHistoryDays: parseHistoryDays(map.shareHistoryDays),
+    mapLayer: map.mapLayer === 'satellite' ? 'satellite' : 'streets',
   };
 }
 
