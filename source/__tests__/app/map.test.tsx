@@ -7,7 +7,8 @@ import { DEFAULT_SETTINGS, loadSettings } from '../../src/db/settings';
 import { SATELLITE_STYLE, STREETS_STYLE_URL } from '../../src/lib/mapSources';
 import { emitPosition } from '../helpers/expoLocationMock';
 import { useLocalSearchParams } from '../helpers/expoRouterMock';
-import { place, renderApp } from '../helpers/renderApp';
+import { emitPackError, emitPackProgress, mapState, OfflineManager } from '../helpers/maplibreMock';
+import { mockAlert, place, renderApp } from '../helpers/renderApp';
 
 const map = () => screen.getByTestId('map');
 const camera = () => screen.getByTestId('map-camera');
@@ -81,4 +82,71 @@ test('switches between map and satellite, remembers the choice, and warns outsid
 test('starts with the saved layer', async () => {
   await renderApp(<MapScreen />, { settings: { ...DEFAULT_SETTINGS, mapLayer: 'satellite' } });
   expect(map().props.mapStyle).toBe(SATELLITE_STYLE);
+});
+
+describe('offline maps', () => {
+  it('links to the offline maps screen', async () => {
+    const user = userEvent.setup();
+    await renderApp(<MapScreen />);
+    await user.press(screen.getByRole('button', { name: 'Offline maps' }));
+    expect(router.push).toHaveBeenLastCalledWith('/offline-maps');
+  });
+
+  it('downloads the area on screen for the current layer, showing progress', async () => {
+    const user = userEvent.setup();
+    const alert = mockAlert();
+    await renderApp(<MapScreen />, { places: [place('Oak', { latitude: 30.45, longitude: -91.16 })] });
+    await user.press(screen.getByRole('button', { name: 'Download this area' }));
+    expect(alert.message('Download for offline use?')).toMatch(/^Map of the area near Oak: about \d+ tiles\./);
+    await alert.press('Download for offline use?', 'Cancel');
+    expect(OfflineManager.createPack).not.toHaveBeenCalled();
+
+    await user.press(screen.getByRole('button', { name: 'Download this area' }));
+    await alert.press('Download for offline use?', 'Download');
+    expect(OfflineManager.createPack.mock.calls[0][0]).toMatchObject({
+      mapStyle: STREETS_STYLE_URL,
+      bounds: mapState.bounds,
+      metadata: { name: 'Near Oak', layer: 'streets' },
+    });
+    expect(screen.getByText('Downloading for offline use… 0%')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Download this area' })).toBeDisabled();
+    await act(async () => emitPackProgress('1', 42.4));
+    expect(screen.getByText('Downloading for offline use… 42%')).toBeOnTheScreen();
+    await act(async () => emitPackProgress('1', 100));
+    expect(screen.getByText('Saved for offline use.')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Download this area' })).toBeEnabled();
+  });
+
+  it('reports download errors', async () => {
+    const user = userEvent.setup();
+    const alert = mockAlert();
+    await renderApp(<MapScreen />);
+    await user.press(screen.getByRole('button', { name: 'Download this area' }));
+    await alert.press('Download for offline use?', 'Download');
+    await act(async () => emitPackError('1', 'No connection'));
+    expect(alert.message('Download failed')).toBe('No connection');
+    expect(screen.queryByText(/Downloading/)).not.toBeOnTheScreen();
+
+    OfflineManager.createPack.mockRejectedValueOnce(new Error('Disk full'));
+    await user.press(screen.getByRole('button', { name: 'Download this area' }));
+    await alert.press('Download for offline use?', 'Download');
+    expect(alert.message('Download failed')).toBe('Disk full');
+  });
+
+  it('refuses areas that are too large or satellite outside the US', async () => {
+    const user = userEvent.setup();
+    const alert = mockAlert();
+    await renderApp(<MapScreen />, { settings: { ...DEFAULT_SETTINGS, mapLayer: 'satellite' } });
+    mapState.bounds = [-92, 30, -90, 32];
+    await user.press(screen.getByRole('button', { name: 'Download this area' }));
+    expect(alert.message('Area too large')).toMatch(/^Zoom in and try again: this is about [\d,]+ tiles; the limit is 6,000\.$/);
+
+    mapState.bounds = [-0.2, 51.45, -0.1, 51.55];
+    await user.press(screen.getByRole('button', { name: 'Download this area' }));
+    expect(alert.message('Satellite imagery covers the US only.')).toMatch(/Switch to Map/);
+
+    mapState.bounds = [-91.2, 30.4, -91.1, 30.5];
+    await user.press(screen.getByRole('button', { name: 'Download this area' }));
+    expect(alert.message('Download for offline use?')).toMatch(/^Satellite imagery of 30\.45000° N, 91\.15000° W: about/);
+  });
 });

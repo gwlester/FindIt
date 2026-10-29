@@ -5,6 +5,7 @@
 <line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
 <text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Map</text>
 <text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='340' y='69' font-family='Helvetica, Arial, sans-serif' font-size='15' font-weight='bold' fill='#555' text-anchor='end'>Offline maps</text>
 <clipPath id='map'><rect x='2' y='89' width='356' height='645'/></clipPath>
 <g clip-path='url(#map)'>
 <rect x='0' y='89' width='360' height='669' fill='#eef1ea'/>
@@ -33,6 +34,10 @@
 <rect x='14' y='102' width='60' height='36' rx='8' fill='#555' stroke='#555' stroke-width='1.5'/>
 <text x='44' y='125' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#fff' font-weight='bold' text-anchor='middle'>Map</text>
 <text x='124' y='125' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='bold' text-anchor='middle'>Satellite</text>
+<rect x='184' y='102' width='110' height='36' rx='8' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<text x='239' y='125' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#555' font-weight='bold' text-anchor='middle'>⤓ Download</text>
+<rect x='14' y='148' width='332' height='30' rx='8' fill='#fff' stroke='none' stroke-width='1.5'/>
+<text x='180.0' y='168' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='normal' text-anchor='middle'>Downloading for offline use… 42%</text>
 <circle cx='324' cy='120' r='16' fill='#fff' stroke='#bbb'/>
 <text x='324' y='125' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#333' font-weight='bold' text-anchor='middle'>N</text>
 <rect x='14' y='588' width='332' height='130' rx='12' fill='#fff' stroke='#bbb' stroke-width='1.5'/>

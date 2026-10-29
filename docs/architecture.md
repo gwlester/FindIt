@@ -90,6 +90,16 @@ file, e.g. my own export).
 Migrations live in `source/src/db/schema.ts` and are tracked with `PRAGMA user_version`.
 To change the schema, append a new migration to the list; never edit an old one.
 
+## Offline maps (`src/lib/offlineMaps.ts`, `src/lib/tiles.ts`)
+
+MapLibre offline packs. **Download** on the map saves the visible bounds for the current layer:
+streets at zooms 10–14 (OpenFreeMap vector tiles stop at 14; higher zooms reuse them), satellite
+at 10–16. Packs need a style URL, so the inline USGS style is written to
+`usgs-satellite-style.json` in the document directory and its `file://` URL is used; tiles are
+cached by URL, so the live map uses them too. A web-mercator tile count refuses areas over
+6,000 tiles, to be polite to the free tile servers. Pack metadata holds `{name, layer,
+createdAt}`; the name is "Near <place>" for the nearest place within 5 km, else coordinates.
+
 ## Import / export formats (`src/formats/`)
 
 | | GPX 1.1 (XML) | GeoJSON (RFC 7946) |

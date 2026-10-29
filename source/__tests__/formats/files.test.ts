@@ -2,22 +2,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 
 import { pickImportFile, shareExport } from '../../src/formats/files';
+import { files } from '../helpers/fileSystemMock';
 
-const files: Record<string, string> = {};
-jest.mock('expo-file-system', () => {
-  class File {
-    uri: string;
-    constructor(...parts: (string | { uri: string })[]) {
-      this.uri = parts.map((p) => (typeof p === 'string' ? p : p.uri)).join('/');
-    }
-    create = jest.fn();
-    write = jest.fn(async (text: string) => {
-      files[this.uri] = text;
-    });
-    text = jest.fn(async () => files[this.uri]);
-  }
-  return { File, Paths: { cache: { uri: 'file:///cache' } } };
-});
 jest.mock('expo-sharing', () => ({ isAvailableAsync: jest.fn(async () => true), shareAsync: jest.fn(async () => {}) }));
 jest.mock('expo-document-picker', () => ({ getDocumentAsync: jest.fn() }));
 

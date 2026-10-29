@@ -1,0 +1,27 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Offline maps</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='16' y='114' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Saved areas work with no connection, even in airplane</text>
+<text x='16' y='130' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>mode. To add one, open the map, show the area and tap</text>
+<text x='16' y='146' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Download (once for Map, once for Satellite).</text>
+<text x='16' y='174' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='bold' text-anchor='start'>3 areas · 48.6 MB</text>
+<text x='16' y='210' font-family='Helvetica, Arial, sans-serif' font-size='16' fill='#333' font-weight='bold' text-anchor='start'>Near Old oak tree cache</text>
+<text x='16' y='230' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Satellite · 31.2 MB · downloading 42% · 2026-10-29</text>
+<text x='344' y='218' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#c62828' font-weight='bold' text-anchor='end'>Delete</text>
+<line x1='16' y1='244' x2='344' y2='244' stroke='#bbb'/>
+<text x='16' y='270' font-family='Helvetica, Arial, sans-serif' font-size='16' fill='#333' font-weight='bold' text-anchor='start'>Near Old oak tree cache</text>
+<text x='16' y='290' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Map · 6.1 MB · ready · 2026-10-29</text>
+<text x='344' y='278' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#c62828' font-weight='bold' text-anchor='end'>Delete</text>
+<line x1='16' y1='304' x2='344' y2='304' stroke='#bbb'/>
+<text x='16' y='330' font-family='Helvetica, Arial, sans-serif' font-size='16' fill='#333' font-weight='bold' text-anchor='start'>Near Zoo gate</text>
+<text x='16' y='350' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Map · 11.3 MB · ready · 2026-10-12</text>
+<text x='344' y='338' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#c62828' font-weight='bold' text-anchor='end'>Delete</text>
+<line x1='16' y1='364' x2='344' y2='364' stroke='#bbb'/>
+<text x='16' y='400' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Map → Download saves the area on screen for the current layer</text>
+<text x='16' y='414' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>(Map: zooms 10–14; Satellite: 10–16, US only). Areas over ~6,000</text>
+<text x='16' y='428' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>tiles are refused: zoom in first. Delete asks to confirm.</text>
+</svg>

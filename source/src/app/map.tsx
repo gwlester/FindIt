@@ -1,8 +1,8 @@
-import { Camera, Map, Marker, NativeUserLocation, type ViewStateChangeEvent } from '@maplibre/maplibre-react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { Camera, Map, Marker, NativeUserLocation, type MapRef, type ViewStateChangeEvent } from '@maplibre/maplibre-react-native';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View, type NativeSyntheticEvent } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View, type NativeSyntheticEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '../components/ui';
@@ -14,6 +14,8 @@ import { formatDistance } from '../lib/format';
 import { distanceMeters } from '../lib/geo';
 import { likelyInUsgsCoverage, mapStyleFor, type MapLayer } from '../lib/mapSources';
 import { initialView } from '../lib/mapView';
+import { areaName, downloadArea, estimateTiles } from '../lib/offlineMaps';
+import { MAX_DOWNLOAD_TILES } from '../lib/tiles';
 import { useTheme } from '../lib/theme';
 
 const LAYERS: { layer: MapLayer; label: string }[] = [
@@ -34,6 +36,9 @@ export default function MapScreen() {
   const [found, setFound] = useState<Set<number>>(new Set());
   const [selectedId, setSelectedId] = useState<number | null>(id ? Number(id) : null);
   const [center, setCenter] = useState<[number, number] | null>(null);
+  // Offline download of the area on screen: percentage while running, 100 when saved.
+  const [download, setDownload] = useState<number | null>(null);
+  const mapRef = useRef<MapRef>(null);
 
   useEffect(() => {
     Promise.all([listPlaces(db), findSummaries(db)]).then(([all, finds]) => {
@@ -53,9 +58,55 @@ export default function MapScreen() {
   const chooseLayer = (next: MapLayer) => updateSettings({ ...settings, mapLayer: next });
   const onRegionDidChange = (e: NativeSyntheticEvent<ViewStateChangeEvent>) => setCenter(e.nativeEvent.center);
 
+  const startDownload = async (bounds: [number, number, number, number], name: string) => {
+    const failed = (message: string) => {
+      setDownload(null);
+      Alert.alert('Download failed', message);
+    };
+    setDownload(0);
+    try {
+      await downloadArea({ bounds, layer, name }, (percentage) => setDownload(percentage), failed);
+    } catch (e) {
+      failed(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const offerDownload = async () => {
+    const bounds = (await mapRef.current!.getBounds()) as [number, number, number, number];
+    const [west, south, east, north] = bounds;
+    if (layer === 'satellite' && !likelyInUsgsCoverage((south + north) / 2, (west + east) / 2)) {
+      Alert.alert('Satellite imagery covers the US only.', 'Switch to Map to download this area.');
+      return;
+    }
+    const tiles = estimateTiles(bounds, layer);
+    if (tiles > MAX_DOWNLOAD_TILES) {
+      Alert.alert(
+        'Area too large',
+        `Zoom in and try again: this is about ${tiles.toLocaleString('en-US')} tiles; the limit is ${MAX_DOWNLOAD_TILES.toLocaleString('en-US')}.`,
+      );
+      return;
+    }
+    const name = areaName(bounds, places);
+    const what = layer === 'satellite' ? 'Satellite imagery' : 'Map';
+    const where = name.startsWith('Near ') ? `the area near ${name.slice(5)}` : name;
+    Alert.alert('Download for offline use?', `${what} of ${where}: about ${tiles.toLocaleString('en-US')} tiles.`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Download', onPress: () => startDownload(bounds, name) },
+    ]);
+  };
+
   return (
     <View style={styles.screen}>
-      <Map style={styles.map} mapStyle={mapStyleFor(layer)} onRegionDidChange={onRegionDidChange} compass>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable accessibilityRole="button" onPress={() => router.push('/offline-maps')} hitSlop={12}>
+              <Text style={[styles.headerButton, { color: theme.accent }]}>Offline maps</Text>
+            </Pressable>
+          ),
+        }}
+      />
+      <Map ref={mapRef} style={styles.map} mapStyle={mapStyleFor(layer)} onRegionDidChange={onRegionDidChange} compass>
         {view ? <Camera initialViewState={view} /> : <Camera trackUserLocation="default" zoom={14} />}
         <NativeUserLocation />
         {places.map((p) => (
@@ -84,6 +135,22 @@ export default function MapScreen() {
           </Pressable>
         ))}
       </View>
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Download this area"
+        accessibilityState={{ disabled: downloading(download) }}
+        disabled={downloading(download)}
+        onPress={offerDownload}
+        style={[styles.download, { backgroundColor: theme.surface, borderColor: theme.border, opacity: downloading(download) ? 0.5 : 1 }]}
+      >
+        <Text style={{ color: theme.accent, fontWeight: '600' }}>⤓ Download</Text>
+      </Pressable>
+      {download != null ? (
+        <Text style={[styles.progress, { color: theme.text, backgroundColor: theme.surface }]}>
+          {downloading(download) ? `Downloading for offline use… ${Math.floor(download)}%` : 'Saved for offline use.'}
+        </Text>
+      ) : null}
 
       {outsideCoverage || places.length === 0 ? (
         <Text style={[styles.notice, { color: theme.text, backgroundColor: theme.surface }]}>
@@ -118,7 +185,12 @@ export default function MapScreen() {
   );
 }
 
+const downloading = (download: number | null) => download != null && download < 100;
+
 const styles = StyleSheet.create({
+  headerButton: { fontSize: 16, fontWeight: '600' },
+  download: { position: 'absolute', top: 12, right: 60, borderRadius: 8, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 8 },
+  progress: { position: 'absolute', top: 104, left: 12, right: 12, padding: 8, borderRadius: 8, textAlign: 'center' },
   screen: { flex: 1 },
   map: { flex: 1 },
   marker: { alignItems: 'center' },
