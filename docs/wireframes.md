@@ -102,7 +102,7 @@ them by name and rough signal strength. **Share my places** lets you tick which 
 offer and starts Bluetooth advertising while the screen is open. The two sections split the
 screen; the nearby-users list and the places checklist each scroll inside their own section,
 so the **Look for…** and **Share N places** buttons are always visible. Both phones can share
-and look at the same time.
+and look at the same time. **Sharing history (N)** under the share button opens the history.
 
 ![Share nearby](wireframes/04-share.svg)
 
@@ -114,6 +114,15 @@ After tapping a nearby user, their places download and the import panel replaces
 coordinates) are skipped.
 
 ![Import](wireframes/05-share-import.svg)
+
+## 8. Sharing history
+
+Who downloaded my places and when, newest first, with how many places they took. A row is
+added when the other phone disconnects after downloading; older FindIt versions don't send a
+name and appear as "FindIt user". Entries past the retention set in Settings are removed when
+this screen or the Share screen opens. **Clear history** asks first.
+
+![Sharing history](wireframes/08-share-history.svg)
 
 ## 7. Import / Export
 
@@ -144,6 +153,7 @@ units), or **Always show the arrow**.
 ![Settings](wireframes/06-settings.svg)
 
 Further down: **Found places**: Off, Once per place (default), or Keep a log. Switching from a
-log to "once" keeps all entries; the latest one is shown.
+log to "once" keeps all entries; the latest one is shown. **Sharing history**: how long to
+remember who downloaded my places: 7 days, 30 days, 90 days (default), 1 year, or Forever.
 
 ![Settings, scrolled](wireframes/06b-settings-more.svg)

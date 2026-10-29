@@ -376,13 +376,14 @@ def share_section(s, top, bottom, scroll_id):
         ("Library bench", "30.41277° N, 91.17702° W", True),
         ("Old oak tree cache", "30.43520° N, 91.19030° W", True),
     ]
-    list_top, list_bottom = top + 60, bottom - 62
+    list_top, list_bottom = top + 60, bottom - 88
     s.clip_start(scroll_id, 16, list_top, W - 32, list_bottom - list_top)
     for i, (n, c, ch) in enumerate(items):
         s.checkbox(30, list_top + 6 + i * 48, n, c, ch)
     s.clip_end()
     s.scrollbar(W - 26, list_top, list_bottom - list_top, 0.6)
-    s.button(30, bottom - 56, W - 60, "Share 4 places")
+    s.button(30, bottom - 82, W - 60, "Share 4 places")
+    s.text(30, bottom - 14, "Sharing history (3)", 14, ACCENT, "bold")
 
 
 def share():
@@ -442,8 +443,32 @@ def settings_more():
     s.checkbox(30, 320, "Off", "Don’t track which places I’ve found.", False)
     s.checkbox(30, 364, "Once per place", "Marking found again updates the date and comment.", True)
     s.checkbox(30, 408, "Keep a log", "Every find is kept, with its date and comment.", False)
-    s.button(16, 472, W - 32, "Save")
+    s.rect(16, 470, W - 32, 214, fill=FILL, r=12)
+    s.text(30, 496, "Sharing history", 17, weight="bold")
+    s.text(30, 518, "Remember who downloaded my places for", 12, MUTED, "bold")
+    for i, (label, ch) in enumerate((("7 days", False), ("30 days", False), ("90 days", True), ("1 year", False), ("Forever", False))):
+        s.checkbox(30, 528 + i * 30, label, checked=ch)
+    s.button(16, 696, W - 32, "Save")
     s.render("06b-settings-more")
+
+
+def share_history():
+    s = Screen("Sharing history")
+    s.text(16, 116, "Kept for 90 days · change this in Settings.", 13, MUTED)
+    rows = [("Alex", "3 places · 2026-10-28"), ("FindIt user", "1 place · 2026-10-21"), ("Sam's Pixel", "4 places · 2026-10-02")]
+    for i, (n, d) in enumerate(rows):
+        y = 132 + i * 58
+        s.text(16, y + 22, n, 16, weight="bold")
+        s.text(16, y + 42, d, 13, MUTED)
+        s.add(f"<line x1='16' y1='{y + 56}' x2='{W - 16}' y2='{y + 56}' stroke='{LINE}'/>")
+    s.note(16, 330, "One row each time someone downloads my places, recorded when")
+    s.note(16, 344, "they disconnect (connecting without downloading isn’t recorded).")
+    s.note(16, 358, "Older FindIt versions send no name: shown as “FindIt user”.")
+    s.note(16, 380, "Entries older than the Settings retention are deleted when this or the")
+    s.note(16, 394, "Share screen opens. Forever keeps everything.")
+    s.button(16, 696, W - 32, "Clear history", filled=False)
+    s.note(16, 684, "Asks “Clear sharing history?” first.")
+    s.render("08-share-history")
 
 
 def files():
@@ -532,6 +557,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, settings, settings_more, files, files_import):
+    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, settings, settings_more, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

@@ -10,9 +10,9 @@ test('migrates the database, then renders every route', async () => {
   setCurrentDb(db);
   await render(<RootLayout />);
   await flush();
-  for (const name of ['index', 'place', 'compass/[id]', 'share', 'files', 'settings']) {
+  for (const name of ['index', 'place', 'compass/[id]', 'share', 'share-history', 'files', 'settings']) {
     expect(screen.getByTestId(`screen-${name}`)).toBeOnTheScreen();
   }
   expect(screen.getByText('title:Import / Export')).toBeOnTheScreen();
-  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 2 });
+  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 3 });
 });

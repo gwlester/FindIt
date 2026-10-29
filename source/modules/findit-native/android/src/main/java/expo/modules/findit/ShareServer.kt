@@ -22,9 +22,13 @@ import java.util.concurrent.ConcurrentHashMap
  * BLE GATT server that lets nearby FindIt users download our shared locations.
  *
  * Protocol (all values UTF-8):
- *  - INFO  (read):  JSON `{"v":1,"name":"...","count":N}`
+ *  - INFO  (read):  JSON `{"v":2,"name":"...","count":N}`
  *  - INDEX (write): decimal index of the item the connected central wants next
  *  - ITEM  (read):  JSON of the item selected by that central's last INDEX write
+ *  - NAME  (write, v2): the receiver's display name, at most 40 bytes
+ *
+ * On disconnect the peer event carries the receiver's name (if it sent one) and how
+ * many distinct items it read, so the app can keep a sharing history.
  *
  * Each value stays under the 512 byte ATT limit, and reads honour the offset so
  * long reads work with any MTU. The INDEX selection is tracked per central.
@@ -39,10 +43,12 @@ class ShareServer(
     val INFO_UUID: UUID = UUID.fromString("5c0a7f11-2b7e-4d1a-9a37-f1d17000c0de")
     val INDEX_UUID: UUID = UUID.fromString("5c0a7f12-2b7e-4d1a-9a37-f1d17000c0de")
     val ITEM_UUID: UUID = UUID.fromString("5c0a7f13-2b7e-4d1a-9a37-f1d17000c0de")
+    val NAME_UUID: UUID = UUID.fromString("5c0a7f14-2b7e-4d1a-9a37-f1d17000c0de")
 
     // 31 byte scan response minus length, type and 128-bit UUID.
     private const val MAX_ADVERTISED_NAME_BYTES = 13
     private const val MAX_VALUE_BYTES = 512
+    private const val MAX_PEER_NAME_BYTES = 40
   }
 
   private val bluetoothManager =
@@ -55,6 +61,8 @@ class ShareServer(
   @Volatile private var info: ByteArray = ByteArray(0)
   @Volatile private var items: List<ByteArray> = emptyList()
   private val selectedIndex = ConcurrentHashMap<String, Int>()
+  private val peerNames = ConcurrentHashMap<String, String>()
+  private val itemsRead = ConcurrentHashMap<String, MutableSet<Int>>()
 
   val isRunning: Boolean
     get() = gattServer != null
@@ -97,6 +105,13 @@ class ShareServer(
           BluetoothGattCharacteristic.PERMISSION_READ
         )
       )
+      addCharacteristic(
+        BluetoothGattCharacteristic(
+          NAME_UUID,
+          BluetoothGattCharacteristic.PROPERTY_WRITE,
+          BluetoothGattCharacteristic.PERMISSION_WRITE
+        )
+      )
     }
 
     val callback = object : BluetoothGattServerCallback() {
@@ -115,7 +130,15 @@ class ShareServer(
             onPeer(mapOf("address" to device.address, "state" to "connected"))
           BluetoothProfile.STATE_DISCONNECTED -> {
             selectedIndex.remove(device.address)
-            onPeer(mapOf("address" to device.address, "state" to "disconnected"))
+            val name = peerNames.remove(device.address)
+            val read = itemsRead.remove(device.address)?.size ?: 0
+            val event = mutableMapOf<String, Any>(
+              "address" to device.address,
+              "state" to "disconnected",
+              "itemsRead" to read
+            )
+            if (name != null) event["name"] = name
+            onPeer(event)
           }
         }
       }
@@ -126,10 +149,15 @@ class ShareServer(
         offset: Int,
         characteristic: BluetoothGattCharacteristic
       ) {
+        val index = selectedIndex[device.address] ?: 0
         val value = when (characteristic.uuid) {
           INFO_UUID -> info
-          ITEM_UUID -> items.getOrNull(selectedIndex[device.address] ?: 0)
+          ITEM_UUID -> items.getOrNull(index)
           else -> null
+        }
+        // Count each item once, on the first chunk of a (possibly long) read.
+        if (characteristic.uuid == ITEM_UUID && value != null && offset == 0) {
+          itemsRead.getOrPut(device.address) { ConcurrentHashMap.newKeySet() }.add(index)
         }
         val server = gattServer ?: return
         when {
@@ -151,9 +179,23 @@ class ShareServer(
         offset: Int,
         value: ByteArray?
       ) {
-        val index = value?.toString(Charsets.UTF_8)?.trim()?.toIntOrNull()
-        val ok = characteristic.uuid == INDEX_UUID && index != null && index in items.indices
-        if (ok) selectedIndex[device.address] = index!!
+        val text = value?.toString(Charsets.UTF_8)?.trim()
+        val ok = when (characteristic.uuid) {
+          INDEX_UUID -> {
+            val index = text?.toIntOrNull()
+            if (index != null && index in items.indices) {
+              selectedIndex[device.address] = index
+              true
+            } else false
+          }
+          NAME_UUID -> {
+            if (!text.isNullOrEmpty()) {
+              peerNames[device.address] = String(truncateUtf8(text, MAX_PEER_NAME_BYTES), Charsets.UTF_8)
+            }
+            true
+          }
+          else -> false
+        }
         if (responseNeeded) {
           gattServer?.sendResponse(
             device,
@@ -225,6 +267,8 @@ class ShareServer(
     gattServer?.let { server -> runCatching { server.clearServices(); server.close() } }
     gattServer = null
     selectedIndex.clear()
+    peerNames.clear()
+    itemsRead.clear()
   }
 
   private fun truncateUtf8(text: String, maxBytes: Int): ByteArray {

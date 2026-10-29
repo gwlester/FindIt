@@ -30,6 +30,20 @@
 <rect x='30' y='408' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
 <text x='64' y='419' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Keep a log</text>
 <text x='64' y='435' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Every find is kept, with its date and comment.</text>
-<rect x='16' y='472' width='328' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
-<text x='180.0' y='499.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Save</text>
+<rect x='16' y='470' width='328' height='214' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='496' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Sharing history</text>
+<text x='30' y='518' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='bold' text-anchor='start'>Remember who downloaded my places for</text>
+<rect x='30' y='528' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='544' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>7 days</text>
+<rect x='30' y='558' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='574' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>30 days</text>
+<rect x='30' y='588' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 599 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='604' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>90 days</text>
+<rect x='30' y='618' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='634' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>1 year</text>
+<rect x='30' y='648' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='664' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Forever</text>
+<rect x='16' y='696' width='328' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='723.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Save</text>
 </svg>

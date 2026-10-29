@@ -1,5 +1,6 @@
+import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,6 +17,7 @@ import { KeepAwake } from '../components/KeepAwake';
 import { Button, Checkbox, Section } from '../components/ui';
 import { findSummaries } from '../db/finds';
 import { importPlaces, listPlaces, placesForExport, type Place } from '../db/locations';
+import { addShare, listShareHistory, pruneShareHistory } from '../db/shareHistory';
 import { useSettings } from '../hooks/useSettings';
 import { askIncludeFinds } from '../lib/askIncludeFinds';
 import { formatLatLon } from '../lib/format';
@@ -43,7 +45,7 @@ function signalLabel(rssi: number | null) {
 export default function ShareScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
-  const { settings } = useSettings();
+  const { settings, loaded } = useSettings();
   const insets = useSafeAreaInsets();
 
   const [bluetooth, setBluetooth] = useState<string>('Unknown');
@@ -51,6 +53,7 @@ export default function ShareScreen() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [sharing, setSharing] = useState(false);
   const [connectedPeers, setConnectedPeers] = useState(0);
+  const [historyCount, setHistoryCount] = useState(0);
 
   const [scanning, setScanning] = useState(false);
   const [nearby, setNearby] = useState<Map<string, NearbyUser>>(new Map());
@@ -75,6 +78,25 @@ export default function ShareScreen() {
       stopSharing().catch(() => {});
     };
   }, []);
+
+  const refreshHistory = useCallback(async () => setHistoryCount((await listShareHistory(db)).length), [db]);
+
+  // Prune with the saved retention (not the defaults shown before settings load).
+  const historyDays = settings.shareHistoryDays;
+  useFocusEffect(
+    useCallback(() => {
+      if (loaded) pruneShareHistory(db, historyDays).then(refreshHistory);
+    }, [db, loaded, historyDays, refreshHistory]),
+  );
+
+  // Protocol v2: when someone who downloaded my places disconnects, remember who it was.
+  useEffect(() => {
+    const sub = onSharePeer((e) => {
+      if (e.state !== 'disconnected' || !e.itemsRead) return;
+      addShare(db, { at: Date.now(), name: e.name?.trim() || 'FindIt user', places: e.itemsRead }).then(refreshHistory);
+    });
+    return () => sub.remove();
+  }, [db, refreshHistory]);
 
   // Drop nearby users that have gone quiet.
   useEffect(() => {
@@ -142,7 +164,11 @@ export default function ShareScreen() {
     setScanning(false);
     setFetching({ id: user.id, done: 0, total: 0 });
     try {
-      const result = await fetchSharedPlaces(user.id, (done, total) => setFetching({ id: user.id, done, total }));
+      const result = await fetchSharedPlaces(
+        user.id,
+        (done, total) => setFetching({ id: user.id, done, total }),
+        settings.displayName,
+      );
       setReceived({ ...result, selected: new Set(result.places.map((_, i) => i)) });
     } catch (e) {
       Alert.alert('Could not download', e instanceof Error ? e.message : String(e));
@@ -263,6 +289,9 @@ export default function ShareScreen() {
             Sharing — keep this screen open.{connectedPeers > 0 ? ` ${connectedPeers} connected now.` : ''}
           </Text>
         ) : null}
+        <Pressable accessibilityRole="button" onPress={() => router.push('/share-history')} hitSlop={8}>
+          <Text style={[styles.link, { color: theme.accent }]}>Sharing history ({historyCount})</Text>
+        </Pressable>
       </Section>
     </View>
   );
@@ -275,4 +304,5 @@ const styles = StyleSheet.create({
   warning: { fontSize: 15, fontWeight: '600' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 8 },
   user: { borderWidth: 1, borderRadius: 10, padding: 12, marginTop: 8 },
+  link: { marginTop: 8, fontWeight: '600' },
 });

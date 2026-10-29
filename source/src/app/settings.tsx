@@ -6,6 +6,7 @@ import { Button, Checkbox, Field, Section, Stepper } from '../components/ui';
 import { DEFAULT_SEARCH_AREA_M, searchAreaRange, stepSearchDistance, toDisplayDistance } from '../lib/searchArea';
 import { useSettings } from '../hooks/useSettings';
 import type { FindMode } from '../db/finds';
+import { HISTORY_RETENTION_OPTIONS, retentionLabel } from '../db/shareHistory';
 import type { Units } from '../lib/format';
 import { useTheme } from '../lib/theme';
 
@@ -27,6 +28,7 @@ function SettingsForm() {
   const [searchDistance, setSearchDistance] = useState(settings.searchAreaDistanceM ?? DEFAULT_SEARCH_AREA_M);
   const [alwaysArrow, setAlwaysArrow] = useState(settings.searchAreaDistanceM === null);
   const [findMode, setFindMode] = useState<FindMode>(settings.findMode);
+  const [historyDays, setHistoryDays] = useState(settings.shareHistoryDays);
 
   const save = async () => {
     const name = displayName.trim();
@@ -34,6 +36,7 @@ function SettingsForm() {
     await updateSettings({
       ...settings,
       findMode,
+      shareHistoryDays: historyDays,
       displayName: name,
       units,
       highAccuracyGps,
@@ -102,6 +105,17 @@ function SettingsForm() {
           sublabel="Every find is kept, with its date and comment."
           onToggle={() => setFindMode('log')}
         />
+      </Section>
+      <Section title="Sharing history">
+        <Text style={[styles.label, { color: theme.muted }]}>Remember who downloaded my places for</Text>
+        {HISTORY_RETENTION_OPTIONS.map((days) => (
+          <Checkbox
+            key={String(days)}
+            checked={historyDays === days}
+            label={retentionLabel(days)}
+            onToggle={() => setHistoryDays(days)}
+          />
+        ))}
       </Section>
       <View>
         <Button title="Save" onPress={save} />

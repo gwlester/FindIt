@@ -98,12 +98,12 @@ describe('search-area distance', () => {
 describe('found places', () => {
   it('chooses off, once or log, and keeps the list filter', async () => {
     const user = userEvent.setup();
-    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, hideFound: true } });
+    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, hideFound: true, shareHistoryDays: 90 } });
     expect(screen.getByRole('checkbox', { name: /Once per place/ })).toBeChecked();
     await user.press(screen.getByRole('checkbox', { name: /Keep a log/ }));
     expect(screen.getByRole('checkbox', { name: /Once per place/ })).not.toBeChecked();
     await user.press(screen.getByRole('button', { name: 'Save' }));
-    expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true });
+    expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true, shareHistoryDays: 90 });
   });
 
   it('can turn marking found off', async () => {
@@ -112,5 +112,26 @@ describe('found places', () => {
     await user.press(screen.getByRole('checkbox', { name: /^Off/ }));
     await user.press(screen.getByRole('button', { name: 'Save' }));
     expect((await loadSettings(db as never)).findMode).toBe('off');
+  });
+});
+
+describe('sharing history', () => {
+  it('keeps the history for a chosen time, or forever', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<SettingsScreen />);
+    expect(screen.getByRole('checkbox', { name: /90 days/ })).toBeChecked();
+    await user.press(screen.getByRole('checkbox', { name: /Forever/ }));
+    expect(screen.getByRole('checkbox', { name: /90 days/ })).not.toBeChecked();
+    await user.press(screen.getByRole('button', { name: 'Save' }));
+    expect((await loadSettings(db as never)).shareHistoryDays).toBeNull();
+  });
+
+  it('can keep it for a week', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, shareHistoryDays: null } });
+    expect(screen.getByRole('checkbox', { name: /Forever/ })).toBeChecked();
+    await user.press(screen.getByRole('checkbox', { name: /7 days/ }));
+    await user.press(screen.getByRole('button', { name: 'Save' }));
+    expect((await loadSettings(db as never)).shareHistoryDays).toBe(7);
   });
 });

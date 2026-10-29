@@ -1,4 +1,5 @@
 import { act, screen, userEvent } from '@testing-library/react-native';
+import { router } from 'expo-router';
 
 import ShareScreen from '../../src/app/share';
 import { fetchSharedPlaces, onBluetoothStateChange, scanForNearbyUsers, type NearbyUser } from '../../src/ble/client';
@@ -6,6 +7,8 @@ import { requestBluetoothPermissions } from '../../src/ble/permissions';
 import { decodeInfo, decodeItem } from '../../src/ble/protocol';
 import { listFinds, recordFind } from '../../src/db/finds';
 import { listPlaces } from '../../src/db/locations';
+import { DEFAULT_SETTINGS } from '../../src/db/settings';
+import { addShare, listShareHistory } from '../../src/db/shareHistory';
 import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
 import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
 import { mockAlert, place, renderApp } from '../helpers/renderApp';
@@ -40,7 +43,7 @@ describe('sharing my places', () => {
     const u = userEvent.setup();
     await renderApp(<ShareScreen />, {
       places: [place('Oak'), place('Elm')],
-      settings: { displayName: 'Gerald', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false },
+      settings: { displayName: 'Gerald', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90 },
     });
     expect(screen.getByText(/see you as “Gerald”/)).toBeOnTheScreen();
     await u.press(screen.getByRole('checkbox', { name: /Elm/ }));
@@ -272,5 +275,50 @@ describe('found information', () => {
     await u.press(screen.getByText('Alex'));
     await u.press(screen.getByRole('button', { name: 'Import selected' }));
     expect((await listFinds(db as never, 2)).map((f) => f.finder)).toEqual(['Alex']);
+  });
+});
+
+describe('sharing history (protocol v2)', () => {
+  it('records who downloaded my places and links to the history', async () => {
+    const u = userEvent.setup();
+    const db = await renderApp(<ShareScreen />, { places: [place('Oak'), place('Elm')] });
+    expect(screen.getByRole('button', { name: 'Sharing history (0)' })).toBeOnTheScreen();
+    await u.press(screen.getByRole('button', { name: 'Share 2 places' }));
+
+    await act(async () => emitNative('onSharePeer', { address: 'A', state: 'connected' }));
+    await act(async () => emitNative('onSharePeer', { address: 'A', state: 'disconnected', name: 'Alex', itemsRead: 2 }));
+    // Older FindIt versions don't send a name.
+    await act(async () => emitNative('onSharePeer', { address: 'B', state: 'disconnected', itemsRead: 1 }));
+    // Connected but downloaded nothing: not a share.
+    await act(async () => emitNative('onSharePeer', { address: 'C', state: 'disconnected', name: 'Jo', itemsRead: 0 }));
+    await act(async () => emitNative('onSharePeer', { address: 'D', state: 'disconnected', name: 'Kim' }));
+
+    expect((await listShareHistory(db as never)).map((s) => [s.name, s.places])).toEqual([
+      ['FindIt user', 1],
+      ['Alex', 2],
+    ]);
+    expect(screen.getByRole('button', { name: 'Sharing history (2)' })).toBeOnTheScreen();
+    await u.press(screen.getByRole('button', { name: 'Sharing history (2)' }));
+    expect(router.push).toHaveBeenCalledWith('/share-history');
+  });
+
+  it('prunes old history when opened', async () => {
+    await renderApp(<ShareScreen />, {
+      seed: async (db) => {
+        await addShare(db as never, { at: Date.now() - 400 * 24 * 3600 * 1000, name: 'Old', places: 1 });
+        await addShare(db as never, { at: Date.now(), name: 'New', places: 1 });
+      },
+    });
+    expect(screen.getByRole('button', { name: 'Sharing history (1)' })).toBeOnTheScreen();
+  });
+
+  it('tells the sharing phone my name when downloading', async () => {
+    const u = userEvent.setup();
+    await renderApp(<ShareScreen />, { settings: { ...DEFAULT_SETTINGS, displayName: 'Gerald' } });
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await act(async () => scan.onUser(user('d1', 'Alex', -50)));
+    jest.mocked(fetchSharedPlaces).mockResolvedValueOnce({ from: 'Alex', places: [] });
+    await u.press(screen.getByText('Alex'));
+    expect(jest.mocked(fetchSharedPlaces).mock.calls[0]).toEqual(['d1', expect.any(Function), 'Gerald']);
   });
 });

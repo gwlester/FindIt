@@ -17,11 +17,16 @@ export function place(name: string, extra: Partial<NewPlace> = {}): NewPlace {
 /** Renders a screen with a fresh test database (optionally seeded) and the settings provider. */
 export async function renderApp(
   ui: ReactElement,
-  { places = [], settings }: { places?: NewPlace[]; settings?: Settings } = {},
+  {
+    places = [],
+    settings,
+    seed,
+  }: { places?: NewPlace[]; settings?: Settings; seed?: (db: TestDb) => Promise<void> } = {},
 ): Promise<TestDb> {
   const db = await createTestDb();
   for (const p of places) await addPlace(db as never, p);
   if (settings) await saveSettings(db as never, settings);
+  await seed?.(db);
   setCurrentDb(db);
   await render(<SettingsProvider>{ui}</SettingsProvider>);
   await flush();
