@@ -1,5 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
+import { formatDate } from '../lib/format';
+
 /** How finds are recorded (setting): off = feature hidden; once = one find per place; log = every find. */
 export type FindMode = 'off' | 'once' | 'log';
 
@@ -15,10 +17,14 @@ export type Find = {
 
 export type FindSummary = {
   count: number;
+  /** My own finds (finder ''). */
+  myCount: number;
+  myLastFoundAt: number | null;
+  /** Latest find by anyone. */
   lastFoundAt: number;
+  lastFinder: string;
+  /** Comment of my latest find if I've found it, otherwise of the latest find. */
   lastComment: string;
-  /** Whether I (not just someone else) have found it. */
-  foundByMe: boolean;
 };
 
 type Row = { id: number; place_id: number; found_at: number; comment: string; finder: string };
@@ -62,17 +68,36 @@ export async function listFinds(db: SQLiteDatabase, placeId: number): Promise<Fi
   return rows.map((r) => ({ id: r.id, placeId: r.place_id, foundAt: r.found_at, comment: r.comment, finder: r.finder }));
 }
 
-/** Count and latest find for every place that has been found. */
+/** Summary of a place's finds (newest first), or null if it hasn't been found. */
+export function summarizeFinds(finds: Find[]): FindSummary | null {
+  if (finds.length === 0) return null;
+  const mine = finds.filter((f) => f.finder === '');
+  return {
+    count: finds.length,
+    myCount: mine.length,
+    myLastFoundAt: mine[0]?.foundAt ?? null,
+    lastFoundAt: finds[0].foundAt,
+    lastFinder: finds[0].finder,
+    lastComment: (mine[0] ?? finds[0]).comment,
+  };
+}
+
+/** e.g. "Found 2026-10-20", "Found 2 times, last 2026-10-21", "Found by Alex 2026-10-22". */
+export function foundLabel(summary: FindSummary | null): string | null {
+  if (!summary) return null;
+  if (summary.myCount > 1) return `Found ${summary.myCount} times, last ${formatDate(summary.myLastFoundAt!)}`;
+  if (summary.myCount === 1) return `Found ${formatDate(summary.myLastFoundAt!)}`;
+  return `Found by ${summary.lastFinder} ${formatDate(summary.lastFoundAt)}`;
+}
+
+/** Summaries for every place that has been found, by place id. */
 export async function findSummaries(db: SQLiteDatabase): Promise<Map<number, FindSummary>> {
-  const rows = await db.getAllAsync<{ place_id: number; n: number; last: number; comment: string; mine: number }>(
-    `SELECT f.place_id, COUNT(*) AS n, MAX(f.found_at) AS last, SUM(f.finder = '') AS mine,
-       (SELECT comment FROM finds l WHERE l.place_id = f.place_id ORDER BY l.found_at DESC, l.id DESC LIMIT 1) AS comment
-     FROM finds f GROUP BY f.place_id`,
-  );
-  return new Map(
-    rows.map((r) => [
-      r.place_id,
-      { count: r.n, lastFoundAt: r.last, lastComment: r.comment, foundByMe: r.mine > 0 },
-    ]),
-  );
+  const rows = await db.getAllAsync<Row>('SELECT * FROM finds ORDER BY found_at DESC, id DESC');
+  const byPlace = new Map<number, Find[]>();
+  for (const r of rows) {
+    const list = byPlace.get(r.place_id) ?? [];
+    list.push({ id: r.id, placeId: r.place_id, foundAt: r.found_at, comment: r.comment, finder: r.finder });
+    byPlace.set(r.place_id, list);
+  }
+  return new Map([...byPlace].map(([id, finds]) => [id, summarizeFinds(finds)!]));
 }

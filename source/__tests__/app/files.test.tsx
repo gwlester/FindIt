@@ -1,7 +1,9 @@
 import { screen, userEvent } from '@testing-library/react-native';
 
 import FilesScreen from '../../src/app/files';
+import { listFinds, recordFind } from '../../src/db/finds';
 import { listPlaces } from '../../src/db/locations';
+import { DEFAULT_SETTINGS } from '../../src/db/settings';
 import { pickImportFile, shareExport } from '../../src/formats/files';
 import { mockAlert, place, renderApp } from '../helpers/renderApp';
 
@@ -103,4 +105,59 @@ test('import: cancel, nothing usable, errors, and deselecting everything', async
   expect(screen.getByText('GPX · 1 place')).toBeOnTheScreen();
   await user.press(screen.getByRole('button', { name: 'Import selected' }));
   expect(alert.message('Imported')).toBe('Added 1 place.');
+});
+
+describe('found information', () => {
+  async function renderWithFind(settings = DEFAULT_SETTINGS) {
+    const db = await renderApp(<FilesScreen />, { places: [place('Oak'), place('Elm')], settings });
+    await recordFind(db as never, 1, { foundAt: 1000, comment: 'easy' }, 'log');
+    return db;
+  }
+
+  it('asks whether to include it when exporting found places', async () => {
+    const user = userEvent.setup();
+    const alert = mockAlert();
+    await renderWithFind();
+    await user.press(screen.getByRole('button', { name: 'Export 2 places…' }));
+    await alert.press('Export 2 places', 'GPX: GPS units and geocaching apps');
+    expect(alert.message('Include found information?')).toMatch(/dates and comments/);
+    await alert.press('Include found information?', 'Include');
+    const exported = jest.mocked(shareExport).mock.calls[0][0];
+    expect(exported.find((p) => p.name === 'Oak')!.finds).toEqual([{ foundAt: 1000, comment: 'easy', finder: '' }]);
+
+    await user.press(screen.getByRole('button', { name: 'Export 2 places…' }));
+    await alert.press('Export 2 places', 'GeoJSON: mapping tools');
+    await alert.press('Include found information?', 'Leave out');
+    expect(jest.mocked(shareExport).mock.calls[1][0].every((p) => p.finds === undefined)).toBe(true);
+  });
+
+  it('does not ask when nothing selected was found, or when marking found is off', async () => {
+    const user = userEvent.setup();
+    const alert = mockAlert();
+    await renderWithFind();
+    await user.press(screen.getByRole('checkbox', { name: /Oak/ }));
+    await user.press(screen.getByRole('button', { name: 'Export 1 place…' }));
+    await alert.press('Export 1 place', 'GPX: GPS units and geocaching apps');
+    expect(alert.spy.mock.calls.some((c) => c[0] === 'Include found information?')).toBe(false);
+    expect(shareExport).toHaveBeenCalledTimes(1);
+    await screen.unmount();
+
+    await renderWithFind({ ...DEFAULT_SETTINGS, findMode: 'off' });
+    await user.press(screen.getByRole('button', { name: 'Export 2 places…' }));
+    await alert.press('Export 2 places', 'GPX: GPS units and geocaching apps');
+    expect(alert.spy.mock.calls.some((c) => c[0] === 'Include found information?')).toBe(false);
+  });
+
+  it('imports finds from a file as mine', async () => {
+    const user = userEvent.setup();
+    mockAlert();
+    const db = await renderApp(<FilesScreen />);
+    jest.mocked(pickImportFile).mockResolvedValueOnce({
+      ...IMPORTED,
+      places: [{ ...IMPORTED.places[0], finds: [{ foundAt: 2000, comment: 'c', finder: '' }] }],
+    });
+    await user.press(screen.getByRole('button', { name: 'Choose a file…' }));
+    await user.press(screen.getByRole('button', { name: 'Import selected' }));
+    expect((await listFinds(db as never, 1)).map((f) => [f.foundAt, f.finder])).toEqual([[2000, '']]);
+  });
 });

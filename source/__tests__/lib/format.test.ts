@@ -1,4 +1,4 @@
-import { formatCoordinate, formatDistance, formatLatLon } from '../../src/lib/format';
+import { formatCoordinate, formatDate, formatDistance, formatLatLon } from '../../src/lib/format';
 
 describe('formatDistance', () => {
   it.each([
@@ -19,4 +19,9 @@ test('formatCoordinate and formatLatLon', () => {
   expect(formatCoordinate(-1.5, 'N', 'S')).toBe('1.50000° S');
   expect(formatLatLon(30.4352, -91.1903)).toBe('30.43520° N, 91.19030° W');
   expect(formatLatLon(-33.9, 151.2)).toBe('33.90000° S, 151.20000° E');
+});
+
+test('formatDate gives the local calendar date', () => {
+  expect(formatDate(new Date(2026, 9, 29, 23, 59).getTime())).toBe('2026-10-29');
+  expect(formatDate(new Date(2026, 0, 5, 0, 1).getTime())).toBe('2026-01-05');
 });

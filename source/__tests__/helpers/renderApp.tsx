@@ -42,8 +42,11 @@ export function mockAlert() {
     press: async (title: string, button: string) => {
       const b = ((find(title)[2] ?? []) as AlertButton[]).find((x) => x.text === button);
       if (!b) throw new Error(`No button "${button}" in alert "${title}"`);
+      // Run the handler and let its work settle, but don't wait forever: the handler may
+      // itself be waiting for the answer to a follow-up alert.
       await act(async () => {
-        await b.onPress?.();
+        const result = Promise.resolve(b.onPress?.());
+        await Promise.race([result, new Promise((resolve) => setTimeout(resolve, 50))]);
       });
     },
   };

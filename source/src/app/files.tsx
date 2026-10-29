@@ -4,10 +4,13 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from 're
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Checkbox, Section } from '../components/ui';
-import { importPlaces, listPlaces, type Place } from '../db/locations';
+import { findSummaries } from '../db/finds';
+import { importPlaces, listPlaces, placesForExport, type Place } from '../db/locations';
 import { pickImportFile, shareExport, type ImportedFile } from '../formats/files';
 import { FORMATS, type ExchangeFormat } from '../formats/index';
+import { askIncludeFinds } from '../lib/askIncludeFinds';
 import { formatLatLon } from '../lib/format';
+import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../lib/theme';
 
 type Pending = ImportedFile & { selected: Set<number> };
@@ -26,6 +29,7 @@ export default function FilesScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { settings } = useSettings();
 
   const [places, setPlaces] = useState<Place[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -40,12 +44,12 @@ export default function FilesScreen() {
   }, [db]);
 
   const exportAs = async (format: ExchangeFormat) => {
+    const chosen = places.filter((p) => selected.has(p.id));
+    const found = settings.findMode !== 'off' ? await findSummaries(db) : new Map();
+    const includeFinds = chosen.some((p) => found.has(p.id)) ? await askIncludeFinds() : false;
     setBusy(true);
     try {
-      await shareExport(
-        places.filter((p) => selected.has(p.id)),
-        format,
-      );
+      await shareExport(await placesForExport(db, chosen, includeFinds), format);
     } catch (e) {
       Alert.alert('Export failed', e instanceof Error ? e.message : String(e));
     } finally {

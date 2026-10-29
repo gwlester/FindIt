@@ -94,3 +94,23 @@ describe('search-area distance', () => {
     expect(screen.getByText('50 m')).toBeOnTheScreen();
   });
 });
+
+describe('found places', () => {
+  it('chooses off, once or log, and keeps the list filter', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, hideFound: true } });
+    expect(screen.getByRole('checkbox', { name: /Once per place/ })).toBeChecked();
+    await user.press(screen.getByRole('checkbox', { name: /Keep a log/ }));
+    expect(screen.getByRole('checkbox', { name: /Once per place/ })).not.toBeChecked();
+    await user.press(screen.getByRole('button', { name: 'Save' }));
+    expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true });
+  });
+
+  it('can turn marking found off', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<SettingsScreen />);
+    await user.press(screen.getByRole('checkbox', { name: /^Off/ }));
+    await user.press(screen.getByRole('button', { name: 'Save' }));
+    expect((await loadSettings(db as never)).findMode).toBe('off');
+  });
+});

@@ -4,6 +4,7 @@ import ShareScreen from '../../src/app/share';
 import { fetchSharedPlaces, onBluetoothStateChange, scanForNearbyUsers, type NearbyUser } from '../../src/ble/client';
 import { requestBluetoothPermissions } from '../../src/ble/permissions';
 import { decodeInfo, decodeItem } from '../../src/ble/protocol';
+import { listFinds, recordFind } from '../../src/db/finds';
 import { listPlaces } from '../../src/db/locations';
 import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
 import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
@@ -240,5 +241,36 @@ describe('receiving', () => {
     } finally {
       jest.useRealTimers();
     }
+  });
+});
+
+describe('found information', () => {
+  it('asks whether to share it, and records received finds as the sender’s', async () => {
+    const u = userEvent.setup();
+    const alert = mockAlert();
+    const db = await renderApp(<ShareScreen />, { places: [place('Oak')] });
+    await recordFind(db as never, 1, { foundAt: 1000, comment: 'easy' }, 'log');
+
+    await u.press(screen.getByRole('button', { name: 'Share 1 place' }));
+    expect(nativeMock.startSharing).not.toHaveBeenCalled();
+    await alert.press('Include found information?', 'Include');
+    expect(decodeItem(nativeMock.startSharing.mock.calls[0][2][0]).finds).toEqual([
+      { foundAt: 1000, comment: 'easy', finder: '' },
+    ]);
+    await u.press(screen.getByRole('button', { name: 'Stop sharing' }));
+    await u.press(screen.getByRole('button', { name: 'Share 1 place' }));
+    await alert.press('Include found information?', 'Leave out');
+    expect(decodeItem(nativeMock.startSharing.mock.calls[1][2][0]).finds).toEqual([]);
+    await u.press(screen.getByRole('button', { name: 'Stop sharing' }));
+
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await act(async () => scan.onUser(user('d1', 'Alex', -50)));
+    jest.mocked(fetchSharedPlaces).mockResolvedValueOnce({
+      from: 'Alex',
+      places: [{ name: 'Creek', latitude: 1, longitude: 2, accuracy: null, notes: '', finds: [{ foundAt: 5, comment: '', finder: '' }] }],
+    });
+    await u.press(screen.getByText('Alex'));
+    await u.press(screen.getByRole('button', { name: 'Import selected' }));
+    expect((await listFinds(db as never, 2)).map((f) => f.finder)).toEqual(['Alex']);
   });
 });

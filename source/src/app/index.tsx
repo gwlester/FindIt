@@ -4,7 +4,8 @@ import { useCallback, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button } from '../components/ui';
+import { Button, Checkbox } from '../components/ui';
+import { findSummaries, foundLabel, type FindSummary } from '../db/finds';
 import { deletePlace, listPlaces, type Place } from '../db/locations';
 import { usePosition } from '../hooks/usePosition';
 import { useSettings } from '../hooks/useSettings';
@@ -16,13 +17,24 @@ export default function PlacesScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const { settings } = useSettings();
+  const { settings, updateSettings } = useSettings();
   const { position } = usePosition();
   const [places, setPlaces] = useState<Place[]>([]);
+  const [finds, setFinds] = useState<Map<number, FindSummary>>(new Map());
 
   const reload = useCallback(() => {
-    listPlaces(db).then(setPlaces).catch((e) => Alert.alert('Could not load places', String(e)));
+    Promise.all([listPlaces(db), findSummaries(db)])
+      .then(([p, f]) => {
+        setPlaces(p);
+        setFinds(f);
+      })
+      .catch((e) => Alert.alert('Could not load places', String(e)));
   }, [db]);
+
+  const tracking = settings.findMode !== 'off';
+  const hidden = tracking && settings.hideFound;
+  const shown = hidden ? places.filter((p) => !finds.get(p.id)?.myCount) : places;
+  const hiddenCount = places.length - shown.length;
 
   useFocusEffect(reload);
 
@@ -60,14 +72,28 @@ export default function PlacesScreen() {
         }}
       />
       <FlatList
-        data={places}
+        data={shown}
         keyExtractor={(p) => String(p.id)}
         style={styles.list}
         persistentScrollbar
         contentContainerStyle={places.length === 0 ? styles.emptyContainer : styles.listContent}
         ListHeaderComponent={
           places.length > 0 ? (
-            <Text style={[styles.tip, { color: theme.muted }]}>Tap a place to find it · long-press to edit</Text>
+            <View>
+              <Text style={[styles.tip, { color: theme.muted }]}>Tap a place to find it · long-press to edit</Text>
+              {tracking ? (
+                <Checkbox
+                  checked={settings.hideFound}
+                  label="Hide found places"
+                  sublabel={
+                    hiddenCount > 0
+                      ? `${hiddenCount} found place${hiddenCount === 1 ? '' : 's'} hidden`
+                      : undefined
+                  }
+                  onToggle={() => updateSettings({ ...settings, hideFound: !settings.hideFound })}
+                />
+              ) : null}
+            </View>
           ) : undefined
         }
         ListEmptyComponent={
@@ -90,6 +116,11 @@ export default function PlacesScreen() {
               <Text style={[styles.sub, { color: theme.muted }]}>{formatLatLon(item.latitude, item.longitude)}</Text>
               {item.source !== 'local' ? (
                 <Text style={[styles.sub, { color: theme.muted }]}>From {item.source}</Text>
+              ) : null}
+              {tracking && finds.has(item.id) ? (
+                <Text style={[styles.sub, { color: theme.accent, fontWeight: '600' }]}>
+                  {`✓ ${foundLabel(finds.get(item.id)!)}`}
+                </Text>
               ) : null}
             </View>
             {position ? (

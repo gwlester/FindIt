@@ -14,8 +14,10 @@ import type { SharedPlace } from '../ble/protocol';
 import { startSharing, stopSharing, onSharePeer } from '../ble/server';
 import { KeepAwake } from '../components/KeepAwake';
 import { Button, Checkbox, Section } from '../components/ui';
-import { importPlaces, listPlaces, type Place } from '../db/locations';
+import { findSummaries } from '../db/finds';
+import { importPlaces, listPlaces, placesForExport, type Place } from '../db/locations';
 import { useSettings } from '../hooks/useSettings';
+import { askIncludeFinds } from '../lib/askIncludeFinds';
 import { formatLatLon } from '../lib/format';
 import { useTheme } from '../lib/theme';
 
@@ -100,9 +102,10 @@ export default function ShareScreen() {
       Alert.alert('Bluetooth permission needed', 'Allow "Nearby devices" to share with other FindIt users.');
       return;
     }
-    const shared = places
-      .filter((p) => selected.has(p.id))
-      .map(({ name, latitude, longitude, accuracy, notes }) => ({ name, latitude, longitude, accuracy, notes }));
+    const chosen = places.filter((p) => selected.has(p.id));
+    const found = settings.findMode !== 'off' ? await findSummaries(db) : new Map();
+    const includeFinds = chosen.some((p) => found.has(p.id)) ? await askIncludeFinds() : false;
+    const shared = await placesForExport(db, chosen, includeFinds);
     try {
       await startSharing(settings.displayName, shared);
       setSharing(true);
@@ -151,7 +154,8 @@ export default function ShareScreen() {
   const importSelected = async () => {
     if (!received) return;
     const chosen = received.places.filter((_, i) => received.selected.has(i));
-    const { added, skipped } = await importPlaces(db, chosen, received.from);
+    // Finds the sender marked as their own are recorded as found by them, not by me.
+    const { added, skipped } = await importPlaces(db, chosen, received.from, { ownFindsBy: received.from });
     setReceived(null);
     setPlaces(await listPlaces(db));
     Alert.alert('Imported', `Added ${added} place${added === 1 ? '' : 's'}${skipped ? `, skipped ${skipped} already saved` : ''}.`);
