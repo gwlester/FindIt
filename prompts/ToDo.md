@@ -2,10 +2,6 @@
 
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
-## Current wave (agreed 2026-10-29; one PR each, built test-first)
-- [ ] App icon and splash screen: 2–3 concepts (Girl Scout green, blues) for the owner to
-      review before one is used. **Owner merges this one.**
-
 ## Map wave (started 2026-10-29; map screen done)
 - [ ] Help: a help menu with About (version, short description, licence buttons), help for each
       screen, and an overall "how to use FindIt" guide.
@@ -20,6 +16,8 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
       and check both show; delete one and check its size is freed.
 - [ ] Test Bluetooth sharing between two Android phones (Android 12+ and, if possible, ≤ 11),
       including several places, long notes, and two receivers at once.
+- [ ] Check the new launcher icon (round and squircle launchers, themed icons on Android 13+)
+      and the navy splash screen in light and dark mode.
 - [ ] Sharing history: a v2 receiver appears by name, a v1 (older) one as "FindIt user", and a
       phone that connects but downloads nothing isn't recorded.
 
