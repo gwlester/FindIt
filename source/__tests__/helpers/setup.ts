@@ -5,6 +5,7 @@ import { resetBleMock } from './bleMock';
 import { useLocalSearchParams } from './expoRouterMock';
 import { setCurrentDb } from './expoSqliteMock';
 import { resetLocationMock } from './expoLocationMock';
+import { resetDeviceMock } from './expoDeviceMock';
 import { resetFileSystemMock } from './fileSystemMock';
 import { resetKeepAwakeMock } from './keepAwakeMock';
 import { resetMapLibreMock } from './maplibreMock';
@@ -20,11 +21,13 @@ jest.mock('../../modules/findit-native', () => ({
   __esModule: true,
   default: require('./nativeModuleMock').nativeMock,
 }));
+jest.mock('expo-device', () => require('./expoDeviceMock'));
 jest.mock('expo-file-system', () => require('./fileSystemMock'));
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
 
 beforeEach(() => {
   resetLocationMock();
+  resetDeviceMock();
   resetFileSystemMock();
   resetNativeMock();
   resetBleMock();

@@ -641,10 +641,20 @@ def about():
         "USGS satellite imagery.",
     )):
         s.text(24, 292 + i * 19, line, 14)
+    # QR code for the latest download (drawn as a stand-in: three finder squares and noise).
+    qx, qy, q = 130, 424, 100
+    s.text(W / 2, 418, "Scan to get FindCache for Android:", 12, MUTED, anchor="middle")
+    s.add(f"<rect x='{qx}' y='{qy}' width='{q}' height='{q}' fill='#fff' stroke='{INK}'/>")
+    for fx, fy in ((qx + 8, qy + 8), (qx + q - 38, qy + 8), (qx + 8, qy + q - 38)):
+        s.add(f"<rect x='{fx}' y='{fy}' width='30' height='30' fill='{INK}'/><rect x='{fx + 5}' y='{fy + 5}' width='20' height='20' fill='#fff'/><rect x='{fx + 10}' y='{fy + 10}' width='10' height='10' fill='{INK}'/>")
+    for i in range(14):
+        s.add(f"<rect x='{qx + 46 + (i * 7) % 28}' y='{qy + 46 + (i * 11) % 40}' width='6' height='6' fill='{INK}'/>")
+    s.text(W / 2, 540, "github.com/gwlester/findit/releases/latest/…", 11, ACCENT, anchor="middle")
     for i, label in enumerate(("FindCache licence", "Open-source licences", "Map data")):
-        s.button(24, 440 + i * 56, W - 48, label, filled=False)
-    s.note(16, 630, "Version is the release's date version (YYYY.MM.DD.NNN).")
-    s.note(16, 644, "Each button opens the Licences screen.")
+        s.button(24, 556 + i * 46, W - 48, label, filled=False)
+    s.note(16, 710, "Version is the release's date version (YYYY.MM.DD.NNN).")
+    s.note(16, 724, "The QR code (and link) is the latest release APK on GitHub.")
+    s.note(16, 738, "Each button opens the Licences screen.")
     s.render("12-about")
 
 
@@ -736,6 +746,7 @@ def files_import():
 def settings():
     s = Screen("Settings")
     s.field(116, "Your name for sharing", "Gerald", hint="Nearby users see the first dozen or so characters.")
+    s.note(16, 196, "Starts as the phone’s own name (Settings → About phone → Device name).")
     s.rect(16, 204, W - 32, 128, fill=FILL, r=12)
     s.text(30, 230, "Distance units", 17, weight="bold")
     s.checkbox(30, 244, "Metric", "metres / kilometres", True)

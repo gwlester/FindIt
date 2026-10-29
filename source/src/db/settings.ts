@@ -4,6 +4,7 @@ import type { Units } from '../lib/format';
 import type { FindMode } from './finds';
 import type { CompassBackground } from '../lib/compassMap';
 import type { MapLayer } from '../lib/mapSources';
+import { defaultDisplayName, FALLBACK_NAME } from '../lib/deviceName';
 import { DEFAULT_SEARCH_AREA_M } from '../lib/searchArea';
 
 export type Settings = {
@@ -27,7 +28,7 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  displayName: 'FindCache user',
+  displayName: FALLBACK_NAME,
   units: 'metric',
   highAccuracyGps: true,
   searchAreaDistanceM: DEFAULT_SEARCH_AREA_M,
@@ -57,7 +58,9 @@ export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
   const rows = await db.getAllAsync<{ key: string; value: string }>('SELECT key, value FROM settings');
   const map = Object.fromEntries(rows.map((r) => [r.key, r.value]));
   return {
-    displayName: map.displayName ?? DEFAULT_SETTINGS.displayName,
+    // Until the user picks a name, share under the phone's own name. The old built-in default
+    // may already be stored, so it counts as "not chosen" too.
+    displayName: !map.displayName || map.displayName === FALLBACK_NAME ? defaultDisplayName() : map.displayName,
     units: map.units === 'imperial' ? 'imperial' : 'metric',
     highAccuracyGps: map.highAccuracyGps !== 'false',
     searchAreaDistanceM: parseSearchArea(map.searchAreaDistanceM),

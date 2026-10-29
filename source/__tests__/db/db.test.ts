@@ -9,6 +9,7 @@ import {
 } from '../../src/db/locations';
 import { DATABASE_NAME, migrateDatabase } from '../../src/db/schema';
 import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../src/db/settings';
+import { setDeviceName } from '../helpers/expoDeviceMock';
 import { createRawTestDb, createTestDb, type TestDb } from '../helpers/testDb';
 
 const place = (name: string, extra: Partial<Parameters<typeof addPlace>[1]> = {}) => ({
@@ -86,6 +87,17 @@ describe('locations', () => {
 describe('settings', () => {
   it('returns defaults when empty', async () => {
     expect(await loadSettings(db as never)).toEqual(DEFAULT_SETTINGS);
+  });
+  it('uses the device name as the sharing name until one is saved', async () => {
+    setDeviceName('Pixel 8');
+    expect((await loadSettings(db as never)).displayName).toBe('Pixel 8');
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, displayName: 'Gerald' });
+    expect((await loadSettings(db as never)).displayName).toBe('Gerald');
+  });
+  it('treats the old built-in default name as unset', async () => {
+    setDeviceName('Pixel 8');
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, displayName: 'FindCache user' });
+    expect((await loadSettings(db as never)).displayName).toBe('Pixel 8');
   });
   it('saves and reloads every setting', async () => {
     const next = { displayName: 'Gerald', units: 'imperial' as const, highAccuracyGps: false, searchAreaDistanceM: 48.768, findMode: 'once' as const, hideFound: false, shareHistoryDays: 30, mapLayer: 'satellite' as const, compassBackground: 'plain' as const };

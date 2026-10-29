@@ -18,12 +18,33 @@
 <text x='24' y='368' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>places with FindCache users nearby over Bluetooth. Maps</text>
 <text x='24' y='387' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>come from OpenStreetMap and, in the United States,</text>
 <text x='24' y='406' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>USGS satellite imagery.</text>
-<rect x='24' y='440' width='312' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
-<text x='180.0' y='467.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>FindCache licence</text>
-<rect x='24' y='496' width='312' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
-<text x='180.0' y='523.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Open-source licences</text>
-<rect x='24' y='552' width='312' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
-<text x='180.0' y='579.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Map data</text>
-<text x='16' y='630' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Version is the release's date version (YYYY.MM.DD.NNN).</text>
-<text x='16' y='644' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Each button opens the Licences screen.</text>
+<text x='180.0' y='418' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='middle'>Scan to get FindCache for Android:</text>
+<rect x='130' y='424' width='100' height='100' fill='#fff' stroke='#333'/>
+<rect x='138' y='432' width='30' height='30' fill='#333'/><rect x='143' y='437' width='20' height='20' fill='#fff'/><rect x='148' y='442' width='10' height='10' fill='#333'/>
+<rect x='192' y='432' width='30' height='30' fill='#333'/><rect x='197' y='437' width='20' height='20' fill='#fff'/><rect x='202' y='442' width='10' height='10' fill='#333'/>
+<rect x='138' y='486' width='30' height='30' fill='#333'/><rect x='143' y='491' width='20' height='20' fill='#fff'/><rect x='148' y='496' width='10' height='10' fill='#333'/>
+<rect x='176' y='470' width='6' height='6' fill='#333'/>
+<rect x='183' y='481' width='6' height='6' fill='#333'/>
+<rect x='190' y='492' width='6' height='6' fill='#333'/>
+<rect x='197' y='503' width='6' height='6' fill='#333'/>
+<rect x='176' y='474' width='6' height='6' fill='#333'/>
+<rect x='183' y='485' width='6' height='6' fill='#333'/>
+<rect x='190' y='496' width='6' height='6' fill='#333'/>
+<rect x='197' y='507' width='6' height='6' fill='#333'/>
+<rect x='176' y='478' width='6' height='6' fill='#333'/>
+<rect x='183' y='489' width='6' height='6' fill='#333'/>
+<rect x='190' y='500' width='6' height='6' fill='#333'/>
+<rect x='197' y='471' width='6' height='6' fill='#333'/>
+<rect x='176' y='482' width='6' height='6' fill='#333'/>
+<rect x='183' y='493' width='6' height='6' fill='#333'/>
+<text x='180.0' y='540' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#555' font-weight='normal' text-anchor='middle'>github.com/gwlester/findit/releases/latest/…</text>
+<rect x='24' y='556' width='312' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='583.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>FindCache licence</text>
+<rect x='24' y='602' width='312' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='629.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Open-source licences</text>
+<rect x='24' y='648' width='312' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='675.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Map data</text>
+<text x='16' y='710' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Version is the release's date version (YYYY.MM.DD.NNN).</text>
+<text x='16' y='724' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>The QR code (and link) is the latest release APK on GitHub.</text>
+<text x='16' y='738' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Each button opens the Licences screen.</text>
 </svg>

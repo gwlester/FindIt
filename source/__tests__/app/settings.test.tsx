@@ -5,6 +5,7 @@ import SettingsScreen from '../../src/app/settings';
 import { DEFAULT_SETTINGS, loadSettings } from '../../src/db/settings';
 import { SettingsProvider } from '../../src/hooks/useSettings';
 import { setCurrentDb } from '../helpers/expoSqliteMock';
+import { setDeviceName } from '../helpers/expoDeviceMock';
 import { mockAlert, renderApp } from '../helpers/renderApp';
 import { createTestDb } from '../helpers/testDb';
 
@@ -21,6 +22,12 @@ test('edits and saves every setting', async () => {
   await user.press(screen.getByRole('button', { name: 'Save' }));
   expect(await loadSettings(db as never)).toMatchObject({ displayName: 'Gerald', units: 'imperial', highAccuracyGps: false });
   expect(router.back).toHaveBeenCalled();
+});
+
+test('starts with the device name as the sharing name', async () => {
+  setDeviceName('Gerald’s Pixel');
+  await renderApp(<SettingsScreen />);
+  expect(screen.getByDisplayValue('Gerald’s Pixel')).toBeOnTheScreen();
 });
 
 test('requires a name', async () => {

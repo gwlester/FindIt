@@ -2,6 +2,17 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Download QR code and device-name default
+
+Test-first.
+- About shows a QR code and link for the latest GitHub release APK
+  (`https://github.com/gwlester/findit/releases/latest/download/findcache.apk`), so a friend can
+  scan it to get the app. Encoder: `qrcode-generator` (pure JS, MIT); drawn black on white with
+  `react-native-svg`. Decoded with OpenCV to confirm it scans.
+- The sharing name now defaults to the phone's device name (`expo-device`), falling back to
+  "FindCache user". A name saved by the user wins; the old stored built-in default counts as
+  unset. Licences list regenerated.
+
 ## 2026-10-29: Settings everywhere, Save no longer under the navigation bar
 
 Test-first. Scrolling screens (Settings, Place, Compass, Help, About, Licences) now pad their

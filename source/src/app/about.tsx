@@ -1,9 +1,11 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
-import { Image, ScrollView, StyleSheet, Text } from 'react-native';
+import { Image, Linking, ScrollView, StyleSheet, Text } from 'react-native';
 
+import { QrCode } from '../components/QrCode';
 import { Button } from '../components/ui';
 import { useBottomPadding } from '../lib/insets';
+import { DOWNLOAD_URL } from '../lib/links';
 import { useTheme } from '../lib/theme';
 
 const ICON = require('../../assets/icon.png');
@@ -28,6 +30,11 @@ export default function AboutScreen() {
         places with FindCache users nearby over Bluetooth. Maps come from OpenStreetMap and, in the United States, USGS
         satellite imagery.
       </Text>
+      <Text style={[styles.paragraph, { color: theme.text }]}>Scan to get FindCache for Android:</Text>
+      <QrCode value={DOWNLOAD_URL} size={220} label="QR code: download the latest FindCache" />
+      <Text accessibilityRole="link" onPress={() => Linking.openURL(DOWNLOAD_URL)} style={[styles.link, { color: theme.accent }]}>
+        {DOWNLOAD_URL}
+      </Text>
       <Button title="FindCache licence" variant="secondary" onPress={() => licences('app')} />
       <Button title="Open-source licences" variant="secondary" onPress={() => licences('open-source')} />
       <Button title="Map data" variant="secondary" onPress={() => licences('map-data')} />
@@ -40,4 +47,5 @@ const styles = StyleSheet.create({
   icon: { width: 96, height: 96, borderRadius: 48, alignSelf: 'center' },
   title: { fontSize: 26, fontWeight: '800', textAlign: 'center' },
   paragraph: { fontSize: 15, lineHeight: 22, marginVertical: 8 },
+  link: { fontSize: 13, textAlign: 'center', textDecorationLine: 'underline' },
 });
