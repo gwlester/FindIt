@@ -3,7 +3,8 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
-import { Compass } from '../../components/Compass';
+import { Compass, innerRadius } from '../../components/Compass';
+import { CompassMap } from '../../components/CompassMap';
 import { FoundDialog } from '../../components/FoundDialog';
 import { KeepAwake } from '../../components/KeepAwake';
 import { Button } from '../../components/ui';
@@ -16,6 +17,7 @@ import { usePosition } from '../../hooks/usePosition';
 import { useSettings } from '../../hooks/useSettings';
 import { formatDistance, formatLatLon } from '../../lib/format';
 import { bearingDegrees, combinedUncertainty, compassPoint, distanceMeters } from '../../lib/geo';
+import { compassMapLayer } from '../../lib/compassMap';
 import { mapScale, showSearchArea } from '../../lib/searchArea';
 import { useTheme } from '../../lib/theme';
 
@@ -72,6 +74,8 @@ export default function CompassScreen() {
       ? { distanceM: distance, radiusM: radius, youM: here?.accuracy ?? 0, scale: mapScale(distance, radius, settings.units) }
       : undefined;
   const fmt = (m: number) => formatDistance(m, settings.units);
+  const compassSize = Math.min(width - 32, 360);
+  const mapLayer = searchArea && here ? compassMapLayer(settings.compassBackground, here.latitude, here.longitude) : null;
 
   let statusLine: string;
   if (permission === 'denied') statusLine = 'Location permission denied';
@@ -102,14 +106,30 @@ export default function CompassScreen() {
       {foundLine ? <Text style={[styles.found, { color: theme.accent }]}>{`✓ ${foundLine}`}</Text> : null}
       {summary?.lastComment ? <Text style={[styles.small, { color: theme.muted }]}>{`“${summary.lastComment}”`}</Text> : null}
 
-      <View style={styles.compass}>
+      <View style={[styles.compass, { width: compassSize, height: compassSize }]}>
+        {mapLayer && searchArea && here ? (
+          <CompassMap
+            layer={mapLayer}
+            size={compassSize}
+            radius={innerRadius(compassSize)}
+            center={here}
+            heading={heading?.degrees ?? 0}
+            scaleMeters={searchArea.scale.meters}
+          />
+        ) : null}
         <Compass
-          size={Math.min(width - 32, 360)}
+          size={compassSize}
           heading={heading?.degrees ?? null}
           bearing={bearing}
           searchArea={searchArea}
+          mapBehind={mapLayer != null}
         />
       </View>
+      {mapLayer ? (
+        <Text style={[styles.small, { color: theme.muted, textAlign: 'center' }]}>
+          {mapLayer === 'satellite' ? 'Imagery: USGS The National Map' : 'Map © OpenStreetMap contributors, OpenFreeMap'}
+        </Text>
+      ) : null}
 
       {statusLine ? <Text style={[styles.status, { color: theme.danger }]}>{statusLine}</Text> : null}
 

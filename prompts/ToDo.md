@@ -7,13 +7,15 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
       review before one is used. **Owner merges this one.**
 
 ## Map wave (started 2026-10-29; map screen done)
-- [ ] Compass display option: plain, map, or satellite behind the search area.
 - [ ] Help: a help menu with About (version, short description, licence buttons), help for each
       screen, and an overall "how to use FindIt" guide.
 
 ## Verify on hardware
 - [ ] Map screen: OpenFreeMap street tiles and USGS satellite tiles load, markers and the blue
       dot appear, and the ⓘ attribution opens (tile hosts can't be reached from the build sandbox).
+- [ ] Compass map: inside the search area the map/satellite disc lines up with the rings (a
+      known 20 m feature sits on the 20 m ring), turns with the phone, and shows in airplane
+      mode where an offline map was saved.
 - [ ] Offline maps: download a Map and a Satellite area, turn on airplane mode, restart the app,
       and check both show; delete one and check its size is freed.
 - [ ] Test Bluetooth sharing between two Android phones (Android 12+ and, if possible, ≤ 11),

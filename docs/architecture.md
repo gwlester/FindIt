@@ -100,6 +100,15 @@ cached by URL, so the live map uses them too. A web-mercator tile count refuses 
 6,000 tiles, to be polite to the free tile servers. Pack metadata holds `{name, layer,
 createdAt}`; the name is "Near <place>" for the nearest place within 5 km, else coordinates.
 
+## Map behind the compass (`src/components/CompassMap.tsx`, `src/lib/compassMap.ts`)
+
+With Settings → Behind the search area set to Map or Satellite, the compass screen puts a
+round, non-interactive MapLibre map under the SVG, sized to the inner circle. Its camera
+follows your position with `bearing` = heading (heading-up) and a zoom from `zoomForScale`
+(MapLibre: 512 dp per world at zoom 0), so the scale rings match the ground. The SVG then
+leaves its faces transparent (the rose becomes a ring). Satellite falls back to the street
+map outside USGS coverage.
+
 ## Import / export formats (`src/formats/`)
 
 | | GPX 1.1 (XML) | GeoJSON (RFC 7946) |

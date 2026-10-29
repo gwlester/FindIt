@@ -7,6 +7,7 @@ import { listFinds, recordFind } from '../../src/db/finds';
 import { addPlace } from '../../src/db/locations';
 import { DEFAULT_SETTINGS } from '../../src/db/settings';
 import { SettingsProvider } from '../../src/hooks/useSettings';
+import { SATELLITE_STYLE, STREETS_STYLE_URL } from '../../src/lib/mapSources';
 import { formatDate } from '../../src/lib/format';
 import { emitHeading, emitPosition, emitPositionError } from '../helpers/expoLocationMock';
 import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
@@ -67,7 +68,7 @@ test('distance, uncertainty, bearing, heading and satellites', async () => {
 test('inside the uncertainty radius, magnetic heading needing calibration, imperial', async () => {
   await renderApp(<CompassScreen />, {
     places: [place('Here', { accuracy: null })],
-    settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const },
+    settings: { displayName: 'x', units: 'imperial', highAccuracyGps: false, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const },
   });
   await act(async () => emitPosition({ latitude: 30.4352, longitude: -91.1903, accuracy: 6 }));
   expect(screen.getByText('You’re in the search area — look around!')).toBeOnTheScreen();
@@ -161,7 +162,7 @@ describe('search area', () => {
   it('follows the setting, in the chosen units, and can be turned off', async () => {
     await renderApp(<CompassScreen />, {
       places: [OAK],
-      settings: { displayName: 'x', units: 'imperial', highAccuracyGps: true, searchAreaDistanceM: 20, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const },
+      settings: { displayName: 'x', units: 'imperial', highAccuracyGps: true, searchAreaDistanceM: 20, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const },
     });
     await act(async () => south(30));
     expect(svgTexts(screen.toJSON()).some((t) => t.endsWith(' ft'))).toBe(false);
@@ -174,10 +175,49 @@ describe('search area', () => {
 
     await renderApp(<CompassScreen />, {
       places: [OAK],
-      settings: { displayName: 'x', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const },
+      settings: { displayName: 'x', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const },
     });
     await act(async () => south(5));
     expect(svgTexts(screen.toJSON())).not.toContain('10 m');
+  });
+});
+
+describe('map behind the search area', () => {
+  const south = (m: number) => emitPosition({ latitude: 30.4352 - m / M_LAT, longitude: -91.1903, accuracy: 3 });
+  const settle = (m: number) =>
+    act(async () => {
+      for (let i = 0; i < 8; i++) south(m);
+    });
+
+  it('is off by default (plain)', async () => {
+    await renderApp(<CompassScreen />, { places: [OAK] });
+    await settle(14);
+    expect(svgTexts(screen.toJSON())).toContain('20 m');
+    expect(screen.queryByTestId('map')).not.toBeOnTheScreen();
+  });
+
+  it('shows a heading-up street map, to the search-area scale, only inside the search area', async () => {
+    await renderApp(<CompassScreen />, { places: [OAK], settings: { ...DEFAULT_SETTINGS, compassBackground: 'streets' } });
+    await settle(100);
+    expect(screen.queryByTestId('map')).not.toBeOnTheScreen();
+    await settle(14);
+    const map = screen.getByTestId('map');
+    expect(map.props.mapStyle).toBe(STREETS_STYLE_URL);
+    expect(map.props).toMatchObject({ dragPan: false, touchZoom: false, touchRotate: false, attribution: false, logo: false });
+    await act(async () => emitHeading({ trueHeading: 40, magHeading: 38, accuracy: 3 }));
+    const camera = screen.getByTestId('map-camera').props;
+    expect(camera.bearing).toBeCloseTo(40, 0);
+    expect(camera.center[0]).toBeCloseTo(-91.1903, 4);
+    expect(camera.center[1]).toBeCloseTo(30.4352 - 14 / M_LAT, 4);
+    expect(camera.zoom).toBeGreaterThan(18);
+    expect(screen.getByText('Map © OpenStreetMap contributors, OpenFreeMap')).toBeOnTheScreen();
+  });
+
+  it('uses satellite imagery in the US', async () => {
+    await renderApp(<CompassScreen />, { places: [OAK], settings: { ...DEFAULT_SETTINGS, compassBackground: 'satellite' } });
+    await settle(14);
+    expect(screen.getByTestId('map').props.mapStyle).toBe(SATELLITE_STYLE);
+    expect(screen.getByText('Imagery: USGS The National Map')).toBeOnTheScreen();
   });
 });
 
