@@ -97,7 +97,46 @@ export function Checkbox({ checked, label, sublabel, onToggle }: {
   );
 }
 
+/** − value + control. */
+export function Stepper({
+  value,
+  onDecrease,
+  onIncrease,
+  decreaseLabel,
+  increaseLabel,
+}: {
+  value: string;
+  onDecrease: () => void;
+  onIncrease: () => void;
+  decreaseLabel: string;
+  increaseLabel: string;
+}) {
+  const theme = useTheme();
+  const stepButton = (symbol: string, label: string, onPress: () => void) => (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      hitSlop={8}
+      style={({ pressed }) => [styles.stepButton, { borderColor: theme.accent, opacity: pressed ? 0.7 : 1 }]}
+    >
+      <Text style={[styles.stepSymbol, { color: theme.accent }]}>{symbol}</Text>
+    </Pressable>
+  );
+  return (
+    <View style={styles.stepper}>
+      {stepButton('−', decreaseLabel, onDecrease)}
+      <Text style={[styles.stepValue, { color: theme.text }]}>{value}</Text>
+      {stepButton('+', increaseLabel, onIncrease)}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: 6 },
+  stepButton: { width: 44, height: 44, borderWidth: 2, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  stepSymbol: { fontSize: 24, fontWeight: '700' },
+  stepValue: { fontSize: 20, fontWeight: '700', minWidth: 80, textAlign: 'center' },
   button: {
     borderWidth: 2,
     borderRadius: 10,

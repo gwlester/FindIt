@@ -14,6 +14,7 @@ import { usePosition } from '../../hooks/usePosition';
 import { useSettings } from '../../hooks/useSettings';
 import { formatDistance, formatLatLon } from '../../lib/format';
 import { bearingDegrees, combinedUncertainty, compassPoint, distanceMeters } from '../../lib/geo';
+import { mapScale, showSearchArea } from '../../lib/searchArea';
 import { useTheme } from '../../lib/theme';
 
 export default function CompassScreen() {
@@ -44,6 +45,12 @@ export default function CompassScreen() {
   const bearing = here && place ? bearingDegrees(here, place) : null;
   const uncertainty = combinedUncertainty(here?.accuracy ?? null, place?.accuracy ?? null);
   const withinUncertainty = distance != null && uncertainty != null && distance <= uncertainty;
+  // Close to the cache, the inner circle becomes a map of the search area (see Settings).
+  const radius = uncertainty ?? 0;
+  const searchArea =
+    distance != null && showSearchArea(distance, settings.searchAreaDistanceM)
+      ? { distanceM: distance, radiusM: radius, youM: here?.accuracy ?? 0, scale: mapScale(distance, radius, settings.units) }
+      : undefined;
   const fmt = (m: number) => formatDistance(m, settings.units);
 
   let statusLine: string;
@@ -74,7 +81,12 @@ export default function CompassScreen() {
       ) : null}
 
       <View style={styles.compass}>
-        <Compass size={Math.min(width - 32, 360)} heading={heading?.degrees ?? null} bearing={bearing} />
+        <Compass
+          size={Math.min(width - 32, 360)}
+          heading={heading?.degrees ?? null}
+          bearing={bearing}
+          searchArea={searchArea}
+        />
       </View>
 
       {statusLine ? <Text style={[styles.status, { color: theme.danger }]}>{statusLine}</Text> : null}
@@ -85,7 +97,7 @@ export default function CompassScreen() {
         {average ? ` · averaged over ${average.count} fixes` : ''}
       </Text>
       {withinUncertainty ? (
-        <Text style={[styles.close, { color: theme.accent }]}>You’re within the uncertainty radius — look around!</Text>
+        <Text style={[styles.close, { color: theme.accent }]}>You’re in the search area — look around!</Text>
       ) : null}
 
       <View style={styles.averaging}>

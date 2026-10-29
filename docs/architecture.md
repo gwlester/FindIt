@@ -135,6 +135,12 @@ replaces the live position while you stand still, and stops automatically when a
 more than 3× its accuracy (at least 10 m) from the average (`hasMovedAway`). Movement is only
 judged once 3 fixes have been collected.
 
+**Search area** (`src/lib/searchArea.ts`, compass). Within the switch distance (setting,
+default 50 m, stored in metres; null = always the arrow) the compass's inner circle becomes a
+map: the cache at its scaled distance and relative bearing, a shaded circle of the combined
+uncertainty radius around it, and your own accuracy as a halo. The scale is the smallest round
+value (10/20/50/100… m or 50/100/200… ft) that holds distance + radius.
+
 **Full GNSS tracking** (`GnssMonitor.kt`, Android 12+, setting *High-accuracy GPS*). While the
 compass or averaging panel is open, the app registers for raw GNSS measurements with
 `GnssMeasurementRequest.setFullTracking(true)`. This stops the chipset duty-cycling, so it keeps

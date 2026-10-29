@@ -473,8 +473,18 @@ def settings():
     s.text(30, 372, "GPS", 17, weight="bold")
     s.checkbox(30, 386, "High-accuracy GPS", "Keep tracking every satellite while finding", True)
     s.text(64, 429, "or averaging a place (Android 12+). More battery.", 12, MUTED)
-    s.button(16, 476, W - 32, "Save")
-    s.note(16, 546, "Stored in the local SQLite database (settings table).")
+    s.rect(16, 470, W - 32, 150, fill=FILL, r=12)
+    s.text(30, 496, "Search area", 17, weight="bold")
+    s.checkbox(30, 508, "Always show the arrow", "Otherwise, close to the cache the compass", False)
+    s.text(64, 551, "shows a map of the search area.", 12, MUTED)
+    s.text(30, 576, "Show the search area within", 12, MUTED, "bold")
+    for x, sym in ((44, "−"), (230, "+")):
+        s.add(f"<circle cx='{x+22}' cy='600' r='16' fill='none' stroke='{ACCENT}' stroke-width='2'/>")
+        s.text(x + 22, 607, sym, 20, ACCENT, "bold", "middle")
+    s.text(156, 607, "50 m", 18, weight="bold", anchor="middle")
+    s.button(16, 634, W - 32, "Save")
+    s.note(16, 700, "Stored in metres; shown in the current units, rounded to")
+    s.note(16, 714, "5 m / 10 ft (50 m ↔ 160 ft). Stored in SQLite (settings).")
     s.render("06-settings")
 
 

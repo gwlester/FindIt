@@ -61,20 +61,22 @@ average shows "Stopped averaging because you moved." Nothing is saved.
 
 ![Compass averaging](wireframes/03b-compass-averaging.svg)
 
-## 3c. Compass: search area (proposal)
+## 3c. Compass: search area
 
-*Proposal, not built yet.* Within about 50 m of the cache, the inner circle of the compass
-becomes a small heading-up map:
+Within the distance set in **Settings → Search area** (default 50 m), the inner circle of the
+compass becomes a small heading-up map (north-up if there's no compass reading):
 - **you:** a blue dot at the centre, with a faint halo for your own GPS uncertainty;
 - **the cache:** ⊕ in the direction of the arrow, at scaled distance;
 - **the search area:** a shaded circle around the cache, as big as the uncertainty radius;
-- **scale:** dashed rings with labels ("10 m", "20 m"). The map zooms in as you get closer.
+- **scale:** a dashed half-way ring and labels (e.g. "10 m", "20 m"; feet in imperial). The
+  map picks the smallest round scale that holds the cache and its circle, so it zooms in as
+  you get closer.
 
 Further away, the compass shows the arrow as before.
 
 ![Search area](wireframes/03c-compass-search-area.svg)
 
-## 3d. Compass: inside the search area (proposal)
+## 3d. Compass: inside the search area
 
 When you're inside the shaded circle, a banner says you're in the search area. With
 **Average my position** running, your halo and the circle shrink as fixes accumulate.
@@ -122,6 +124,9 @@ notes. Places you already have (same name and position) are skipped.
 ## 6. Settings
 
 Your display name (what others see when you share), distance units, and **High-accuracy GPS**
-(full GNSS tracking on the compass and averaging screens; on by default).
+(full GNSS tracking on the compass and averaging screens; on by default), and **Search
+area**: the distance at which the compass switches from the arrow to the search-area map
+(stored in metres, shown in your units rounded to 5 m / 10 ft, converted when you change
+units), or **Always show the arrow**.
 
 ![Settings](wireframes/06-settings.svg)

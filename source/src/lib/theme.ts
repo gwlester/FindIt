@@ -12,6 +12,8 @@ const light = {
   north: '#d32f2f',
   roseFace: '#ffffff',
   roseRing: '#2a3038',
+  mapFace: '#eef3ee',
+  you: '#2f6db5',
 };
 
 const dark: typeof light = {
@@ -26,6 +28,8 @@ const dark: typeof light = {
   north: '#ff5f57',
   roseFace: '#1a1d22',
   roseRing: '#c9ced6',
+  mapFace: '#16231c',
+  you: '#6aa8f0',
 };
 
 export type Theme = typeof light;
