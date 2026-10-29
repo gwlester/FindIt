@@ -13,7 +13,7 @@
     "android": {
       "package": "com.gwlester.findit",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0B3D6B",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -43,6 +43,18 @@
         {
           "isBackgroundEnabled": false,
           "neverForLocation": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#0B3D6B",
+          "dark": {
+            "backgroundColor": "#0B3D6B"
+          }
         }
       ]
     ]
