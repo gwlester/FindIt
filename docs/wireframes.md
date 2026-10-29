@@ -12,7 +12,8 @@ Orange text is annotation, not UI.
 The list of known places, sorted by name, with the distance from your current GPS fix.
 Tap a place to open the compass; long-press it to edit or delete. Places received from
 someone else show who they came from. The list scrolls when there are more places than fit;
-the **Add place** / **Share nearby** buttons stay fixed at the bottom.
+the **Add place** / **Share nearby** buttons stay fixed at the bottom. **Files** (header) opens
+Import / Export.
 
 ![Places](wireframes/01-places.svg)
 
@@ -69,6 +70,24 @@ After tapping a nearby user, their places download and the import panel replaces
 coordinates) are skipped.
 
 ![Import](wireframes/05-share-import.svg)
+
+## 7. Import / Export
+
+**Import**: choose a file with the system file picker. The format is detected automatically
+(see below). **Export**: tick the places to export. **Export N places…** asks for the format
+each time, GPX or GeoJSON, then opens the Android share sheet (save to Files or Drive, email,
+or send to another app).
+
+![Import / Export](wireframes/07-files.svg)
+
+## 7b. Import / Export: importing a file
+
+After choosing a file, its places are listed to pick from. The format is chosen from the file
+extension (`.gpx`, `.geojson`, `.json`), then its MIME type, then its content. For
+geocaching.com files, the cache name and code become the place name and the hint goes into the
+notes. Places you already have (same name and position) are skipped.
+
+![Importing](wireframes/07b-files-import.svg)
 
 ## 6. Settings
 

@@ -88,3 +88,25 @@ export async function hasDuplicate(db: SQLiteDatabase, place: Pick<Place, 'name'
   );
   return (row?.n ?? 0) > 0;
 }
+
+/**
+ * Adds places received from elsewhere (Bluetooth or a file), skipping ones that are
+ * already saved (same name and coordinates). `source` records where they came from.
+ */
+export async function importPlaces(
+  db: SQLiteDatabase,
+  places: Omit<NewPlace, 'source'>[],
+  source: string,
+): Promise<{ added: number; skipped: number }> {
+  let added = 0;
+  let skipped = 0;
+  for (const place of places) {
+    if (await hasDuplicate(db, place)) {
+      skipped++;
+      continue;
+    }
+    await addPlace(db, { ...place, source });
+    added++;
+  }
+  return { added, skipped };
+}

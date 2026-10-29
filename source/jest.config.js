@@ -1,0 +1,16 @@
+/** @type {import('jest').Config} */
+const PER_FILE = { branches: 90, functions: 90, lines: 90, statements: 90 };
+
+module.exports = {
+  preset: 'jest-expo',
+  clearMocks: true,
+  setupFilesAfterEnv: ['<rootDir>/__tests__/helpers/setup.ts'],
+  testMatch: ['<rootDir>/__tests__/**/*.test.{ts,tsx}'],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', 'modules/findit-native/index.ts'],
+  coverageReporters: ['text', 'text-summary', 'json-summary'],
+  // A glob key applies the threshold to every matching file individually.
+  coverageThreshold: {
+    './src/**/*.{ts,tsx}': PER_FILE,
+    './modules/findit-native/index.ts': PER_FILE,
+  },
+};

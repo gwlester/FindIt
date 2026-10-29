@@ -95,12 +95,17 @@ class Screen:
             frame.append(
                 f"<text x='{W-20}' y='69' {FONT} font-size='15' font-weight='bold' fill='{ACCENT}' text-anchor='end'>{escape(self.header_right)}</text>"
             )
+        if getattr(self, "header_extra", None):
+            frame.append(
+                f"<text x='{W-100}' y='69' {FONT} font-size='15' font-weight='bold' fill='{ACCENT}' text-anchor='end'>{escape(self.header_extra)}</text>"
+            )
         body = frame + self.parts + ["</svg>"]
         (OUT / f"{name}.svg").write_text("\n".join(body) + "\n")
 
 
 def places():
     s = Screen("FindIt", header_right="Settings", back=False)
+    s.header_extra = "Files"
     s.text(W / 2, 112, "Tap a place to find it · long-press to edit", 11, MUTED, anchor="middle")
     rows = [
         ("Bridge micro", "30.44102° N, 91.18311° W", "From Alex", "1.42 km"),
@@ -294,6 +299,65 @@ def receive():
     s.render("05-share-import")
 
 
+def files():
+    s = Screen("Import / Export")
+    s.rect(16, 104, W - 32, 124, fill=FILL, r=12)
+    s.text(30, 130, "Import", 17, weight="bold")
+    s.text(30, 152, "GPX (geocaching.com, GPS units, other apps) or", 12, MUTED)
+    s.text(30, 167, "GeoJSON. The format is detected from the file.", 12, MUTED)
+    s.button(30, 176, W - 60, "Choose a file…")
+    s.rect(16, 240, W - 32, 400, fill=FILL, r=12)
+    s.text(30, 266, "Export", 17, weight="bold")
+    items = [
+        ("Bridge micro", "30.44102° N, 91.18311° W", True),
+        ("Creek crossing", "30.42011° N, 91.15550° W", True),
+        ("Lakeside ammo can", "30.40911° N, 91.17208° W", False),
+        ("Library bench", "30.41277° N, 91.17702° W", True),
+        ("Old oak tree cache", "30.43520° N, 91.19030° W", True),
+        ("Water tower", "30.45120° N, 91.20102° W", True),
+    ]
+    s.clip_start("export-list", 16, 278, W - 32, 290)
+    for i, (n, c, ch) in enumerate(items):
+        s.checkbox(30, 284 + i * 48, n, c, ch)
+    s.clip_end()
+    s.scrollbar(W - 26, 278, 290, 0.8)
+    s.button(30, 580, W - 60, "Export 5 places…")
+    s.rect(40, 660, W - 80, 84, fill="#fff", stroke=INK, r=6)
+    s.text(56, 682, "Export 5 places — Which format?", 13, weight="bold")
+    s.text(56, 704, "GPX: GPS units and geocaching apps", 12, ACCENT, "bold")
+    s.text(56, 722, "GeoJSON: mapping tools", 12, ACCENT, "bold")
+    s.text(56, 738, "Cancel", 11, MUTED)
+    s.note(16, 654, "Asked on every export, then the Android share sheet opens:")
+    s.render("07-files")
+
+
+def files_import():
+    s = Screen("Import / Export")
+    s.rect(16, 104, W - 32, 330, fill=FILL, r=12)
+    s.text(30, 130, "Import from caches.gpx", 17, weight="bold")
+    s.text(30, 152, "GPX · 4 places · 1 other item skipped", 12, MUTED)
+    items = [
+        ("Old Oak (GC12345)", "30.43520° N, 91.19030° W", True),
+        ("Bridge micro (GC2B3C4)", "30.44102° N, 91.18311° W", True),
+        ("Water tower (GC9ZZ01)", "30.45120° N, 91.20102° W", False),
+        ("Zoo gate (GC7Q2W1)", "30.53120° N, 91.10102° W", True),
+    ]
+    s.clip_start("import-list", 16, 162, W - 32, 210)
+    for i, (n, c, ch) in enumerate(items):
+        s.checkbox(30, 168 + i * 48, n, c, ch)
+    s.clip_end()
+    s.scrollbar(W - 26, 162, 210, 0.75)
+    s.button(30, 380, 142, "Cancel", filled=False)
+    s.button(188, 380, 142, "Import selected")
+    s.rect(16, 448, W - 32, 140, fill=FILL, r=12, dash=True)
+    s.text(30, 474, "Export", 17, MUTED, "bold")
+    s.text(30, 500, "(checklist + Export button, unchanged)", 13, MUTED)
+    s.note(16, 612, "Format chosen automatically: .gpx / .geojson / .json, then MIME type,")
+    s.note(16, 626, "then content. geocaching.com files: cache name + code, hint in notes.")
+    s.note(16, 640, "Places you already have (same name and position) are skipped.")
+    s.render("07b-files-import")
+
+
 def settings():
     s = Screen("Settings")
     s.field(116, "Your name for sharing", "Gerald", hint="Nearby users see the first dozen or so characters.")
@@ -311,6 +375,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, share, receive, settings):
+    for fn in (places, place, averaging, compass, share, receive, settings, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

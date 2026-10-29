@@ -6,6 +6,7 @@ Simple geocache-type app for Android.
 - Pick one and a compass points to it. The rose keeps N/E/S/W on the real directions,
   with the approximate distance, an uncertainty radius and live GPS satellite counts below it.
 - Share places with other FindIt users nearby over Bluetooth LE.
+- Import and export places as GPX (geocaching.com, GPS units, other geocaching apps) or GeoJSON.
 
 ## Download
 

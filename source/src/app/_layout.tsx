@@ -23,6 +23,7 @@ export default function RootLayout() {
           <Stack.Screen name="place" options={{ title: 'Place' }} />
           <Stack.Screen name="compass/[id]" options={{ title: 'Find it' }} />
           <Stack.Screen name="share" options={{ title: 'Share nearby' }} />
+          <Stack.Screen name="files" options={{ title: 'Import / Export' }} />
           <Stack.Screen name="settings" options={{ title: 'Settings' }} />
         </Stack>
       </SettingsProvider>

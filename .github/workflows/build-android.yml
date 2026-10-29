@@ -61,6 +61,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Fails if any source file drops below 90% statement/branch/function/line coverage.
+      - name: Unit tests (90% coverage per file)
+        run: npm run test:coverage
+
       # Release builds (master) get a date-based version YYYY.MM.DD.NNN (UTC), where NNN
       # counts that day's releases. versionCode is YYMMDDNNN so every release installs
       # over the previous one. Other branches keep the version in app.json.
