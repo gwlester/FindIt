@@ -30,6 +30,16 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX finds_by_place ON finds (place_id, found_at);
   `,
+  // 3: who downloaded my shared places, and when.
+  `
+  CREATE TABLE share_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    at INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    places INTEGER NOT NULL
+  );
+  CREATE INDEX share_history_by_time ON share_history (at);
+  `,
 ];
 
 /** Runs any migrations newer than the database's `user_version`. */

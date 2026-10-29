@@ -16,6 +16,8 @@ export type Settings = {
   findMode: FindMode;
   /** Hide places I've found from the list. */
   hideFound: boolean;
+  /** Days to keep the sharing history; null = forever. */
+  shareHistoryDays: number | null;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -25,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   searchAreaDistanceM: DEFAULT_SEARCH_AREA_M,
   findMode: 'once',
   hideFound: false,
+  shareHistoryDays: 90,
 };
 
 const FIND_MODES: FindMode[] = ['off', 'once', 'log'];
@@ -33,6 +36,12 @@ function parseSearchArea(value: string | undefined): number | null {
   if (value === 'off') return null;
   const meters = Number(value);
   return value !== undefined && Number.isFinite(meters) && meters > 0 ? meters : DEFAULT_SEARCH_AREA_M;
+}
+
+function parseHistoryDays(value: string | undefined): number | null {
+  if (value === 'off') return null;
+  const days = Number(value);
+  return value !== undefined && Number.isInteger(days) && days > 0 ? days : 90;
 }
 
 export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
@@ -45,6 +54,7 @@ export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
     searchAreaDistanceM: parseSearchArea(map.searchAreaDistanceM),
     findMode: FIND_MODES.includes(map.findMode as FindMode) ? (map.findMode as FindMode) : 'once',
     hideFound: map.hideFound === 'true',
+    shareHistoryDays: parseHistoryDays(map.shareHistoryDays),
   };
 }
 

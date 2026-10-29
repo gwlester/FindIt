@@ -98,12 +98,12 @@ describe('search-area distance', () => {
 describe('found places', () => {
   it('chooses off, once or log, and keeps the list filter', async () => {
     const user = userEvent.setup();
-    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, hideFound: true } });
+    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, hideFound: true, shareHistoryDays: 90 } });
     expect(screen.getByRole('checkbox', { name: /Once per place/ })).toBeChecked();
     await user.press(screen.getByRole('checkbox', { name: /Keep a log/ }));
     expect(screen.getByRole('checkbox', { name: /Once per place/ })).not.toBeChecked();
     await user.press(screen.getByRole('button', { name: 'Save' }));
-    expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true });
+    expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true, shareHistoryDays: 90 });
   });
 
   it('can turn marking found off', async () => {
