@@ -1,0 +1,111 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Old oak tree cache</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='180.0' y='112' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#888' font-weight='normal' text-anchor='middle'>30.43520° N, 91.19030° W</text>
+<polygon points='172.0,116 188.0,116 180.0,128' fill='#555'/>
+<g transform='rotate(-30 180.0 270)'>
+<circle cx='180.0' cy='270' r='140' fill='#fff' stroke='#333' stroke-width='3'/>
+<line x1='180.0' y1='130' x2='180.0' y2='144' stroke='#333' stroke-width='2' transform='rotate(0 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(5 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(10 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(15 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(20 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(25 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='140' stroke='#333' stroke-width='2' transform='rotate(30 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(35 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(40 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(45 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(50 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(55 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='140' stroke='#333' stroke-width='2' transform='rotate(60 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(65 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(70 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(75 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(80 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(85 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='144' stroke='#333' stroke-width='2' transform='rotate(90 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(95 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(100 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(105 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(110 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(115 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='140' stroke='#333' stroke-width='2' transform='rotate(120 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(125 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(130 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(135 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(140 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(145 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='140' stroke='#333' stroke-width='2' transform='rotate(150 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(155 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(160 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(165 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(170 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(175 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='144' stroke='#333' stroke-width='2' transform='rotate(180 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(185 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(190 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(195 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(200 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(205 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='140' stroke='#333' stroke-width='2' transform='rotate(210 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(215 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(220 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(225 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(230 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(235 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='140' stroke='#333' stroke-width='2' transform='rotate(240 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(245 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(250 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(255 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(260 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(265 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='144' stroke='#333' stroke-width='2' transform='rotate(270 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(275 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(280 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(285 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(290 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(295 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='140' stroke='#333' stroke-width='2' transform='rotate(300 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(305 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(310 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(315 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(320 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(325 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='140' stroke='#333' stroke-width='2' transform='rotate(330 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(335 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(340 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(345 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(350 180.0 270)'/>
+<line x1='180.0' y1='130' x2='180.0' y2='135' stroke='#333' stroke-width='1' transform='rotate(355 180.0 270)'/>
+<text x='180.0' y='166' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#c00' text-anchor='middle' transform='rotate(0 180.0 270)'>N</text>
+<text x='180.0' y='166' font-family='Helvetica, Arial, sans-serif' font-size='17' font-weight='bold' fill='#333' text-anchor='middle' transform='rotate(90 180.0 270)'>E</text>
+<text x='180.0' y='166' font-family='Helvetica, Arial, sans-serif' font-size='17' font-weight='bold' fill='#333' text-anchor='middle' transform='rotate(180 180.0 270)'>S</text>
+<text x='180.0' y='166' font-family='Helvetica, Arial, sans-serif' font-size='17' font-weight='bold' fill='#333' text-anchor='middle' transform='rotate(270 180.0 270)'>W</text>
+</g>
+<circle cx='180.0' cy='270' r='94' fill='none' stroke='#bbb' stroke-width='2'/>
+<polygon transform='rotate(45 180.0 270)' fill='#555' points='180.0,186 204.0,230 188.0,230 188.0,342 172.0,342 172.0,230 156.0,230'/>
+<circle cx='180.0' cy='270' r='5' fill='#333'/>
+<text x='180.0' y='466' font-family='Helvetica, Arial, sans-serif' font-size='40' fill='#333' font-weight='bold' text-anchor='middle'>≈ 121 m</text>
+<text x='180.0' y='490' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#888' font-weight='normal' text-anchor='middle'>uncertainty radius ± 3 m · averaged over 96 fixes</text>
+<rect x='16' y='502' width='328' height='112' rx='10' fill='#fff' stroke='#555' stroke-width='2'/>
+<text x='30' y='526' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='bold' text-anchor='start'>Averaging your position — stand still</text>
+<text x='30' y='548' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#888' font-weight='normal' text-anchor='start'>96 fixes · ± 2 m</text>
+<rect x='30' y='560' width='300' height='40' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='585.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Stop averaging</text>
+<clipPath id='details-626'><rect x='0' y='626' width='360' height='86'/></clipPath>
+<g clip-path='url(#details-626)'>
+<rect x='16' y='626' width='328' height='152' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='652' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>Bearing 075° E</text>
+<text x='30' y='676' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>Heading 030° true</text>
+<text x='30' y='700' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>GPS accuracy ± 4 m · place recorded ± 5 m</text>
+<text x='30' y='724' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='bold' text-anchor='start'>Satellites: 14 used · 22 in view · 31 known</text>
+<text x='30' y='748' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>GPS 7 · Galileo 4 · GLONASS 2 · BeiDou 1</text>
+<text x='30' y='772' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Full GNSS tracking on (High-accuracy GPS)</text>
+</g>
+<text x='16' y='730' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Distance, arrow and radius use your averaged position. Walking</text>
+<text x='16' y='744' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>away stops it: “Stopped averaging because you moved.”</text>
+</svg>

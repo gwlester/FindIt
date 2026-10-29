@@ -1,4 +1,4 @@
-import { averageFixes, isUsableFix, MAX_FIX_ACCURACY_M, type Fix } from '../../src/lib/averaging';
+import { averageFixes, hasMovedAway, isUsableFix, MAX_FIX_ACCURACY_M, type Fix } from '../../src/lib/averaging';
 import { distanceMeters } from '../../src/lib/geo';
 
 const TRUTH = { latitude: 30.4352, longitude: -91.1903 };
@@ -91,5 +91,27 @@ describe('averageFixes', () => {
       timestamp: t * 1000,
     }));
     expect(averageFixes(fixes)!.accuracy).toBeGreaterThan(2);
+  });
+});
+
+describe('hasMovedAway', () => {
+  const avg = { latitude: 30, longitude: -91, count: 10, durationSec: 10, spread: 1, accuracy: 2 };
+  const north = (m: number, accuracy: number | null = 4) => ({
+    latitude: 30 + m / 110574,
+    longitude: -91,
+    accuracy,
+    timestamp: 0,
+  });
+
+  it('is false for fixes within 3× their accuracy (at least 10 m) of the average', () => {
+    expect(hasMovedAway(avg, north(9))).toBe(false);
+    expect(hasMovedAway(avg, north(11, 4))).toBe(false); // 3 × 4 = 12 m
+  });
+
+  it('is true once a fix is further than that', () => {
+    expect(hasMovedAway(avg, north(13, 4))).toBe(true);
+    expect(hasMovedAway(avg, north(11, 1))).toBe(true); // 10 m minimum
+    expect(hasMovedAway(avg, north(31, null))).toBe(true); // unknown accuracy counts as 10 m
+    expect(hasMovedAway(avg, north(29, null))).toBe(false);
   });
 });

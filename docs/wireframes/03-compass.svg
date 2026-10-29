@@ -89,17 +89,20 @@
 <circle cx='180.0' cy='270' r='94' fill='none' stroke='#bbb' stroke-width='2'/>
 <polygon transform='rotate(45 180.0 270)' fill='#555' points='180.0,186 204.0,230 188.0,230 188.0,342 172.0,342 172.0,230 156.0,230'/>
 <circle cx='180.0' cy='270' r='5' fill='#333'/>
-<text x='180.0' y='470' font-family='Helvetica, Arial, sans-serif' font-size='40' fill='#333' font-weight='bold' text-anchor='middle'>≈ 125 m</text>
-<text x='180.0' y='494' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#888' font-weight='normal' text-anchor='middle'>uncertainty radius ± 6 m</text>
-<rect x='16' y='512' width='328' height='152' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
-<text x='30' y='538' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>Bearing 075° E</text>
-<text x='30' y='562' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>Heading 030° true</text>
-<text x='30' y='586' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>GPS accuracy ± 4 m · place recorded ± 5 m</text>
-<text x='30' y='610' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='bold' text-anchor='start'>Satellites: 14 used · 22 in view · 31 known</text>
-<text x='30' y='634' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>GPS 7 · Galileo 4 · GLONASS 2 · BeiDou 1</text>
-<text x='30' y='658' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Full GNSS tracking on (High-accuracy GPS)</text>
-<text x='16' y='686' font-family='Helvetica, Arial, sans-serif' font-size='13' fill='#888' font-weight='normal' text-anchor='start'>Under the roots on the north side.</text>
-<text x='16' y='706' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Rose: N/E/S/W stay true; ▲ = phone heading; arrow → target.</text>
-<text x='16' y='720' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Heading/position smoothed. Inside radius → “look around!”</text>
-<text x='16' y='734' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Low compass calibration → figure-8 prompt.</text>
+<text x='180.0' y='466' font-family='Helvetica, Arial, sans-serif' font-size='40' fill='#333' font-weight='bold' text-anchor='middle'>≈ 125 m</text>
+<text x='180.0' y='490' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#888' font-weight='normal' text-anchor='middle'>uncertainty radius ± 6 m</text>
+<rect x='16' y='502' width='328' height='40' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='527.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Average my position</text>
+<clipPath id='details-554'><rect x='0' y='554' width='360' height='158'/></clipPath>
+<g clip-path='url(#details-554)'>
+<rect x='16' y='554' width='328' height='152' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='580' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>Bearing 075° E</text>
+<text x='30' y='604' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>Heading 030° true</text>
+<text x='30' y='628' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='normal' text-anchor='start'>GPS accuracy ± 4 m · place recorded ± 5 m</text>
+<text x='30' y='652' font-family='Helvetica, Arial, sans-serif' font-size='14' fill='#333' font-weight='bold' text-anchor='start'>Satellites: 14 used · 22 in view · 31 known</text>
+<text x='30' y='676' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>GPS 7 · Galileo 4 · GLONASS 2 · BeiDou 1</text>
+<text x='30' y='700' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Full GNSS tracking on (High-accuracy GPS)</text>
+</g>
+<text x='16' y='730' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Rose: N/E/S/W stay true; ▲ = phone heading; arrow → target.</text>
+<text x='16' y='744' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Smoothed heading/position. Inside radius → “look around!”</text>
 </svg>

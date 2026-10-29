@@ -1,6 +1,8 @@
 // Position averaging: combine many GPS fixes taken while standing still into one
 // better estimate (the classic geocacher technique for recording coordinates).
 
+import { distanceMeters } from './geo';
+
 export type Fix = {
   latitude: number;
   longitude: number;
@@ -112,4 +114,13 @@ export function averageFixes(fixes: Fix[]): Average | null {
   );
 
   return { latitude: lat, longitude: lon, count: used.length, durationSec, spread, accuracy };
+}
+
+/**
+ * True when a new fix is too far from the average to be the same spot: further than
+ * 3× its accuracy (at least 10 m; unknown accuracy counts as 10 m). Used to stop
+ * averaging automatically when the user walks away.
+ */
+export function hasMovedAway(average: Pick<Average, 'latitude' | 'longitude'>, fix: Fix): boolean {
+  return distanceMeters(average, fix) > Math.max(3 * (fix.accuracy ?? 10), 10);
 }
