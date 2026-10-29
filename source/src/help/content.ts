@@ -98,7 +98,7 @@ export const HELP_TOPICS: HelpTopic[] = [
     route: 'settings',
     title: 'Settings',
     paragraphs: [
-      'Your name for sharing is what nearby FindCache users see. Units switch between metres and feet.',
+      'Your name for sharing is what nearby FindCache users see; it starts as your phone’s name. Units switch between metres and feet.',
       'High-accuracy GPS tracks every satellite on the compass (Android 12 and later; uses more battery). Search area sets how close you need to be before the compass shows the search-area map, and what is drawn behind it.',
       'Found places: off, once per place, or a log of every find. Sharing history: how long to remember who downloaded your places.',
     ],

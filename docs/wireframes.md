@@ -172,8 +172,9 @@ Every screen has **?** at the top right. It opens a small menu: **Help for this 
 
 ## 12. About and licences
 
-The app icon, name and version (the release's date version), a short description, and three
-buttons: **FindCache licence** (BSD 2-Clause), **Open-source licences** (every JavaScript package in
+The app icon, name and version (the release's date version), a short description, a **QR code**
+and link for the latest FindCache download on GitHub (so a friend can scan it from your screen to
+get the app), and three buttons: **FindCache licence** (BSD 2-Clause), **Open-source licences** (every JavaScript package in
 the app and the main native libraries; tap one for its licence text) and **Map data**
 (OpenStreetMap, OpenFreeMap / OpenMapTiles, USGS, with links).
 
@@ -201,7 +202,8 @@ notes. Places you already have (same name and position) are skipped.
 
 ## 6. Settings
 
-Your display name (what others see when you share), distance units, and **High-accuracy GPS**
+Your display name (what others see when you share; until you change it, it is the phone's own
+name, Settings → About phone → Device name), distance units, and **High-accuracy GPS**
 (full GNSS tracking on the compass and averaging screens; on by default), and **Search
 area**: the distance at which the compass switches from the arrow to the search-area map
 (stored in metres, shown in your units rounded to 5 m / 10 ft, converted when you change
