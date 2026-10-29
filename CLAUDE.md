@@ -31,5 +31,6 @@ Applies to bug fixes too: first a test that reproduces the bug.
   not on plain branch pushes: open a PR to get a build. `build` is a required check for merging.
 - Keep `docs/` (including wireframes via `docs/wireframes/generate_wireframes.py`) and
   `prompts/Done.md` / `prompts/ToDo.md` up to date with each change.
-- Every successful build of `master` is published as a date-versioned release
-  (`YYYY.MM.DD.NNN`); only the two newest releases are kept.
+- A successful `master` build that changes the app (`source/` or the build workflow) is
+  published as a date-versioned release (`YYYY.MM.DD.NNN`); docs-only merges are not
+  released. Only the two newest releases are kept.
