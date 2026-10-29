@@ -3,9 +3,6 @@
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
 ## Current wave (agreed 2026-10-29; one PR each, built test-first)
-- [ ] Search-area view on the compass (wireframes 03c/03d) with a setting for the distance at
-      which it replaces the arrow: stored in metres, shown in the current units rounded to
-      5 m / 10 ft, converted when units change; option "always show the arrow".
 - [ ] Mark places as found: a "Mark found" button on the compass that asks for an optional
       comment; a setting for "once" or "log" (switching to "once" keeps the latest entry); ✓ and
       date in the list with a "hide found places" filter; export and Bluetooth sharing ask
