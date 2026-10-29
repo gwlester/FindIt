@@ -30,7 +30,7 @@ test('still marks settings loaded if reading fails', async () => {
   const { result } = await renderHook(() => useSettings(), { wrapper });
   await act(async () => {});
   expect(result.current.loaded).toBe(true);
-  expect(result.current.settings.displayName).toBe('FindIt user');
+  expect(result.current.settings.displayName).toBe('FindCache user');
 });
 
 test('throws outside the provider', async () => {

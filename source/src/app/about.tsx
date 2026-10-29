@@ -17,16 +17,16 @@ export default function AboutScreen() {
     <ScrollView contentContainerStyle={styles.content}>
       <Image source={ICON} style={styles.icon} accessibilityIgnoresInvertColors />
       <Text accessibilityRole="header" style={[styles.title, { color: theme.text }]}>
-        FindIt
+        FindCache
       </Text>
       <Text style={{ color: theme.muted }}>Version {version}</Text>
       <Text style={[styles.paragraph, { color: theme.text }]}>
-        FindIt is a simple geocache-style app: save named places, then let the compass, the distance and the
+        FindCache is a simple geocache-style app: save named places, then let the compass, the distance and the
         uncertainty radius guide you back to them. It works offline, keeps everything on your phone, and shares
-        places with FindIt users nearby over Bluetooth. Maps come from OpenStreetMap and, in the United States, USGS
+        places with FindCache users nearby over Bluetooth. Maps come from OpenStreetMap and, in the United States, USGS
         satellite imagery.
       </Text>
-      <Button title="FindIt licence" variant="secondary" onPress={() => licences('app')} />
+      <Button title="FindCache licence" variant="secondary" onPress={() => licences('app')} />
       <Button title="Open-source licences" variant="secondary" onPress={() => licences('open-source')} />
       <Button title="Map data" variant="secondary" onPress={() => licences('map-data')} />
     </ScrollView>

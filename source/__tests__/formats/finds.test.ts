@@ -30,7 +30,7 @@ describe('GPX', () => {
     expect(b.finds![0].foundAt).toBeGreaterThan(0);
   });
 
-  it('ignores FindIt finds with bad times', () => {
+  it('ignores FindCache finds with bad times', () => {
     const xml = `<gpx><wpt lat="1" lon="2"><name>A</name><extensions>
       <find time="nope"><comment>x</comment></find><find time="2026-01-01T00:00:00Z"/></extensions></wpt></gpx>`;
     expect(parseGpx(xml).places[0].finds).toEqual([{ foundAt: Date.UTC(2026, 0, 1), comment: '', finder: '' }]);

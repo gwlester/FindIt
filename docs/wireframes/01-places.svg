@@ -3,7 +3,7 @@
 <text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
 <text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
 <line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
-<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>FindIt</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>FindCache</text>
 <text x='340' y='69' font-family='Helvetica, Arial, sans-serif' font-size='15' font-weight='bold' fill='#555' text-anchor='end'>?</text>
 <text x='312' y='69' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='end'>Settings</text>
 <text x='232' y='69' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='end'>Files</text>

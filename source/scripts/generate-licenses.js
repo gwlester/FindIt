@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Writes src/help/licenses.json for the About screen: FindIt's own licence, the licence of
+// Writes src/help/licenses.json for the About screen: FindCache's own licence, the licence of
 // every npm package bundled into the app (taken from the bundle's source map), and the main
 // native libraries (scripts/native-licenses.json). Re-run after changing dependencies:
 //

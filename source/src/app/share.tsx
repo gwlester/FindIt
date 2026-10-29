@@ -93,7 +93,7 @@ export default function ShareScreen() {
   useEffect(() => {
     const sub = onSharePeer((e) => {
       if (e.state !== 'disconnected' || !e.itemsRead) return;
-      addShare(db, { at: Date.now(), name: e.name?.trim() || 'FindIt user', places: e.itemsRead }).then(refreshHistory);
+      addShare(db, { at: Date.now(), name: e.name?.trim() || 'FindCache user', places: e.itemsRead }).then(refreshHistory);
     });
     return () => sub.remove();
   }, [db, refreshHistory]);
@@ -121,7 +121,7 @@ export default function ShareScreen() {
       return;
     }
     if (!(await requestBluetoothPermissions())) {
-      Alert.alert('Bluetooth permission needed', 'Allow "Nearby devices" to share with other FindIt users.');
+      Alert.alert('Bluetooth permission needed', 'Allow "Nearby devices" to share with other FindCache users.');
       return;
     }
     const chosen = places.filter((p) => selected.has(p.id));
@@ -144,7 +144,7 @@ export default function ShareScreen() {
       return;
     }
     if (!(await requestBluetoothPermissions())) {
-      Alert.alert('Bluetooth permission needed', 'Allow "Nearby devices" to find other FindIt users.');
+      Alert.alert('Bluetooth permission needed', 'Allow "Nearby devices" to find other FindCache users.');
       return;
     }
     setNearby(new Map());
@@ -227,7 +227,7 @@ export default function ShareScreen() {
       ) : (
         <Section title="Receive from nearby" style={styles.fill}>
           <Button
-            title={scanning ? 'Stop looking' : 'Look for nearby FindIt users'}
+            title={scanning ? 'Stop looking' : 'Look for nearby FindCache users'}
             variant={scanning ? 'secondary' : 'primary'}
             onPress={toggleScanning}
             disabled={!bluetoothReady || fetching != null}
@@ -264,7 +264,7 @@ export default function ShareScreen() {
 
       <Section title="Share my places" style={styles.fill}>
         <Text style={{ color: theme.muted, marginBottom: 6 }}>
-          Nearby FindIt users will see you as “{settings.displayName}”.
+          Nearby FindCache users will see you as “{settings.displayName}”.
         </Text>
         <ScrollView style={styles.fill} persistentScrollbar>
           {places.map((p) => (

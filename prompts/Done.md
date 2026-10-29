@@ -2,6 +2,19 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Renamed to FindCache
+
+"FindIt" is already an Android app, so the app is now **FindCache** (the repo keeps its name).
+Test-first: tests expect the new name, plus `appConfig.test.ts` for the app identity.
+- App name, slug, scheme and Android package (`com.gwlester.findcache`, changed before any
+  publication because a Play package id is permanent), screen titles, help/about text, GPX
+  `creator`/document name, export file name (`findcache-YYYY-MM-DD.gpx`), default sharing name
+  ("FindCache user"), release asset `findcache.apk`, workflow artifact name.
+- Deliberately unchanged internal identifiers: SQLite file `findit.db`, the GPX extension
+  namespace and `findit:` prefix, and the `findit-native` module and BLE UUIDs (renaming them
+  would break existing data and cross-version sharing for no user-visible gain).
+- Docs and wireframes regenerated.
+
 ## 2026-10-29: Help, About and licences
 
 Built test-first (content, licence generator, Help button, screens, layout):

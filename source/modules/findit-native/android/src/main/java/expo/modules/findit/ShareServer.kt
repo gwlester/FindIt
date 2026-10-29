@@ -19,7 +19,7 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * BLE GATT server that lets nearby FindIt users download our shared locations.
+ * BLE GATT server that lets nearby FindCache users download our shared locations.
  *
  * Protocol (all values UTF-8):
  *  - INFO  (read):  JSON `{"v":2,"name":"...","count":N}`

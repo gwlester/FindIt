@@ -33,9 +33,9 @@ test('serializePlaces defaults the time to now', () => {
 
 test('exportFileName and FORMATS', () => {
   const now = new Date(Date.UTC(2026, 9, 29, 12));
-  expect(exportFileName('gpx', now)).toBe('findit-2026-10-29.gpx');
-  expect(exportFileName('geojson', now)).toBe('findit-2026-10-29.geojson');
-  expect(exportFileName('gpx')).toMatch(/^findit-\d{4}-\d{2}-\d{2}\.gpx$/);
+  expect(exportFileName('gpx', now)).toBe('findcache-2026-10-29.gpx');
+  expect(exportFileName('geojson', now)).toBe('findcache-2026-10-29.geojson');
+  expect(exportFileName('gpx')).toMatch(/^findcache-\d{4}-\d{2}-\d{2}\.gpx$/);
   expect(FORMATS.gpx.mimeType).toBe('application/gpx+xml');
   expect(FORMATS.geojson.mimeType).toBe('application/geo+json');
 });

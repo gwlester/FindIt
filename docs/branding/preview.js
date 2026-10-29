@@ -27,7 +27,7 @@ ${concepts.map(([n, title, bg]) => `
   <div style="display:flex;gap:16px">
    <div style="width:300px;height:420px;border-radius:24px;background:linear-gradient(#35495e,#1c2833);padding:24px 12px;box-sizing:border-box;display:flex;flex-wrap:wrap;gap:18px 6px;align-content:flex-start">
      ${others.slice(0, 2).map((c) => cell(`<div style="width:56px;height:56px;border-radius:50%;background:${c}"></div>`, 'App')).join('')}
-     ${cell(icon(n, 56, '50%'), 'FindIt')}
+     ${cell(icon(n, 56, '50%'), 'FindCache')}
      ${others.slice(2).map((c) => cell(`<div style="width:56px;height:56px;border-radius:50%;background:${c}"></div>`, 'App')).join('')}
    </div>
    <div style="width:220px;height:420px;border-radius:24px;border:3px solid #333;background:${bg};display:flex;align-items:center;justify-content:center;box-sizing:border-box">

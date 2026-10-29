@@ -96,7 +96,7 @@ describe('sharing my places', () => {
     expect(screen.getByText('You have no places to share yet.')).toBeOnTheScreen();
     await act(async () => setBtState('PoweredOff'));
     expect(screen.getByText(/Bluetooth is off/)).toBeOnTheScreen();
-    expect(screen.getByRole('button', { name: 'Look for nearby FindIt users' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Look for nearby FindCache users' })).toBeDisabled();
     await act(async () => setBtState('Unauthorized'));
     expect(screen.getByText('Bluetooth: Unauthorized')).toBeOnTheScreen();
   });
@@ -113,7 +113,7 @@ describe('keeping the screen awake', () => {
     await u.press(screen.getByRole('button', { name: 'Stop sharing' }));
     expect(activeKeepAwakeTags()).toEqual([]);
 
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     expect(activeKeepAwakeTags()).toEqual(['share']);
     await act(async () => scan.onUser(user('d1', 'Alex', -50)));
     let finish!: (v: Awaited<ReturnType<typeof fetchSharedPlaces>>) => void;
@@ -131,7 +131,7 @@ describe('receiving', () => {
     const alert = mockAlert();
     const db = await renderApp(<ShareScreen />, { places: [place('Oak')] });
 
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     expect(screen.getByText(/Looking…/)).toBeOnTheScreen();
     await act(async () => {
       scan.onUser(user('d1', 'Alex', -50));
@@ -179,7 +179,7 @@ describe('receiving', () => {
     const u = userEvent.setup();
     const alert = mockAlert();
     await renderApp(<ShareScreen />);
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     await act(async () => scan.onUser(user('d1', 'Alex', -50)));
 
     jest.mocked(fetchSharedPlaces).mockResolvedValueOnce({ from: 'Alex', places: [] });
@@ -188,7 +188,7 @@ describe('receiving', () => {
     expect(screen.getByRole('button', { name: 'Import selected' })).toBeDisabled();
     await u.press(screen.getByRole('button', { name: 'Cancel' }));
 
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     await act(async () => scan.onUser(user('d1', 'Alex', -50)));
     jest.mocked(fetchSharedPlaces).mockResolvedValueOnce({
       from: 'Alex',
@@ -198,13 +198,13 @@ describe('receiving', () => {
     await u.press(screen.getByRole('button', { name: 'Import selected' }));
     expect(alert.message('Imported')).toBe('Added 1 place.');
 
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     await act(async () => scan.onUser(user('d1', 'Alex', -50)));
     jest.mocked(fetchSharedPlaces).mockRejectedValueOnce(new Error('Connection lost'));
     await u.press(screen.getByText('Alex'));
     expect(alert.message('Could not download')).toBe('Connection lost');
 
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     await act(async () => scan.onUser(user('d1', 'Alex', -50)));
     jest.mocked(fetchSharedPlaces).mockRejectedValueOnce('odd');
     await u.press(screen.getByText('Alex'));
@@ -217,21 +217,21 @@ describe('receiving', () => {
     await renderApp(<ShareScreen />);
 
     jest.mocked(requestBluetoothPermissions).mockResolvedValueOnce(false);
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     expect(alert.message('Bluetooth permission needed')).toMatch(/find/);
 
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     await u.press(screen.getByRole('button', { name: 'Stop looking' }));
     expect(scan.stop).toHaveBeenCalled();
 
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     await act(async () => scan.onError('Location services off'));
     expect(alert.message('Scan failed')).toBe('Location services off');
-    expect(screen.getByRole('button', { name: 'Look for nearby FindIt users' })).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Look for nearby FindCache users' })).toBeOnTheScreen();
 
     jest.useFakeTimers({ now: 1_000_000 });
     try {
-      await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+      await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
       await act(async () => {
         scan.onUser(user('old', 'Old', -60, 1_000_000 - 20_000));
         scan.onUser(user('new', 'New', -60, 1_000_000));
@@ -266,7 +266,7 @@ describe('found information', () => {
     expect(decodeItem(nativeMock.startSharing.mock.calls[1][2][0]).finds).toEqual([]);
     await u.press(screen.getByRole('button', { name: 'Stop sharing' }));
 
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     await act(async () => scan.onUser(user('d1', 'Alex', -50)));
     jest.mocked(fetchSharedPlaces).mockResolvedValueOnce({
       from: 'Alex',
@@ -287,14 +287,14 @@ describe('sharing history (protocol v2)', () => {
 
     await act(async () => emitNative('onSharePeer', { address: 'A', state: 'connected' }));
     await act(async () => emitNative('onSharePeer', { address: 'A', state: 'disconnected', name: 'Alex', itemsRead: 2 }));
-    // Older FindIt versions don't send a name.
+    // Older FindCache versions don't send a name.
     await act(async () => emitNative('onSharePeer', { address: 'B', state: 'disconnected', itemsRead: 1 }));
     // Connected but downloaded nothing: not a share.
     await act(async () => emitNative('onSharePeer', { address: 'C', state: 'disconnected', name: 'Jo', itemsRead: 0 }));
     await act(async () => emitNative('onSharePeer', { address: 'D', state: 'disconnected', name: 'Kim' }));
 
     expect((await listShareHistory(db as never)).map((s) => [s.name, s.places])).toEqual([
-      ['FindIt user', 1],
+      ['FindCache user', 1],
       ['Alex', 2],
     ]);
     expect(screen.getByRole('button', { name: 'Sharing history (2)' })).toBeOnTheScreen();
@@ -315,7 +315,7 @@ describe('sharing history (protocol v2)', () => {
   it('tells the sharing phone my name when downloading', async () => {
     const u = userEvent.setup();
     await renderApp(<ShareScreen />, { settings: { ...DEFAULT_SETTINGS, displayName: 'Gerald' } });
-    await u.press(screen.getByRole('button', { name: 'Look for nearby FindIt users' }));
+    await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     await act(async () => scan.onUser(user('d1', 'Alex', -50)));
     jest.mocked(fetchSharedPlaces).mockResolvedValueOnce({ from: 'Alex', places: [] });
     await u.press(screen.getByText('Alex'));

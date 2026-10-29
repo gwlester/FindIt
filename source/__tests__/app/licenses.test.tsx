@@ -6,7 +6,7 @@ import licenses from '../../src/help/licenses.json';
 import { useLocalSearchParams } from '../helpers/expoRouterMock';
 import { renderApp } from '../helpers/renderApp';
 
-test('FindIt’s own licence', async () => {
+test('FindCache’s own licence', async () => {
   useLocalSearchParams.mockReturnValue({ kind: 'app' });
   await renderApp(<LicensesScreen />);
   expect(screen.getByText(licenses.app)).toBeOnTheScreen();

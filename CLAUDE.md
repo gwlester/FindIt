@@ -1,4 +1,4 @@
-# FindIt: working agreement
+# FindCache: working agreement
 
 The app lives in `source/` (Expo / React Native, Android only); see `source/AGENTS.md` for
 Expo-specific rules, `docs/` for architecture, and `prompts/ToDo.md` / `prompts/Done.md` for

@@ -1,8 +1,8 @@
-# FindIt documentation
+# FindCache documentation
 
-FindIt is a simple geocache-style Android app: keep a list of named places, pick one,
+FindCache is a simple geocache-style Android app: keep a list of named places, pick one,
 and a compass points you to it with the approximate distance, an uncertainty radius
-and live GPS satellite counts. Places can be swapped with other FindIt users nearby over
+and live GPS satellite counts. Places can be swapped with other FindCache users nearby over
 Bluetooth Low Energy. All data is stored on the phone in a local SQLite database.
 
 | Document | What's in it |

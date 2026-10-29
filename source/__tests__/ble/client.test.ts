@@ -59,8 +59,8 @@ describe('scanForNearbyUsers', () => {
     bleState.scanCallback!(null, null);
     expect(onUser.mock.calls.map((c) => [c[0].id, c[0].name, c[0].rssi])).toEqual([
       ['d1', 'Alex', -50],
-      ['d2', 'FindIt user', null],
-      ['d3', 'FindIt user', -80],
+      ['d2', 'FindCache user', null],
+      ['d3', 'FindCache user', -80],
     ]);
     stop();
     expect(managerMethods.stopDeviceScan).toHaveBeenCalled();
@@ -144,7 +144,7 @@ describe('sending my name (protocol v2)', () => {
     expect(device.writtenName).toBe('Gerald');
   });
 
-  it('still works with an older FindIt that has no name characteristic', async () => {
+  it('still works with an older FindCache that has no name characteristic', async () => {
     const client = loadClient();
     const device = fakeDevice([encodeItem({ name: 'A', latitude: 1, longitude: 2, accuracy: null, notes: '' })]);
     const original = device.writeCharacteristicWithResponseForService.getMockImplementation()!;

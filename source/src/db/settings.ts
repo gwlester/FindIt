@@ -7,7 +7,7 @@ import type { MapLayer } from '../lib/mapSources';
 import { DEFAULT_SEARCH_AREA_M } from '../lib/searchArea';
 
 export type Settings = {
-  /** Name other FindIt users see when we share. */
+  /** Name other FindCache users see when we share. */
   displayName: string;
   units: Units;
   /** Ask the GNSS chipset for full tracking on the compass/averaging screens (more battery). */
@@ -27,7 +27,7 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  displayName: 'FindIt user',
+  displayName: 'FindCache user',
   units: 'metric',
   highAccuracyGps: true,
   searchAreaDistanceM: DEFAULT_SEARCH_AREA_M,

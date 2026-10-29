@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "FindIt",
-    "slug": "findit",
-    "scheme": "findit",
+    "name": "FindCache",
+    "slug": "findcache",
+    "scheme": "findcache",
     "version": "1.0.0",
     "platforms": [
       "android"
@@ -11,7 +11,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "android": {
-      "package": "com.gwlester.findit",
+      "package": "com.gwlester.findcache",
       "adaptiveIcon": {
         "backgroundColor": "#0B3D6B",
         "foregroundImage": "./assets/android-icon-foreground.png",

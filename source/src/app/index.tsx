@@ -105,7 +105,7 @@ export default function PlacesScreen() {
         ListEmptyComponent={
           <Text style={[styles.empty, { color: theme.muted }]}>
             No places yet. Add one from your current position, enter coordinates, or receive some from a nearby
-            FindIt user.
+            FindCache user.
           </Text>
         }
         renderItem={({ item }) => (

@@ -27,7 +27,7 @@ export default function RootLayout() {
             contentStyle: { backgroundColor: theme.background },
           }}
         >
-          <Stack.Screen name="index" options={{ title: 'FindIt' }} />
+          <Stack.Screen name="index" options={{ title: 'FindCache' }} />
           <Stack.Screen name="place" options={{ title: 'Place', headerRight: help('place') }} />
           <Stack.Screen name="compass/[id]" options={{ title: 'Find it', headerRight: help('compass') }} />
           <Stack.Screen name="share" options={{ title: 'Share nearby', headerRight: help('share') }} />
@@ -36,7 +36,7 @@ export default function RootLayout() {
           <Stack.Screen name="offline-maps" options={{ title: 'Offline maps', headerRight: help('offline-maps') }} />
           <Stack.Screen name="files" options={{ title: 'Import / Export', headerRight: help('files') }} />
           <Stack.Screen name="help" options={{ title: 'Help' }} />
-          <Stack.Screen name="about" options={{ title: 'About FindIt' }} />
+          <Stack.Screen name="about" options={{ title: 'About FindCache' }} />
           <Stack.Screen name="licenses" options={{ title: 'Licences' }} />
           <Stack.Screen name="settings" options={{ title: 'Settings', headerRight: help('settings') }} />
         </Stack>

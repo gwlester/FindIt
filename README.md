@@ -1,4 +1,4 @@
-# FindIt
+# FindCache
 
 [![Build Android](https://github.com/gwlester/FindIt/actions/workflows/build-android.yml/badge.svg?branch=master)](https://github.com/gwlester/FindIt/actions/workflows/build-android.yml)
 [![Coverage](https://codecov.io/gh/gwlester/FindIt/graph/badge.svg?branch=master)](https://codecov.io/gh/gwlester/FindIt)
@@ -9,12 +9,12 @@ Simple geocache-type app for Android.
 - Keep a list of named places (stored locally in SQLite).
 - Pick one and a compass points to it. The rose keeps N/E/S/W on the real directions,
   with the approximate distance, an uncertainty radius and live GPS satellite counts below it.
-- Share places with other FindIt users nearby over Bluetooth LE.
+- Share places with other FindCache users nearby over Bluetooth LE.
 - Import and export places as GPX (geocaching.com, GPS units, other geocaching apps) or GeoJSON.
 
 ## Download
 
-**[⬇ Download the latest FindIt release (findit.apk)](https://github.com/gwlester/findit/releases/latest/download/findit.apk)**
+**[⬇ Download the latest FindCache release (findcache.apk)](https://github.com/gwlester/findit/releases/latest/download/findcache.apk)**
 ([release notes and older versions](https://github.com/gwlester/findit/releases/latest)).
 Android 7+ on 64-bit ARM phones. Open the file on the phone and allow installs from unknown
 sources. Releases use date-based versions (e.g. `2026.10.28.001`), one per successful

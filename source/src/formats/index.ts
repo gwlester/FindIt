@@ -34,7 +34,7 @@ export function serializePlaces(places: ExchangePlace[], format: ExchangeFormat,
   return format === 'gpx' ? toGpx(places, now) : toGeoJson(places);
 }
 
-/** e.g. findit-2026-10-29.gpx */
+/** e.g. findcache-2026-10-29.gpx */
 export function exportFileName(format: ExchangeFormat, now: Date = new Date()): string {
-  return `findit-${now.toISOString().slice(0, 10)}.${FORMATS[format].extension}`;
+  return `findcache-${now.toISOString().slice(0, 10)}.${FORMATS[format].extension}`;
 }

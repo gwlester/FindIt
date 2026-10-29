@@ -7,7 +7,7 @@ const root = path.join(__dirname, '..', '..');
 const installed = (name: string) =>
   JSON.parse(fs.readFileSync(path.join(root, 'node_modules', name, 'package.json'), 'utf8')).version;
 
-test('includes FindIt’s own licence (the repository LICENSE)', () => {
+test('includes FindCache’s own licence (the repository LICENSE)', () => {
   expect(licenses.app).toBe(fs.readFileSync(path.join(root, '..', 'LICENSE'), 'utf8').trim());
 });
 

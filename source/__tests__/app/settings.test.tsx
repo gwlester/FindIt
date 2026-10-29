@@ -11,7 +11,7 @@ import { createTestDb } from '../helpers/testDb';
 test('edits and saves every setting', async () => {
   const user = userEvent.setup();
   const db = await renderApp(<SettingsScreen />);
-  const name = screen.getByDisplayValue('FindIt user');
+  const name = screen.getByDisplayValue('FindCache user');
   await user.clear(name);
   await user.type(name, 'Gerald');
   await user.press(screen.getByRole('checkbox', { name: /Imperial/ }));
@@ -27,7 +27,7 @@ test('requires a name', async () => {
   const user = userEvent.setup();
   const alert = mockAlert();
   await renderApp(<SettingsScreen />);
-  await user.clear(screen.getByDisplayValue('FindIt user'));
+  await user.clear(screen.getByDisplayValue('FindCache user'));
   await user.press(screen.getByRole('button', { name: 'Save' }));
   expect(alert.message('Name required')).toMatch(/recognise you/);
   expect(router.back).not.toHaveBeenCalled();

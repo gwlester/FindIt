@@ -7,7 +7,7 @@ import { useTheme } from '../lib/theme';
 
 type Kind = 'app' | 'open-source' | 'map-data';
 
-const TITLES: Record<Kind, string> = { app: 'FindIt licence', 'open-source': 'Open-source licences', 'map-data': 'Map data' };
+const TITLES: Record<Kind, string> = { app: 'FindCache licence', 'open-source': 'Open-source licences', 'map-data': 'Map data' };
 
 const MAP_DATA = [
   {
@@ -30,7 +30,7 @@ const MAP_DATA = [
   },
 ];
 
-/** FindIt's licence, the bundled open-source licences, or the map data credits (`kind`). */
+/** FindCache's licence, the bundled open-source licences, or the map data credits (`kind`). */
 export default function LicensesScreen() {
   const theme = useTheme();
   const { kind: param } = useLocalSearchParams<{ kind?: string }>();
@@ -57,7 +57,7 @@ export default function LicensesScreen() {
 
       {kind === 'open-source' ? (
         <>
-          <Text style={{ color: theme.muted }}>FindIt is built with these open-source projects. Tap one to read its licence.</Text>
+          <Text style={{ color: theme.muted }}>FindCache is built with these open-source projects. Tap one to read its licence.</Text>
           {heading('Bundled JavaScript packages')}
           {licenses.packages.map((p) => {
             const key = `${p.name}@${p.version}`;
