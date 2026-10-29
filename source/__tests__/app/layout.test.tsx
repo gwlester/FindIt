@@ -18,5 +18,11 @@ test('migrates the database, then renders every route', async () => {
   for (const name of ['place', 'compass/[id]', 'share', 'share-history', 'offline-maps', 'files', 'settings']) {
     expect(within(screen.getByTestId(`screen-${name}`)).getByRole('button', { name: 'Help' })).toBeOnTheScreen();
   }
+  // Settings is one tap away from every screen except Settings itself (the places screen and the
+  // map put their own button in their header).
+  for (const name of ['place', 'compass/[id]', 'share', 'share-history', 'offline-maps', 'files', 'help', 'about', 'licenses']) {
+    expect(within(screen.getByTestId(`screen-${name}`)).getByRole('button', { name: 'Settings' })).toBeOnTheScreen();
+  }
+  expect(within(screen.getByTestId('screen-settings')).queryByRole('button', { name: 'Settings' })).not.toBeOnTheScreen();
   expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 3 });
 });

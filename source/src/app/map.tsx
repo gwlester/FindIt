@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View, type NativeSyntheticEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { SettingsButton } from '../components/SettingsButton';
 import { HelpButton } from '../components/HelpButton';
 import { Button } from '../components/ui';
 import { findSummaries } from '../db/finds';
@@ -105,6 +106,7 @@ export default function MapScreen() {
               <Pressable accessibilityRole="button" onPress={() => router.push('/offline-maps')} hitSlop={12}>
                 <Text style={[styles.headerButton, { color: theme.accent }]}>Offline maps</Text>
               </Pressable>
+              <SettingsButton />
               <HelpButton topic="map" />
             </View>
           ),

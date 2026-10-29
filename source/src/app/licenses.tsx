@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import licenses from '../help/licenses.json';
+import { useBottomPadding } from '../lib/insets';
 import { useTheme } from '../lib/theme';
 
 type Kind = 'app' | 'open-source' | 'map-data';
@@ -33,6 +34,7 @@ const MAP_DATA = [
 /** FindCache's licence, the bundled open-source licences, or the map data credits (`kind`). */
 export default function LicensesScreen() {
   const theme = useTheme();
+  const bottom = useBottomPadding();
   const { kind: param } = useLocalSearchParams<{ kind?: string }>();
   const kind: Kind = param === 'app' || param === 'map-data' ? param : 'open-source';
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export default function LicensesScreen() {
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView testID="scroll" contentContainerStyle={[styles.content, { paddingBottom: bottom }]}>
       <Stack.Screen options={{ title: TITLES[kind] }} />
       {kind === 'app' ? <Text style={mono}>{licenses.app}</Text> : null}
 

@@ -95,6 +95,12 @@ class Screen:
             frame.append(
                 f"<text x='{W-20}' y='69' {FONT} font-size='15' font-weight='bold' fill='{ACCENT}' text-anchor='end'>{escape(self.header_right)}</text>"
             )
+        # Settings is one tap away from every screen, except the places screen (its own
+        # "Settings" link) and Settings itself.
+        if self.title not in ("FindCache", "Settings"):
+            right = self.header_right or ""
+            gear_x = W - 20 if not right else W - 52 if right == "?" else W - 20 - int(len(right) * 8.5) - 16
+            frame.append(f"<text x='{gear_x}' y='71' {FONT} font-size='20' fill='{ACCENT}' text-anchor='end'>⚙</text>")
         if getattr(self, "header_extra", None):
             frame.append(
                 f"<text x='{W-100}' y='69' {FONT} font-size='15' font-weight='bold' fill='{ACCENT}' text-anchor='end'>{escape(self.header_extra)}</text>"

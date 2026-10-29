@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Image, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Button } from '../components/ui';
+import { useBottomPadding } from '../lib/insets';
 import { useTheme } from '../lib/theme';
 
 const ICON = require('../../assets/icon.png');
@@ -10,11 +11,12 @@ const ICON = require('../../assets/icon.png');
 /** App name, version, a short description and the licences. */
 export default function AboutScreen() {
   const theme = useTheme();
+  const bottom = useBottomPadding();
   const version = Constants.expoConfig?.version ?? 'unknown';
   const licences = (kind: string) => router.push({ pathname: '/licenses', params: { kind } });
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView testID="scroll" contentContainerStyle={[styles.content, { paddingBottom: bottom }]}>
       <Image source={ICON} style={styles.icon} accessibilityIgnoresInvertColors />
       <Text accessibilityRole="header" style={[styles.title, { color: theme.text }]}>
         FindCache

@@ -5,6 +5,7 @@
 <line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
 <text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>About FindCache</text>
 <text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='340' y='71' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' text-anchor='end'>⚙</text>
 <circle cx='180' cy='160' r='48' fill='#1F6FB2'/>
 <path d='M180 200 L156 165 A30 30 0 1 1 204 165 Z' fill='#00AE58'/>
 <polygon points='180,128 186,148 200,152 186,156 180,176 174,156 160,152 174,148' fill='#fff'/>
