@@ -107,29 +107,30 @@ def places():
     s = Screen("FindIt", header_right="Settings", back=False)
     s.header_extra = "Files"
     s.text(W / 2, 112, "Tap a place to find it · long-press to edit", 11, MUTED, anchor="middle")
+    s.checkbox(16, 122, "Hide found places", "2 found places hidden", False)
     rows = [
-        ("Bridge micro", "30.44102° N, 91.18311° W", "From Alex", "1.42 km"),
-        ("Creek crossing", "30.42011° N, 91.15550° W", None, "3.38 km"),
-        ("Lakeside ammo can", "30.40911° N, 91.17208° W", "From Sam", "5.31 km"),
-        ("Library bench", "30.41277° N, 91.17702° W", None, "4.80 km"),
-        ("Old oak tree cache", "30.43520° N, 91.19030° W", None, "125 m"),
-        ("Water tower", "30.45120° N, 91.20102° W", "From Alex", "1.77 km"),
-        ("Zoo gate", "30.53120° N, 91.10102° W", None, "12.4 km"),
-        ("Zydeco park", "30.52011° N, 91.12550° W", None, "13.0 km"),
+        ("Bridge micro", "30.44102° N, 91.18311° W", "From Alex", None, "1.42 km"),
+        ("Creek crossing", "30.42011° N, 91.15550° W", None, "✓ Found 2026-10-29", "3.38 km"),
+        ("Lakeside ammo can", "30.40911° N, 91.17208° W", "From Sam", "✓ Found by Sam 2026-10-20", "5.31 km"),
+        ("Library bench", "30.41277° N, 91.17702° W", None, "✓ Found 3 times, last 2026-10-28", "4.80 km"),
+        ("Old oak tree cache", "30.43520° N, 91.19030° W", None, None, "125 m"),
+        ("Water tower", "30.45120° N, 91.20102° W", "From Alex", None, "1.77 km"),
+        ("Zoo gate", "30.53120° N, 91.10102° W", None, None, "12.4 km"),
     ]
-    y = 126
-    s.clip_start("places", 0, 120, W, H - 86 - 120)
-    for name, coords, src, dist in rows:
-        h = 76 if src else 60
+    y = 166
+    s.clip_start("places", 0, 160, W, H - 86 - 160)
+    for name, coords, src, found, dist in rows:
+        extra = [x for x in (src, found) if x]
+        h = 60 + 16 * len(extra)
         s.rect(16, y, W - 32, h, fill="#fff", r=12)
         s.text(30, y + 24, name, 16, weight="bold")
         s.text(30, y + 44, coords, 12, MUTED)
-        if src:
-            s.text(30, y + 62, src, 12, MUTED)
+        for i, line in enumerate(extra):
+            s.text(30, y + 62 + 16 * i, line, 12, ACCENT if line.startswith("✓") else MUTED, "bold" if line.startswith("✓") else "normal")
         s.text(W - 30, y + h / 2 + 5, dist, 15, ACCENT, "bold", "end")
         y += h + 10
     s.clip_end()
-    s.scrollbar(W - 9, 126, H - 86 - 132, 0.7)
+    s.scrollbar(W - 9, 166, H - 86 - 172, 0.7)
     s.add(f"<line x1='0' y1='{H-86}' x2='{W}' y2='{H-86}' stroke='{LINE}'/>")
     s.button(16, H - 72, 156, "Add place")
     s.button(188, H - 72, 156, "Share nearby", filled=False)
@@ -315,15 +316,36 @@ def compass_in_search_area():
 
 def compass():
     s = Screen("Old oak tree cache")
-    s.text(W / 2, 112, "30.43520° N, 91.19030° W", 13, MUTED, anchor="middle")
+    s.text(W / 2, 112, "30.43520° N, 91.19030° W · ✓ Found 2026-10-20", 12, MUTED, anchor="middle")
     s.add(compass_svg(W / 2, 270, 140, heading=30, bearing=75))
     s.text(W / 2, 466, "≈ 125 m", 40, INK, "bold", "middle")
     s.text(W / 2, 490, "uncertainty radius ± 6 m", 15, MUTED, anchor="middle")
-    s.button(16, 502, W - 32, "Average my position", filled=False, h=40)
+    s.button(16, 502, 160, "Average position", filled=False, h=40)
+    s.button(184, 502, W - 200, "Mark found", h=40)
     compass_details(s, 554)
     s.note(16, 730, "Rose: N/E/S/W stay true; ▲ = phone heading; arrow → target.")
     s.note(16, 744, "Smoothed heading/position. Inside radius → “look around!”")
     s.render("03-compass")
+
+
+def compass_mark_found():
+    s = Screen("Old oak tree cache")
+    s.text(W / 2, 112, "30.43520° N, 91.19030° W", 13, MUTED, anchor="middle")
+    s.add(compass_svg(W / 2, 270, 140, heading=30, bearing=75))
+    s.add(f"<rect x='0' y='88' width='{W}' height='{H-88}' fill='#000' fill-opacity='0.35'/>")
+    s.rect(24, 300, W - 48, 236, fill="#fff", stroke=INK, r=14)
+    s.text(40, 334, "Mark as found", 18, weight="bold")
+    s.text(40, 362, "Comment", 12, MUTED, "bold")
+    s.rect(40, 370, W - 80, 80, fill="#fff")
+    s.text(52, 396, "Under the roots, dry log book", 14)
+    s.button(40, 470, 132, "Cancel", filled=False)
+    s.button(188, 470, 132, "Save find")
+    s.note(16, 580, "Comment is optional. Setting “Once per place”: marking again")
+    s.note(16, 594, "shows “Update find” and replaces the date and comment.")
+    s.note(16, 608, "“Keep a log”: every find is kept. “Off”: no Mark found button.")
+    s.note(16, 630, "Exporting or sharing found places asks:")
+    s.note(16, 644, "“Include found information?” → Include / Leave out.")
+    s.render("03e-compass-mark-found")
 
 
 def compass_averaging():
@@ -401,6 +423,27 @@ def receive():
     s.button(188, 350, 142, "Import selected")
     share_section(s, 416, 744, "share-list-2")
     s.render("05-share-import")
+
+
+def settings_more():
+    s = Screen("Settings")
+    s.text(W / 2, 108, "(scrolled down)", 11, MUTED, anchor="middle")
+    s.rect(16, 118, W - 32, 150, fill=FILL, r=12)
+    s.text(30, 144, "Search area", 17, weight="bold")
+    s.checkbox(30, 156, "Always show the arrow", "Otherwise, close to the cache the compass", False)
+    s.text(64, 199, "shows a map of the search area.", 12, MUTED)
+    s.text(30, 224, "Show the search area within", 12, MUTED, "bold")
+    for x, sym in ((44, "−"), (230, "+")):
+        s.add(f"<circle cx='{x+22}' cy='248' r='16' fill='none' stroke='{ACCENT}' stroke-width='2'/>")
+        s.text(x + 22, 255, sym, 20, ACCENT, "bold", "middle")
+    s.text(156, 255, "50 m", 18, weight="bold", anchor="middle")
+    s.rect(16, 282, W - 32, 176, fill=FILL, r=12)
+    s.text(30, 308, "Found places", 17, weight="bold")
+    s.checkbox(30, 320, "Off", "Don’t track which places I’ve found.", False)
+    s.checkbox(30, 364, "Once per place", "Marking found again updates the date and comment.", True)
+    s.checkbox(30, 408, "Keep a log", "Every find is kept, with its date and comment.", False)
+    s.button(16, 472, W - 32, "Save")
+    s.render("06b-settings-more")
 
 
 def files():
@@ -489,6 +532,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, share, receive, settings, files, files_import):
+    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, settings, settings_more, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

@@ -1,0 +1,35 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Settings</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='180.0' y='108' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#888' font-weight='normal' text-anchor='middle'>(scrolled down)</text>
+<rect x='16' y='118' width='328' height='150' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='144' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Search area</text>
+<rect x='30' y='156' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='167' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Always show the arrow</text>
+<text x='64' y='183' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Otherwise, close to the cache the compass</text>
+<text x='64' y='199' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>shows a map of the search area.</text>
+<text x='30' y='224' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='bold' text-anchor='start'>Show the search area within</text>
+<circle cx='66' cy='248' r='16' fill='none' stroke='#555' stroke-width='2'/>
+<text x='66' y='255' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' font-weight='bold' text-anchor='middle'>−</text>
+<circle cx='252' cy='248' r='16' fill='none' stroke='#555' stroke-width='2'/>
+<text x='252' y='255' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' font-weight='bold' text-anchor='middle'>+</text>
+<text x='156' y='255' font-family='Helvetica, Arial, sans-serif' font-size='18' fill='#333' font-weight='bold' text-anchor='middle'>50 m</text>
+<rect x='16' y='282' width='328' height='176' rx='12' fill='#f2f2f2' stroke='#bbb' stroke-width='1.5'/>
+<text x='30' y='308' font-family='Helvetica, Arial, sans-serif' font-size='17' fill='#333' font-weight='bold' text-anchor='start'>Found places</text>
+<rect x='30' y='320' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='331' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Off</text>
+<text x='64' y='347' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Don’t track which places I’ve found.</text>
+<rect x='30' y='364' width='22' height='22' rx='5' fill='#555' stroke='#555' stroke-width='2'/>
+<path d='M35 375 l5 5 l8 -10' stroke='#fff' stroke-width='2.5' fill='none'/>
+<text x='64' y='375' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Once per place</text>
+<text x='64' y='391' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Marking found again updates the date and comment.</text>
+<rect x='30' y='408' width='22' height='22' rx='5' fill='none' stroke='#555' stroke-width='2'/>
+<text x='64' y='419' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#333' font-weight='normal' text-anchor='start'>Keep a log</text>
+<text x='64' y='435' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Every find is kept, with its date and comment.</text>
+<rect x='16' y='472' width='328' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='499.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Save</text>
+</svg>

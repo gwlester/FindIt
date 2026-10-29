@@ -57,7 +57,22 @@ CREATE TABLE locations (
   created_at INTEGER NOT NULL           -- ms since epoch
 );
 CREATE TABLE settings (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);
+-- v2
+CREATE TABLE finds (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  place_id INTEGER NOT NULL,           -- deleted together with its place
+  found_at INTEGER NOT NULL,           -- ms since epoch
+  comment TEXT NOT NULL DEFAULT '',
+  finder TEXT NOT NULL DEFAULT ''      -- '' = me, otherwise the FindIt user it came from
+);
 ```
+
+Finds (`src/db/finds.ts`): in **once** mode, marking again updates my latest find; in **log**
+mode a find is added. Finds travel in exports and Bluetooth sharing only when the user says so:
+GPX uses `<sym>Geocache Found</sym>` plus `<findit:find time>` (comment, finder) extensions;
+GeoJSON a `finds` list; Bluetooth items an `f` array (oldest dropped first to fit). Imported
+finds marked as the sender's own are attributed to the sender (Bluetooth) or kept as mine (a
+file, e.g. my own export).
 
 Migrations live in `source/src/db/schema.ts` and are tracked with `PRAGMA user_version`.
 To change the schema, append a new migration to the list; never edit an old one.
