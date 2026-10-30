@@ -2,6 +2,15 @@
 
 Completed work, newest first.
 
+## 2026-10-29: Cleanup workflow tolerates already-deleted items
+
+A cleanup run failed ("Could not find a cache matching …") because the cache it had just listed
+was deleted by something else first. Every delete in `.github/workflows/cleanup.yml` (caches,
+branches, artifacts, runs) now goes through `ignore_missing`: "not found / 404 / does not exist" is
+reported as "Already deleted" and is not a failure; any other error (e.g. 403) still fails.
+Checked by running each step's script against a fake `gh` (already gone: exit 0; permission
+error: exit 1), after reproducing the old failure the same way.
+
 ## 2026-10-29: Download QR code and device-name default
 
 Test-first.
