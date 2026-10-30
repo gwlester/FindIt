@@ -35,9 +35,22 @@ jobs:
     steps:
       - name: Delete caches for the closed PR
         run: |
+          # Something already deleted (by another run, a person, or the API) is not a failure;
+          # any other error (permissions, network) still is.
+          ignore_missing() {
+            local out
+            if out=$("$@" 2>&1); then
+              [ -z "$out" ] || echo "$out"
+            elif grep -qiE 'could not find|not found|HTTP 404|does not exist' <<<"$out"; then
+              echo "Already deleted: ${*: -1}"
+            else
+              echo "$out" >&2
+              return 1
+            fi
+          }
           ref="refs/pull/${{ github.event.pull_request.number }}/merge"
           gh cache list --ref "$ref" --limit 1000 --json id --jq '.[].id' |
-            while read -r id; do gh cache delete "$id"; done
+            while read -r id; do ignore_missing gh cache delete "$id"; done
 
   # Branches deleted with the workflow token don't trigger other workflows, so this
   # also removes the branch's caches instead of relying on the `delete` event.
@@ -55,15 +68,22 @@ jobs:
         env:
           BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
-          if gh api -X DELETE "repos/$GH_REPO/git/refs/heads/$BRANCH" 2> err.txt; then
-            echo "Deleted branch $BRANCH"
-          elif grep -q "Reference does not exist" err.txt; then
-            echo "Branch $BRANCH was already deleted"
-          else
-            cat err.txt; exit 1
-          fi
+          # Something already deleted (by another run, a person, or the API) is not a failure;
+          # any other error (permissions, network) still is.
+          ignore_missing() {
+            local out
+            if out=$("$@" 2>&1); then
+              [ -z "$out" ] || echo "$out"
+            elif grep -qiE 'could not find|not found|HTTP 404|does not exist' <<<"$out"; then
+              echo "Already deleted: ${*: -1}"
+            else
+              echo "$out" >&2
+              return 1
+            fi
+          }
+          ignore_missing gh api -X DELETE "repos/$GH_REPO/git/refs/heads/$BRANCH"
           gh cache list --ref "refs/heads/$BRANCH" --limit 1000 --json id --jq '.[].id' |
-            while read -r id; do gh cache delete "$id"; done
+            while read -r id; do ignore_missing gh cache delete "$id"; done
 
   branch-caches:
     if: github.event_name == 'delete' && github.event.ref_type == 'branch'
@@ -73,8 +93,21 @@ jobs:
         env:
           BRANCH: ${{ github.event.ref }}
         run: |
+          # Something already deleted (by another run, a person, or the API) is not a failure;
+          # any other error (permissions, network) still is.
+          ignore_missing() {
+            local out
+            if out=$("$@" 2>&1); then
+              [ -z "$out" ] || echo "$out"
+            elif grep -qiE 'could not find|not found|HTTP 404|does not exist' <<<"$out"; then
+              echo "Already deleted: ${*: -1}"
+            else
+              echo "$out" >&2
+              return 1
+            fi
+          }
           gh cache list --ref "refs/heads/$BRANCH" --limit 1000 --json id --jq '.[].id' |
-            while read -r id; do gh cache delete "$id"; done
+            while read -r id; do ignore_missing gh cache delete "$id"; done
 
   sweep:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
@@ -85,6 +118,19 @@ jobs:
     steps:
       - name: Delete stale branches (merged, no open pull request)
         run: |
+          # Something already deleted (by another run, a person, or the API) is not a failure;
+          # any other error (permissions, network) still is.
+          ignore_missing() {
+            local out
+            if out=$("$@" 2>&1); then
+              [ -z "$out" ] || echo "$out"
+            elif grep -qiE 'could not find|not found|HTTP 404|does not exist' <<<"$out"; then
+              echo "Already deleted: ${*: -1}"
+            else
+              echo "$out" >&2
+              return 1
+            fi
+          }
           default=$(gh api "repos/$GH_REPO" --jq .default_branch)
           gh api --paginate "repos/$GH_REPO/branches?per_page=100" --jq '.[] | "\(.name) \(.commit.sha)"' |
             while read -r branch sha; do
@@ -92,36 +138,75 @@ jobs:
               merged=$(gh api "repos/$GH_REPO/commits/$sha/pulls" --jq '[.[] | select(.merged_at != null)] | length')
               open=$(gh api "repos/$GH_REPO/pulls?state=open&head=${GH_REPO%%/*}:$branch" --jq 'length')
               if [ "$merged" -gt 0 ] && [ "$open" -eq 0 ]; then
-                gh api -X DELETE "repos/$GH_REPO/git/refs/heads/$branch" && echo "Deleted stale branch $branch"
+                ignore_missing gh api -X DELETE "repos/$GH_REPO/git/refs/heads/$branch" && echo "Deleted stale branch $branch"
               fi
             done
 
       - name: Delete artifacts older than 7 days
         run: |
+          # Something already deleted (by another run, a person, or the API) is not a failure;
+          # any other error (permissions, network) still is.
+          ignore_missing() {
+            local out
+            if out=$("$@" 2>&1); then
+              [ -z "$out" ] || echo "$out"
+            elif grep -qiE 'could not find|not found|HTTP 404|does not exist' <<<"$out"; then
+              echo "Already deleted: ${*: -1}"
+            else
+              echo "$out" >&2
+              return 1
+            fi
+          }
           cutoff=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
           gh api --paginate "repos/$GH_REPO/actions/artifacts?per_page=100" \
             --jq ".artifacts[] | select(.expired == false and .created_at < \"$cutoff\") | .id" |
-            while read -r id; do gh api -X DELETE "repos/$GH_REPO/actions/artifacts/$id"; done
+            while read -r id; do ignore_missing gh api -X DELETE "repos/$GH_REPO/actions/artifacts/$id"; done
 
       - name: Delete caches for branches that no longer exist
         run: |
+          # Something already deleted (by another run, a person, or the API) is not a failure;
+          # any other error (permissions, network) still is.
+          ignore_missing() {
+            local out
+            if out=$("$@" 2>&1); then
+              [ -z "$out" ] || echo "$out"
+            elif grep -qiE 'could not find|not found|HTTP 404|does not exist' <<<"$out"; then
+              echo "Already deleted: ${*: -1}"
+            else
+              echo "$out" >&2
+              return 1
+            fi
+          }
           branches=$(gh api --paginate "repos/$GH_REPO/branches?per_page=100" --jq '.[].name')
           gh cache list --limit 1000 --json id,ref --jq '.[] | "\(.id) \(.ref)"' |
             while read -r id ref; do
               case "$ref" in
                 refs/heads/*)
-                  if ! grep -qxF "${ref#refs/heads/}" <<<"$branches"; then gh cache delete "$id"; fi ;;
+                  if ! grep -qxF "${ref#refs/heads/}" <<<"$branches"; then ignore_missing gh cache delete "$id"; fi ;;
                 refs/pull/*)
                   pr=$(cut -d/ -f3 <<<"$ref")
                   state=$(gh pr view "$pr" --json state --jq .state 2>/dev/null || echo CLOSED)
-                  if [ "$state" != "OPEN" ]; then gh cache delete "$id"; fi ;;
+                  if [ "$state" != "OPEN" ]; then ignore_missing gh cache delete "$id"; fi ;;
               esac
             done
 
       - name: Delete workflow runs older than 30 days
         run: |
+          # Something already deleted (by another run, a person, or the API) is not a failure;
+          # any other error (permissions, network) still is.
+          ignore_missing() {
+            local out
+            if out=$("$@" 2>&1); then
+              [ -z "$out" ] || echo "$out"
+            elif grep -qiE 'could not find|not found|HTTP 404|does not exist' <<<"$out"; then
+              echo "Already deleted: ${*: -1}"
+            else
+              echo "$out" >&2
+              return 1
+            fi
+          }
           cutoff=$(date -u -d '30 days ago' +%Y-%m-%d)
           gh api --paginate "repos/$GH_REPO/actions/runs?per_page=100&created=<$cutoff" \
             --jq '.workflow_runs[] | select(.status == "completed") | .id' |
-            while read -r id; do gh api -X DELETE "repos/$GH_REPO/actions/runs/$id"; done
+            while read -r id; do ignore_missing gh api -X DELETE "repos/$GH_REPO/actions/runs/$id"; done
 
