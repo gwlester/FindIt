@@ -13,6 +13,9 @@ Assets live in [`store/`](../store):
 | `store/graphics/feature-graphic-1024x500.png` | Feature graphic (generated, see AI declaration) |
 | `store/screenshots/phone/01…06-*.png` | Phone screenshots, 1350×2560, captioned (upload these) |
 | `store/screenshots/raw/01…06-*.png` | The same six as captured, 1080×2400, no frame |
+| `store/screenshots/tablet-7/01…06-*.png` | 7-inch tablet screenshots, 1200×1785 (portrait; `raw/` holds the uncropped 1200×1920 captures) |
+| `store/screenshots/tablet-10/01…06-*.png` | 10-inch tablet screenshots, 1600×2432 (`raw/` holds the uncropped 1600×2560 captures) |
+| `store/PLAY-CONSOLE-ANSWERS.md` | Step-by-step answers for every Play Console prompt |
 
 ## 1. Developer account (same as the Virtual Church Musician apps)
 
@@ -99,9 +102,11 @@ a rendered web page is safer than a GitHub blob).
   1350×2560): places list, compass, map, share, import/export, settings. Captured on an
   Android 14 emulator (x86_64 build of the release APK) with five made-up places near Austin, TX and a
   mocked GPS fix, so no real locations appear. The tiles are real OpenFreeMap data.
-- **7-inch and 10-inch tablet screenshots:** optional, not captured. The app is portrait-only and
-  not tablet-optimised, so there are none yet. Recapture on the `vcm_tablet_7` and
-  `vcm_tablet_10` AVDs if you want them.
+- **7-inch and 10-inch tablet screenshots:** the same six screens (no captions), portrait,
+  with the taskbar cropped off. The app is portrait-only, so a landscape tablet would show it
+  letterboxed; the emulator is rotated to portrait instead. Captured on Android 14 emulators
+  (`findcache_tablet_7`, set to 1920×1200 at 320 dpi, and `findcache_tablet_10`, 2560×1600),
+  with the same made-up places and a mocked fix.
 - **Recapturing:** build an x86_64 release APK (`npx expo prebuild --platform android` then
   `./gradlew assembleRelease -PreactNativeArchitectures=x86_64` in `source/android`; the CI APK is
   arm64 only and will not load on an x86_64 emulator), install, grant the location and Bluetooth
@@ -151,7 +156,7 @@ Answer **Label assets as created or edited using AI**, then per asset:
 
 If Play Console asks for a **location permission** declaration or a "location in the foreground" video, the use is: show distance and bearing to a saved place while the screen is open.
 
-## 6. Release build (**TODO**: not ready to upload)
+## 6. Release build (CI ready; **TODO** add the keystore secrets)
 
 - The CI build produces a **debug-signed arm64 APK** (`findcache.apk`). Play needs a **signed
   AAB** (`./gradlew bundleRelease`) with an **upload keystore**, and a 64-bit build (arm64-v8a is
@@ -160,7 +165,8 @@ If Play Console asks for a **location permission** declaration or a "location in
   `ANDROID_RELEASE_KEYSTORE_BASE64` plus `…_PASSWORD`, alias and key password secrets into a
   keystore. Reuse the pattern (a separate upload key for FindCache is cleaner) and enrol the app
   in **Play App Signing** when first uploading.
-- Add the keystore secrets to a protected GitHub `release` environment here; never commit a keystore.
+- CI now builds the signed AAB on release builds once the four `ANDROID_RELEASE_*` secrets are
+  added (see `docs/building.md`); never commit a keystore.
 - **Version:** `versionCode` is `YYMMDDNNN` and `versionName` is `YYYY.MM.DD.NNN`, both set by the
   workflow at release time. Play needs a higher `versionCode` for every upload.
 - **SDK levels:** `targetSdkVersion` 36, compile SDK 37 (Expo SDK 58 / React Native 0.88). Min
@@ -182,3 +188,13 @@ If Play Console asks for a **location permission** declaration or a "location in
 ```text
 First release of FindCache: save places, find them with a compass, view maps (online or offline), share places with nearby phones over Bluetooth, and import or export GPX and GeoJSON.
 ```
+
+### Recapturing tablet screenshots
+
+The `vcm_tablet_*` AVDs have `hw.gps = no`, so no location fix ever arrives; use copies
+(`findcache_tablet_7/10`, same files with `hw.gps = yes`). Run the emulator on a virtual X server
+(`xvfb-run -a emulator -avd findcache_tablet_10 -no-snapshot -no-audio -gpu swiftshader_indirect`),
+not on the desktop. After the app is open: `adb shell cmd window user-rotation lock 1` (portrait;
+this resets whenever the app is relaunched), `adb emu geo fix -97.7431 30.2672 150` a few times, and
+`adb shell cmd uimode night no`. Seed places as above (`adb root`, then `adb unroot` before the
+run so the shell isn't uid 0), and capture with `adb exec-out screencap -p`.

@@ -46,3 +46,7 @@ coverage/
 # CI test reports
 coverage-report.md
 test-output.log
+
+# Gradle output of the local Expo module (created when the app is built locally)
+/modules/*/android/build/
+/modules/*/android/.gradle/

@@ -85,7 +85,17 @@ ones), on **every push to `master`**, and by hand from the Actions tab. Its job 
    90%-per-file coverage check;
 2. generates the Android project (`expo prebuild`) and builds a release APK for `arm64-v8a`,
    signed with the debug key so it can be sideloaded;
-3. uploads the APK as the artifact `findcache-<commit>`, kept for **7 days**.
+3. uploads the APK as the artifact `findcache-<commit>`, kept for **7 days**;
+4. on release builds, if the upload-keystore secrets exist, also builds a Play-ready AAB
+   (`bundleRelease`) signed with the upload key and uploads it as `findcache-aab-<commit>`.
+
+**Upload keystore (for Google Play).** Create a keystore once (or reuse the Virtual Church Musician one, which uses the same secret names) (`keytool -genkeypair -v -keystore
+upload.keystore -alias upload -keyalg RSA -keysize 2048 -validity 10000`), keep it out of the
+repo, and add four repository secrets: `ANDROID_RELEASE_KEYSTORE_BASE64` (`base64 -w0
+upload.keystore`), `ANDROID_RELEASE_KEYSTORE_PASSWORD`, `ANDROID_RELEASE_KEY_ALIAS` and
+`ANDROID_RELEASE_KEY_PASSWORD`. Without them the AAB step is skipped. Signing is applied by
+`.github/gradle/release-signing.init.gradle`. The sideload APK stays debug-signed so existing
+installs can update over it; enrol the app in Play App Signing on the first upload.
 
 ### Test coverage reports
 
