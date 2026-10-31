@@ -186,7 +186,10 @@ jobs:
           name: findcache-${{ github.sha }}
           path: source/android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
-          retention-days: 7
+          # A hand-off to the release job (the Release then holds the real file) and a way to
+          # test a pull request's build. The 7-day default here once kept every build's APK for a
+          # week; one day is enough and keeps Actions storage small.
+          retention-days: 1
           compression-level: 0 # APKs are already compressed
 
       # Release builds only; skipped until the upload keystore secrets exist (ANDROID_RELEASE_KEYSTORE_BASE64,
@@ -221,7 +224,8 @@ jobs:
           name: findcache-aab-${{ github.sha }}
           path: source/android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
-          retention-days: 7
+          # The only copy of the Play upload, so it outlives the APK artifact, but not for long.
+          retention-days: 3
           compression-level: 0
 
   # Publishes the HTML coverage report of each master build to GitHub Pages
@@ -253,6 +257,7 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: write
+      actions: write # to delete this run's hand-off artifact once the Release holds the file
     concurrency:
       group: release
       cancel-in-progress: false
@@ -274,6 +279,16 @@ jobs:
           cp apk/*.apk findcache.apk
           gh release create "$VERSION" findcache.apk --target "$GITHUB_SHA" \
             --title "FindCache $VERSION" --generate-notes --latest
+
+      # Best-effort, and only after "Publish release" succeeded: the APK is now safe in the
+      # Release, so its artifact (a hand-off to this job) is deleted instead of waiting out its
+      # retention. A failure here never fails the release.
+      - name: Delete this run's APK artifact
+        run: |
+          id=$(gh api "repos/$GH_REPO/actions/runs/$GITHUB_RUN_ID/artifacts" \
+            --jq ".artifacts[] | select(.name == \"findcache-$GITHUB_SHA\") | .id" 2>/dev/null) || id=""
+          [ -z "$id" ] || gh api -X DELETE "repos/$GH_REPO/actions/artifacts/$id" ||
+            echo "::warning::Could not delete artifact $id (it will still expire after its retention period)"
 
       - name: Delete older releases (keep the newest 2)
         run: |
