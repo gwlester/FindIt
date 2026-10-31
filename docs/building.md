@@ -85,7 +85,8 @@ ones), on **every push to `master`**, and by hand from the Actions tab. Its job 
    90%-per-file coverage check;
 2. generates the Android project (`expo prebuild`) and builds a release APK for `arm64-v8a`,
    signed with the debug key so it can be sideloaded;
-3. uploads the APK as the artifact `findcache-<commit>`, kept for **7 days**;
+3. uploads the APK as the artifact `findcache-<commit>`, kept for **1 day** (the release job deletes it
+   as soon as the Release holds the file);
 4. on release builds, if the upload-keystore secrets exist, also builds a Play-ready AAB
    (`bundleRelease`) signed with the upload key and uploads it as `findcache-aab-<commit>`.
 
@@ -155,7 +156,16 @@ Every other build is only in the Actions tab: open the run, download the artifac
 
 ### Keeping branches and Actions storage clean
 
-- Artifacts expire after 7 days. They're stored uncompressed, since APKs are already compressed.
+- Artifacts: the APK (a hand-off to the release job and a way to test a PR build) lasts 1 day and
+  is deleted by the release job once the Release has it; the signed AAB (the only copy of the
+  Play upload) lasts 3 days; the Pages report 1 day. They're stored uncompressed, since APKs are
+  already compressed. Long retention once filled the Virtual Church Musician repo's storage quota,
+  so nothing here keeps the 90-day default.
+- Limits: this repo is public, so standard runner minutes are free. Actions **caches** are capped
+  at 10 GB per repository (least recently used entries are evicted; unused ones expire after
+  7 days); going over is only possible if an admin raises the limit on a paid plan. A private repo
+  also has an artifact and package storage quota with overage billing, so keep the retention short
+  if this repo is ever made private. Optionally set a $0 budget at GitHub → Settings → Billing.
 - The Gradle cache is written only from the default branch, and stale entries are removed
   after every run (`cache-cleanup: always`). Newer pushes cancel builds still in progress.
 - `.github/workflows/cleanup.yml`:
