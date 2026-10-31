@@ -2,6 +2,13 @@
 
 Completed work, newest first.
 
+## 2026-10-31: Skip builds when the app is not affected
+
+A `changes` job (`.github/scripts/app-changed.sh`) skips `build` and the jobs after it when a PR or
+`master` push touches only docs, prompts, store files or README. A skipped job counts as passing, so
+the required `build` check still reports. Manual runs always build. The script was checked against
+real past commits; the skipped path is exercised by the next docs-only PR.
+
 ## 2026-10-31: Submitted to Google Play (internal testing)
 
 Release 2026.10.31.002: the signed AAB from CI (`findcache-aab-<commit>`, signing build verified with
