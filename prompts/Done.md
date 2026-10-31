@@ -2,6 +2,14 @@
 
 Completed work, newest first.
 
+## 2026-10-31: Submitted to Google Play (internal testing)
+
+Release 2026.10.31.002: the signed AAB from CI (`findcache-aab-<commit>`, signing build verified with
+`jarsigner`) was uploaded and submitted to Google Play with an internal testing release, using
+`store/PLAY-CONSOLE-ANSWERS.md`. Target audience is 18+ (keeps the app out of the Families program).
+The KnG pages are live (website, user guide, privacy policy). The Actions-storage hardening is
+merged: the release job deletes the APK artifact once the Release holds it, and its first run worked.
+
 ## 2026-10-31: KnG site: Just for Fun and the FindCache guide
 
 In the KnG repo ([PR #4](https://github.com/gwlester/KnG/pull/4), deployed on merge): a **Just for
