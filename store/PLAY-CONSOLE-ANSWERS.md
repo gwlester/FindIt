@@ -71,7 +71,10 @@ Then:
 | Prompt | Answer |
 | --- | --- |
 | Is all of the user data collected by your app encrypted in transit? | **Yes** (HTTPS) |
-| Do you provide a way for users to request data deletion? | **No data is held by the developer.** Choose the option that says users can't request deletion because nothing is stored on your servers, or the wording closest to "data is only on the device, uninstall to delete". |
+| Which methods of account creation does your app support? | **My app does not allow users to create an account** |
+| Can users log in with accounts created outside of the app? | **No** |
+| Do you provide a way for users to request that their data is deleted? | **No**. (Not "No, but automatically deleted within 90 days": the developer holds no data; it all stays on the device.) |
+| Families Policy commitment ("Committed to follow the Play Families policy") | This only appears if a target age group under 13 is ticked. It shouldn't appear: go back to Target audience and untick every group under 13. If it still shows, answer **No**. |
 
 Data types, declare only this one:
 
