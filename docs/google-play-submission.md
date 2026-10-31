@@ -21,7 +21,7 @@ Assets live in [`store/`](../store):
 
 - **Account type:** Individual, Gerald Lester (not KnG Consulting, LLC)
 - **Contact email:** `inquiries@kng-consulting.com` (**DECIDE**: confirm this address for FindCache)
-- **Website:** `https://www.kng-consulting.com`
+- **Website (store listing):** `https://www.kng-consulting.com/findcache.html`
 - Name and address for verification: see `VirtualChurchMusician/licenses/agreement.md`.
 - **Testing requirement:** a personal account created after Nov 2023 needs a **closed test with
   at least 12 testers opted in for 14 continuous days** before it can apply for production
@@ -42,7 +42,7 @@ Assets live in [`store/`](../store):
 | Tags | Navigation, Outdoors, Geocaching (pick from the console's list) |
 
 The name "FindIt" was dropped because another Android app uses it; search Play for "FindCache"
-before creating to confirm the name is free (**TODO**).
+before creating to confirm the name is free (checked: not used, 2026-10-31).
 
 ## 3. Store listing
 
@@ -78,20 +78,19 @@ PRIVATE BY DESIGN
 • No account, no ads, no analytics, no tracking.
 • Your places are stored only on your phone. They leave it only when you share or export them.
 
-FindCache is free and open source (BSD 2-Clause). Source code: https://github.com/gwlester/FindIt
+FindCache is free and open source (BSD 2-Clause). Full user guide: https://www.kng-consulting.com/findcache.html
+Source code: https://github.com/gwlester/FindIt
 ```
 
 Keep the claims above true: re-check against `docs/wireframes.md` if features change.
 
 **Contact details** (store listing): email `inquiries@kng-consulting.com`, website
-`https://www.kng-consulting.com`. Phone number is optional; leave blank.
+`https://www.kng-consulting.com/findcache.html`. Phone number is optional; leave blank.
 
-**Privacy policy URL:** the KnG policy at `https://www.kng-consulting.com/privacy.html` covers
-only Virtual Church Musician, so it does not describe FindCache. Use the FindCache policy in
-[privacy-policy.md](privacy-policy.md), published at
-`https://github.com/gwlester/FindIt/blob/master/docs/privacy-policy.md` (the repo is public), or
-add it to the KnG site as a second page (**DECIDE**; Play wants a page that is only the policy, and
-a rendered web page is safer than a GitHub blob).
+**Privacy policy URL:** `https://www.kng-consulting.com/findcache-privacy.html`, a page on the KnG
+site that holds only the FindCache policy (source: [privacy-policy.md](privacy-policy.md); the KnG
+policy at `/privacy.html` covers only Virtual Church Musician). The user guide for the app is the
+page tree under `https://www.kng-consulting.com/findcache.html` (the KnG repo's `content/findcache/`).
 
 ## 4. Graphics and screenshots
 

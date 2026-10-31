@@ -10,7 +10,12 @@ Two answers are judgement calls I made for you, marked **(my pick)**: change the
 
 - Sign in to the existing developer account (Individual, Gerald Lester), the one used for
   Virtual Church Musician.
-- Search Play for **FindCache** first. If another app already has the name, tell me and we pick another.
+- The name **FindCache** is free on Play (checked by the owner on 2026-10-31).
+- **Make the KnG pages live first.** They are merged and on `https://preview.kng-consulting.com`, but
+  KnG pushes only update the preview: run **Actions → Deploy to AWS → Run workflow** in the KnG repo
+  and approve the `production-switch` step. Play checks the privacy-policy URL when you save it.
+- The KnG site pages used below (live after that step): `https://www.kng-consulting.com/findcache.html` (overview
+  and user guide) and `https://www.kng-consulting.com/findcache-privacy.html` (the privacy policy).
 - The signed AAB comes from CI: after a `master` build with the `ANDROID_RELEASE_*` secrets set,
   download the artifact `findcache-aab-<commit>` from the run (kept 7 days).
 
@@ -110,7 +115,7 @@ If Play asks about location use, say: *"Shows the distance and bearing to a save
 | App category | **Maps & Navigation** |
 | Tags | Navigation, Outdoors, Geocaching (take what the list offers) |
 | Store listing contact email | `inquiries@kng-consulting.com` |
-| Website | `https://www.kng-consulting.com` |
+| Website | `https://www.kng-consulting.com/findcache.html` (the FindCache page and user guide) |
 | Phone | leave blank |
 | External marketing | leave on |
 
@@ -150,7 +155,8 @@ PRIVATE BY DESIGN
 • No account, no ads, no analytics, no tracking.
 • Your places are stored only on your phone. They leave it only when you share or export them.
 
-FindCache is free and open source (BSD 2-Clause). Source code: https://github.com/gwlester/FindIt
+FindCache is free and open source (BSD 2-Clause). Full user guide: https://www.kng-consulting.com/findcache.html
+Source code: https://github.com/gwlester/FindIt
 ```
 
 **Graphics**
@@ -164,13 +170,18 @@ FindCache is free and open source (BSD 2-Clause). Source code: https://github.co
 | 10-inch tablet screenshots | `screenshots/tablet-10/01…06-*.png` |
 | Chromebook screenshots | skip |
 
-**Privacy policy URL** (Policy → App content → Privacy policy) **(my pick)**:
+**Privacy policy URL** (Policy → App content → Privacy policy):
 ```text
-https://github.com/gwlester/FindIt/blob/master/docs/privacy-policy.md
+https://www.kng-consulting.com/findcache-privacy.html
 ```
-The Virtual Church Musician policy doesn't cover this app, so don't reuse it. A GitHub page works
-but Play prefers a page that only holds the policy: if you later add a FindCache page on the
-KnG site, switch to that URL (it can be changed any time).
+It is a page that holds only the FindCache policy (same text as `docs/privacy-policy.md`). The
+Virtual Church Musician policy doesn't cover this app, so don't reuse it.
+
+**User guide:** the full description ends with a link to the guide, and the store-listing
+**Website** field points at the same overview page. The guide pages, if Play or a tester asks for
+more detail: `https://www.kng-consulting.com/findcache-getting-started.html`,
+`findcache-finding-a-place.html`, `findcache-maps.html`, `findcache-sharing.html` and
+`findcache-help.html` on the same site.
 
 **AI-generated content labels** (Graphics → "Label assets as created or edited using AI"):
 
