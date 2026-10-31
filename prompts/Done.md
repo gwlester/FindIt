@@ -2,6 +2,14 @@
 
 Completed work, newest first.
 
+## 2026-10-31: KnG site: Just for Fun and the FindCache guide
+
+In the KnG repo ([PR #4](https://github.com/gwlester/KnG/pull/4), deployed on merge): a **Just for
+Fun** nav entry and landing page (FindCache teaser including how averaging narrows the uncertainty,
+download QR to the APK, links), a FindCache overview and eight user-guide pages, and the FindCache
+privacy policy as its own page. Play answers now use `findcache.html` (website, description link) and
+`findcache-privacy.html` (privacy policy URL). "FindCache" confirmed free on Play by the owner.
+
 ## 2026-10-31: Play Console answer sheet and tablet screenshots
 
 - `store/PLAY-CONSOLE-ANSWERS.md`: what to answer at every Play Console prompt (create app,
