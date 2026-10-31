@@ -3,13 +3,11 @@
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
 ## Improvements
-- [ ] Check the next `master` release build produces the signed AAB `findcache-aab-<commit>`
-      (the `ANDROID_RELEASE_*` secrets are set).
-- [ ] Owner: promote the KnG site to live (KnG repo → Actions → Deploy to AWS → Run workflow, then
-      approve `production-switch`) so `findcache.html` and `findcache-privacy.html` are public; the
-      Play listing links to them.
-- [ ] Google Play: follow `store/PLAY-CONSOLE-ANSWERS.md` (the contact email is still to confirm), then
-      create the app and run the closed test.
+- [ ] Google Play: internal test installs and works; run the closed test (12+ testers opted in for
+      14 continuous days, send them the join link); then Dashboard → Apply for production (target
+      audience stays 18+).
+- [ ] Once FindCache is findable on Google Play: replace the temporary sideload section on the KnG
+      getting-started page with "Get it on Google Play" and switch the QR code to the Play link.
 - [ ] Confirm `SYSTEM_ALERT_WINDOW` is gone from the next release APK (`aapt2 dump badging`).
 - [ ] Optional, repo owner: Settings → General → Pull Requests → "Automatically delete head
       branches" (the cleanup workflow already deletes merged branches).
