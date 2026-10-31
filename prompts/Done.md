@@ -2,6 +2,33 @@
 
 Completed work, newest first.
 
+## 2026-10-31: Play Console answer sheet and tablet screenshots
+
+- `store/PLAY-CONSOLE-ANSWERS.md`: what to answer at every Play Console prompt (create app,
+  content rating, Data safety, listing text, graphics, privacy-policy URL, testing and release),
+  with the open DECIDE items settled (marked "my pick").
+- Six 7-inch (1200x1785) and six 10-inch (1600x2432) portrait screenshots in
+  `store/screenshots/tablet-7/` and `tablet-10/`, captured on Android 14 emulators run under a
+  virtual X server. Recapture notes in `docs/google-play-submission.md`.
+- `source/.gitignore` ignores the native module's Gradle build output.
+
+## 2026-10-31: Signed AAB in CI (secrets set)
+
+Release builds now also run `bundleRelease` signed with an upload keystore, via a Gradle init
+script (`.github/gradle/release-signing.init.gradle`) and four `ANDROID_RELEASE_*` secrets; the
+step is skipped when they are absent. The sideload APK keeps the debug key so installs can still
+update. The four `ANDROID_RELEASE_*` secrets were set by the owner from the Virtual Church Musician
+upload keystore (can be swapped for a FindCache-only key before the first Play upload). Workflow-only change: YAML validated locally; the real check is the first master build
+with the secrets set.
+
+## 2026-10-31: Hardware verification of the map wave
+
+Verified on devices by the owner (all passed): map screen (OpenFreeMap streets, USGS satellite,
+markers, blue dot, attribution); compass map alignment, rotation and offline use; offline map
+download/restart in airplane mode/delete; Bluetooth sharing between two phones (several places,
+long notes, two receivers); launcher icon and splash in light and dark; sharing history names
+(v2 by name, v1 as "FindCache user", connect-only not recorded).
+
 ## 2026-10-29: Cleanup workflow tolerates already-deleted items
 
 A cleanup run failed ("Could not find a cache matching …") because the cache it had just listed

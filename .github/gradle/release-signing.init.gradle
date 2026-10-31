@@ -1,0 +1,24 @@
+// Gradle init script: signs the app's release build with the upload keystore named by the
+// environment (set by the "Build signed AAB" step in build-android.yml). Kept out of the
+// generated android/ project, which `expo prebuild` recreates on every build.
+allprojects {
+    afterEvaluate { project ->
+        if (project.plugins.hasPlugin('com.android.application')) {
+            project.android {
+                signingConfigs {
+                    upload {
+                        storeFile project.file(System.getenv('UPLOAD_KEYSTORE_FILE'))
+                        storePassword System.getenv('UPLOAD_KEYSTORE_PASSWORD')
+                        keyAlias System.getenv('UPLOAD_KEY_ALIAS')
+                        keyPassword System.getenv('UPLOAD_KEY_PASSWORD')
+                    }
+                }
+                buildTypes {
+                    release {
+                        signingConfig signingConfigs.upload
+                    }
+                }
+            }
+        }
+    }
+}
