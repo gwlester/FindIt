@@ -77,9 +77,13 @@ libraries.
 
 ## Continuous integration (GitHub Actions)
 
-`.github/workflows/build-android.yml` runs on **every pull request** (including docs-only
-ones), on **every push to `master`**, and by hand from the Actions tab. Its job is called
-`build`, which is the status check required by the `master` ruleset. It:
+`.github/workflows/build-android.yml` starts on **every pull request**, on **every push to
+`master`**, and by hand from the Actions tab. A first job, `changes`
+(`.github/scripts/app-changed.sh`), checks whether the change touches `source/`, the build
+workflow or `.github/gradle/`. If not (docs, prompts, store files, README), the `build` job is
+**skipped**, which GitHub counts as passing, so the required `build` check still reports and docs
+PRs merge in seconds. A manual run always builds. When the app is affected, `build` (the status
+check required by the `master` ruleset):
 
 1. installs dependencies (`npm ci`), then runs the typecheck, lint, and unit tests with the
    90%-per-file coverage check;
@@ -135,7 +139,7 @@ Repository admin, *for pull requests only*.
 ### Releases
 
 Every successful build of `master` **that changes the app** (`source/` or the build workflow) is
-published as a GitHub Release; docs-only merges are built and tested but not released. Running
+published as a GitHub Release; docs-only merges are not built at all. Running
 the workflow by hand on `master` always releases. Releases use a **date-based
 version** `YYYY.MM.DD.NNN` (UTC date; `NNN` counts that day's releases from `001`), for example
 `2026.10.28.001`. The build stamps that version into the app (`versionName`). The Android
