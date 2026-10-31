@@ -64,7 +64,7 @@ FIND THEM AGAIN
 • A compass rose keeps N, E, S and W on the real directions and points to your place.
 • See the approximate distance and an uncertainty radius based on GPS accuracy.
 • Live GPS satellite counts (used, in view, known) show how good your fix is.
-• Close to a cache, the compass shows a search-area circle, optionally over a street map.
+• Close to a cache, the compass shows a search-area circle, optionally over a street map or satellite view.
 
 MAPS
 • Free street maps (OpenStreetMap data via OpenFreeMap) and satellite imagery in the United States (USGS).
