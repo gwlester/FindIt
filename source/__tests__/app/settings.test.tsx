@@ -105,12 +105,12 @@ describe('search-area distance', () => {
 describe('found places', () => {
   it('chooses off, once or log, and keeps the list filter', async () => {
     const user = userEvent.setup();
-    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const } });
+    const db = await renderApp(<SettingsScreen />, { settings: { ...DEFAULT_SETTINGS, hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const, debugLogging: false } });
     expect(screen.getByRole('checkbox', { name: /Once per place/ })).toBeChecked();
     await user.press(screen.getByRole('checkbox', { name: /Keep a log/ }));
     expect(screen.getByRole('checkbox', { name: /Once per place/ })).not.toBeChecked();
     await user.press(screen.getByRole('button', { name: 'Save' }));
-    expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const });
+    expect(await loadSettings(db as never)).toMatchObject({ findMode: 'log', hideFound: true, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const, debugLogging: false });
   });
 
   it('can turn marking found off', async () => {
@@ -159,5 +159,18 @@ describe('search area background', () => {
     await user.press(screen.getByRole('checkbox', { name: /^Map/ }));
     await user.press(screen.getByRole('button', { name: 'Save' }));
     expect((await loadSettings(db as never)).compassBackground).toBe('streets');
+  });
+});
+
+describe('troubleshooting', () => {
+  it('turns debug logging on and opens the log', async () => {
+    const user = userEvent.setup();
+    const db = await renderApp(<SettingsScreen />);
+    expect(screen.getByRole('checkbox', { name: /Enable debug logging/ })).not.toBeChecked();
+    await user.press(screen.getByRole('checkbox', { name: /Enable debug logging/ }));
+    await user.press(screen.getByRole('button', { name: 'View debug log' }));
+    expect(router.push).toHaveBeenLastCalledWith('/debug-log');
+    await user.press(screen.getByRole('button', { name: 'Save' }));
+    expect((await loadSettings(db as never)).debugLogging).toBe(true);
   });
 });

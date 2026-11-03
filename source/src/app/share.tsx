@@ -10,7 +10,7 @@ import {
   scanForNearbyUsers,
   type NearbyUser,
 } from '../ble/client';
-import { requestBluetoothPermissions } from '../ble/permissions';
+import { prepareToScan, requestBluetoothPermissions } from '../ble/permissions';
 import type { SharedPlace } from '../ble/protocol';
 import { startSharing, stopSharing, onSharePeer } from '../ble/server';
 import { KeepAwake } from '../components/KeepAwake';
@@ -143,8 +143,9 @@ export default function ShareScreen() {
       setScanning(false);
       return;
     }
-    if (!(await requestBluetoothPermissions())) {
-      Alert.alert('Bluetooth permission needed', 'Allow "Nearby devices" to find other FindCache users.');
+    const ready = await prepareToScan();
+    if (!ready.ok) {
+      Alert.alert(ready.title, ready.message);
       return;
     }
     setNearby(new Map());

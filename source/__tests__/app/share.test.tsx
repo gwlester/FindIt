@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 
 import ShareScreen from '../../src/app/share';
 import { fetchSharedPlaces, onBluetoothStateChange, scanForNearbyUsers, type NearbyUser } from '../../src/ble/client';
-import { requestBluetoothPermissions } from '../../src/ble/permissions';
+import { prepareToScan, requestBluetoothPermissions } from '../../src/ble/permissions';
 import { decodeInfo, decodeItem } from '../../src/ble/protocol';
 import { listFinds, recordFind } from '../../src/db/finds';
 import { listPlaces } from '../../src/db/locations';
@@ -13,7 +13,10 @@ import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
 import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
 import { mockAlert, place, renderApp } from '../helpers/renderApp';
 
-jest.mock('../../src/ble/permissions', () => ({ requestBluetoothPermissions: jest.fn(async () => true) }));
+jest.mock('../../src/ble/permissions', () => ({
+  requestBluetoothPermissions: jest.fn(async () => true),
+  prepareToScan: jest.fn(async () => ({ ok: true })),
+}));
 jest.mock('../../src/ble/client', () => ({
   onBluetoothStateChange: jest.fn(),
   scanForNearbyUsers: jest.fn(),
@@ -25,6 +28,7 @@ let scan: { onUser: (u: NearbyUser) => void; onError: (m: string) => void; stop:
 
 beforeEach(() => {
   jest.mocked(requestBluetoothPermissions).mockResolvedValue(true);
+  jest.mocked(prepareToScan).mockResolvedValue({ ok: true });
   jest.mocked(onBluetoothStateChange).mockImplementation((listener) => {
     setBtState = listener;
     listener('PoweredOn');
@@ -43,7 +47,7 @@ describe('sharing my places', () => {
     const u = userEvent.setup();
     await renderApp(<ShareScreen />, {
       places: [place('Oak'), place('Elm')],
-      settings: { displayName: 'Gerald', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const },
+      settings: { displayName: 'Gerald', units: 'metric', highAccuracyGps: true, searchAreaDistanceM: 50, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const, debugLogging: false },
     });
     expect(screen.getByText(/see you as “Gerald”/)).toBeOnTheScreen();
     await u.press(screen.getByRole('checkbox', { name: /Elm/ }));
@@ -216,9 +220,11 @@ describe('receiving', () => {
     const alert = mockAlert();
     await renderApp(<ShareScreen />);
 
-    jest.mocked(requestBluetoothPermissions).mockResolvedValueOnce(false);
+    // Looking needs more than sharing: precise location and Location on (see prepareToScan).
+    jest.mocked(prepareToScan).mockResolvedValueOnce({ ok: false, title: 'Precise location needed', message: 'Allow it.' });
     await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
-    expect(alert.message('Bluetooth permission needed')).toMatch(/find/);
+    expect(alert.message('Precise location needed')).toBe('Allow it.');
+    expect(scanForNearbyUsers).not.toHaveBeenCalled();
 
     await u.press(screen.getByRole('button', { name: 'Look for nearby FindCache users' }));
     await u.press(screen.getByRole('button', { name: 'Stop looking' }));

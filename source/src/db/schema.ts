@@ -40,6 +40,15 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX share_history_by_time ON share_history (at);
   `,
+  // 4: debug log (Settings → Troubleshooting), newest 2000 entries.
+  `
+  CREATE TABLE debug_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    at INTEGER NOT NULL,
+    tag TEXT NOT NULL,
+    message TEXT NOT NULL
+  );
+  `,
 ];
 
 /** Runs any migrations newer than the database's `user_version`. */

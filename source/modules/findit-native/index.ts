@@ -22,6 +22,8 @@ export type SharePeerEvent = {
 type FindItNativeEvents = {
   onGnssStatus(status: GnssStatus): void;
   onSharePeer(event: SharePeerEvent): void;
+  /** A line for the debug log from the BLE GATT server. */
+  onShareLog(event: { message: string }): void;
 };
 
 declare class FindItNativeModule extends NativeModule<FindItNativeEvents> {

@@ -1,6 +1,6 @@
 import { GUIDE_INTRO, HELP_TOPICS, helpTopic } from '../../src/help/content';
 
-const ROUTES = ['index', 'place', 'compass/[id]', 'map', 'offline-maps', 'share', 'share-history', 'files', 'settings'];
+const ROUTES = ['index', 'place', 'compass/[id]', 'map', 'offline-maps', 'share', 'share-history', 'files', 'settings', 'debug-log'];
 
 test('every screen has a help topic with a title and text', () => {
   for (const route of ROUTES) {
