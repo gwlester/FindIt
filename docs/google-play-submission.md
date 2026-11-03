@@ -108,7 +108,7 @@ page tree under `https://www.kng-consulting.com/findcache.html` (the KnG repo's 
   with the same made-up places and a mocked fix.
 - **Recapturing:** build an x86_64 release APK (`npx expo prebuild --platform android` then
   `./gradlew assembleRelease -PreactNativeArchitectures=x86_64` in `source/android`; the CI APK is
-  arm64 only and will not load on an x86_64 emulator), install, grant the location and Bluetooth
+  ARM only (arm64-v8a, armeabi-v7a) and will not load on an x86_64 emulator), install, grant the location and Bluetooth
   permissions, seed the SQLite database (`files/SQLite/findit.db`, needs `adb root`), and set a
   location with `adb emu geo fix -97.7431 30.2672 150`.
 
@@ -157,7 +157,7 @@ If Play Console asks for a **location permission** declaration or a "location in
 
 ## 6. Release build (CI ready; **TODO** add the keystore secrets)
 
-- The CI build produces a **debug-signed arm64 APK** (`findcache.apk`). Play needs a **signed
+- The CI build produces a **debug-signed APK** (arm64-v8a + armeabi-v7a) (`findcache.apk`). Play needs a **signed
   AAB** (`./gradlew bundleRelease`) with an **upload keystore**, and a 64-bit build (arm64-v8a is
   fine; add x86_64 only if you want Chromebooks/emulators).
 - VCM already solved this: `VirtualChurchMusician/.github/workflows/release.yml` decodes
