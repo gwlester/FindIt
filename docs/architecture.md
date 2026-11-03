@@ -73,6 +73,13 @@ CREATE TABLE share_history (
   name TEXT NOT NULL,                  -- receiver's name, or 'FindCache user' (older versions)
   places INTEGER NOT NULL              -- distinct places they downloaded
 );
+-- v4
+CREATE TABLE debug_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  at INTEGER NOT NULL,                 -- ms since epoch
+  tag TEXT NOT NULL,                   -- app, permissions, ble, share, share-server
+  message TEXT NOT NULL                -- newest 2000 kept (see Debug log)
+);
 ```
 
 Sharing history (`src/db/shareHistory.ts`): the Share screen records a row when a receiver that
@@ -89,6 +96,19 @@ file, e.g. my own export).
 
 Migrations live in `source/src/db/schema.ts` and are tracked with `PRAGMA user_version`.
 To change the schema, append a new migration to the list; never edit an old one.
+
+## Debug log (`src/lib/debugLog.ts`)
+
+Settings → Troubleshooting → **Enable debug logging** (`debugLogging`, off by default).
+`debugLog(tag, message)` can be called from anywhere and does nothing while logging is off;
+otherwise entries are queued (so they keep their order and never block or break the caller)
+and written to the `debug_log` table (schema v4), which keeps the newest 2000.
+`<DebugLogging />` in the root layout turns it on and off with the setting, writes a first line
+with the app version, Android version and phone model, and relays the native share server's
+`onShareLog` events. Tags: `app`, `permissions`, `ble` (receiving: state, scan, devices seen,
+download steps), `share` (starting/stopping sharing) and `share-server` (the Kotlin GATT
+server: advertising, connections, MTU, reads and writes). The Debug log screen shows, shares
+(`.txt` via the share sheet) and clears it.
 
 ## Offline maps (`src/lib/offlineMaps.ts`, `src/lib/tiles.ts`)
 

@@ -219,3 +219,15 @@ remember who downloaded my places: 7 days, 30 days, 90 days (default), 1 year, o
 ![Settings, scrolled](wireframes/06b-settings-more.svg)
 
 ![Settings, end](wireframes/06c-settings-end.svg)
+
+At the end, **Troubleshooting → Enable debug logging** (off by default) and **View debug log**.
+
+## 13. Debug log
+
+What the app did, newest first, while debug logging is on: app and Android versions and phone
+model, Bluetooth state, permission answers (including precise location and whether Location is
+on), each scan and the devices it saw, each download step and error, and the sharing phone's
+own Bluetooth server (advertising, connections, reads, writes). **Share log** sends it as a
+text file; **Clear log** asks first. Only the newest 2,000 lines are kept.
+
+![Debug log](wireframes/13-debug-log.svg)

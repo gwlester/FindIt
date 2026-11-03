@@ -23,7 +23,7 @@ class FindItNativeModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("FindItNative")
 
-    Events("onGnssStatus", "onSharePeer")
+    Events("onGnssStatus", "onSharePeer", "onShareLog")
 
     AsyncFunction("startGnssStatus") { fullTracking: Boolean ->
       requirePermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -40,7 +40,11 @@ class FindItNativeModule : Module() {
         requirePermission(Manifest.permission.BLUETOOTH_ADVERTISE)
         requirePermission(Manifest.permission.BLUETOOTH_CONNECT)
       }
-      val server = share ?: ShareServer(context) { sendEvent("onSharePeer", it) }.also { share = it }
+      val server = share ?: ShareServer(
+        context,
+        onPeer = { sendEvent("onSharePeer", it) },
+        onLog = { sendEvent("onShareLog", mapOf("message" to it)) }
+      ).also { share = it }
       server.start(advertisedName, infoJson, items) { error ->
         if (error == null) promise.resolve(null) else promise.reject("ERR_SHARE_FAILED", error, null)
       }

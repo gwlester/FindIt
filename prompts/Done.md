@@ -2,6 +2,23 @@
 
 Completed work, newest first.
 
+## 2026-11-03: Debug logging; nearby sharing finds nobody
+
+Reported: Share → Look for nearby never finds anyone. Android only reports nearby Bluetooth
+devices to FindCache with precise location granted and Location on; the rename to FindCache
+made it a new app with fresh permissions, and the Share screen only asked for the Bluetooth
+ones, so a phone with approximate location (or Location off) silently found nobody.
+Built test-first:
+- **Fix:** before looking, ask for precise location too and check Location is on, explaining
+  what's missing ("Precise location needed", "Turn on Location").
+- **Settings → Troubleshooting → Enable debug logging** and a **Debug log** screen (view,
+  share as a text file, clear; newest 2000 lines, schema v4). Logs app/Android/phone, Bluetooth
+  state, permission answers, scans and devices seen, download steps, sharing start/stop, and
+  the Kotlin GATT server (advertising, connections, MTU, reads, writes).
+- `ShareServer.kt` now handles long (prepared) writes, e.g. a long sharing name on a small MTU.
+- Docs: wireframes 06c, 13; architecture (debug log, schema v4); ble-protocol (permissions,
+  long writes); help topic.
+
 ## 2026-10-31: Skip builds when the app is not affected
 
 A `changes` job (`.github/scripts/app-changed.sh`) skips `build` and the jobs after it when a PR or

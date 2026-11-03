@@ -1,0 +1,89 @@
+import { File, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { Button } from '../components/ui';
+import { useSettings } from '../hooks/useSettings';
+import { clearDebugLog, formatDebugLog, readDebugLog, type DebugEntry } from '../lib/debugLog';
+import { useTheme } from '../lib/theme';
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const clock = (ms: number) => {
+  const d = new Date(ms);
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+};
+const stamp = (d: Date) =>
+  `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+
+/** The debug log (Settings → Troubleshooting): view it, share it as a text file, or clear it. */
+export default function DebugLogScreen() {
+  const db = useSQLiteContext();
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const { settings } = useSettings();
+  const [entries, setEntries] = useState<DebugEntry[]>([]);
+
+  const reload = useCallback(async () => setEntries(await readDebugLog(db)), [db]);
+
+  useEffect(() => {
+    readDebugLog(db).then(setEntries);
+  }, [db]);
+
+  const share = async () => {
+    try {
+      const file = new File(Paths.cache, `findcache-debug-log-${stamp(new Date())}.txt`);
+      file.create({ overwrite: true });
+      file.write(formatDebugLog(entries));
+      await Sharing.shareAsync(file.uri, { mimeType: 'text/plain', dialogTitle: 'Share the FindCache debug log' });
+    } catch (e) {
+      Alert.alert('Could not share the log', e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const clear = () =>
+    Alert.alert('Clear the debug log?', 'This deletes every entry.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Clear', style: 'destructive', onPress: () => clearDebugLog(db).then(reload) },
+    ]);
+
+  return (
+    <View style={[styles.screen, { paddingBottom: insets.bottom + 16 }]}>
+      <Text style={{ color: theme.muted }}>
+        {settings.debugLogging
+          ? `Debug logging is on. ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}, newest first.`
+          : 'Debug logging is off. Turn it on in Settings → Troubleshooting, try what goes wrong, then come back.'}
+      </Text>
+      <FlatList
+        style={[styles.list, { borderColor: theme.border }]}
+        data={entries}
+        keyExtractor={(e) => String(e.id)}
+        persistentScrollbar
+        ListEmptyComponent={<Text style={{ color: theme.muted, padding: 8 }}>The log is empty.</Text>}
+        renderItem={({ item }) => (
+          <Text testID="debug-entry" style={[styles.entry, { color: theme.text }]}>
+            {clock(item.at)} [{item.tag}] {item.message}
+          </Text>
+        )}
+      />
+      <View style={styles.row}>
+        <View style={{ flex: 1 }}>
+          <Button title="Refresh" variant="secondary" onPress={reload} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Button title="Clear log" variant="danger" onPress={clear} disabled={entries.length === 0} />
+        </View>
+      </View>
+      <Button title="Share log" onPress={share} disabled={entries.length === 0} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, padding: 16, gap: 10 },
+  list: { flex: 1, borderWidth: 1, borderRadius: 8 },
+  entry: { fontFamily: 'monospace', fontSize: 12, paddingHorizontal: 8, paddingVertical: 3 },
+  row: { flexDirection: 'row', gap: 10 },
+});

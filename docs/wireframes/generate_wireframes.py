@@ -500,8 +500,40 @@ def settings_end():
     s.text(30, 166, "Remember who downloaded my places for", 12, MUTED, "bold")
     for i, (label, ch) in enumerate((("7 days", False), ("30 days", False), ("90 days", True), ("1 year", False), ("Forever", False))):
         s.checkbox(30, 176 + i * 30, label, checked=ch)
-    s.button(16, 346, W - 32, "Save")
+    s.rect(16, 346, W - 32, 150, fill=FILL, r=12)
+    s.text(30, 372, "Troubleshooting", 17, weight="bold")
+    s.checkbox(30, 384, "Enable debug logging", "Record what the app does (Bluetooth sharing,", False)
+    s.text(64, 427, "permissions) on this phone, to help find problems.", 12, MUTED)
+    s.button(30, 440, W - 60, "View debug log", filled=False)
+    s.button(16, 510, W - 32, "Save")
     s.render("06c-settings-end")
+
+
+def debug_log():
+    s = Screen("Debug log", header_right="?")
+    s.text(16, 114, "Debug logging is on. 9 entries, newest first.", 12, MUTED)
+    s.rect(16, 124, W - 32, 452, fill="#fff", stroke=LINE, r=8)
+    lines = [
+        "09:00:09 [ble] Scan stopped (0 devices seen)",
+        "09:00:01 [ble] Scan started for service 5c0a7f10-…",
+        "09:00:01 [permissions] Location services on",
+        "09:00:00 [permissions] Android API 34:",
+        "    BLUETOOTH_SCAN=granted,",
+        "    BLUETOOTH_CONNECT=granted, BLUETOOTH_ADVERTISE=granted,",
+        "    ACCESS_FINE_LOCATION=denied",
+        "08:59:40 [ble] Bluetooth state: PoweredOn",
+        "08:59:39 [app] Debug logging on: FindCache",
+        "    2026.11.03.001, Android 14 (API 34), Google Pixel 8",
+    ]
+    for i, line in enumerate(lines):
+        s.text(26, 146 + i * 20, line, 11, INK)
+    s.button(16, 590, 158, "Refresh", filled=False)
+    s.button(186, 590, 158, "Clear log", filled=False)
+    s.button(16, 644, W - 32, "Share log")
+    s.note(16, 710, "Share log sends a .txt file (email, chat, Files). Newest 2,000")
+    s.note(16, 724, "lines are kept. No places or coordinates; it does contain the")
+    s.note(16, 738, "names and Bluetooth addresses of nearby FindCache users.")
+    s.render("13-debug-log")
 
 
 def share_history():
@@ -771,6 +803,6 @@ def settings():
 
 
 if __name__ == "__main__":
-    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, map_screen, offline_maps, compass_map_behind, settings_end, help_menu, help_topic, about, licences, settings, settings_more, files, files_import):
+    for fn in (places, place, averaging, compass, compass_averaging, compass_search_area, compass_in_search_area, compass_mark_found, share, receive, share_history, map_screen, offline_maps, compass_map_behind, settings_end, help_menu, help_topic, about, licences, debug_log, settings, settings_more, files, files_import):
         fn()
     print("wrote", sorted(p.name for p in OUT.glob("*.svg")))

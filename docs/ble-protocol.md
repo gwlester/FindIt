@@ -52,7 +52,18 @@ The server tracks the selected INDEX per connected device, so several phones can
 ## Permissions (Android 12+)
 
 `BLUETOOTH_SCAN`, `BLUETOOTH_CONNECT`, `BLUETOOTH_ADVERTISE` (runtime "Nearby devices"
-permission). On Android 11 and below, fine location permission covers scanning.
+permission). Because `BLUETOOTH_SCAN` is not declared `neverForLocation`, Android only reports
+nearby devices to the app when **precise** location (`ACCESS_FINE_LOCATION`) is granted and
+**Location is turned on**; otherwise a scan silently finds nobody. The Share screen therefore
+asks for precise location and checks Location before looking (`prepareToScan` in
+`src/ble/permissions.ts`), and explains what's missing. On Android 11 and below, fine location
+permission covers scanning (Location must still be on).
+
+## Long writes
+
+Writes longer than the connection's MTU arrive as a long ("prepared") write: pieces with
+offsets, then an execute. The server echoes each piece, collects them, and applies the value
+on execute (or drops it on cancel). In practice only a long NAME on a small MTU needs this.
 
 ## Version
 
