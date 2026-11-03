@@ -7,6 +7,7 @@ import { addPlace, listPlaces } from '../../src/db/locations';
 import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../src/db/settings';
 import { SettingsProvider } from '../../src/hooks/useSettings';
 import { emitPosition } from '../helpers/expoLocationMock';
+import { setSupportedCpuArchitectures } from '../helpers/expoDeviceMock';
 import { setCurrentDb } from '../helpers/expoSqliteMock';
 import { createTestDb } from '../helpers/testDb';
 import { mockAlert, place, renderApp } from '../helpers/renderApp';
@@ -46,6 +47,17 @@ test('lists places by name with source and distance, and navigates', async () =>
   expect(router.push).toHaveBeenLastCalledWith('/files');
   await user.press(screen.getByRole('button', { name: 'Settings' }));
   expect(router.push).toHaveBeenLastCalledWith('/settings');
+});
+
+test('a 32-bit phone has no map button or show-on-map action', async () => {
+  const user = userEvent.setup();
+  const alert = mockAlert();
+  setSupportedCpuArchitectures(['armeabi-v7a']);
+  await renderApp(<PlacesScreen />, { places: [place('Oak')] });
+  expect(screen.queryByRole('button', { name: 'Map' })).not.toBeOnTheScreen();
+  await user.longPress(screen.getByText('Oak'));
+  const buttons = (alert.spy.mock.calls.at(-1)?.[2] ?? []) as { text?: string }[];
+  expect(buttons.map((b) => b.text)).toEqual(['Edit', 'Delete', 'Cancel']);
 });
 
 test('long-press offers edit, show on map and delete', async () => {

@@ -4,8 +4,9 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
 
 ## Improvements
 - [ ] 32-bit ARM APK (`work/findcache-32-bit`): after the PR build, check `unzip -l findcache.apk | grep lib/` shows
-      `armeabi-v7a`, test-install on the Soyes XS15 (MT6580), then drop the "64-bit processor" lines from the KnG
-      getting-started page and the FindCache page, and move this to `Done.md`.
+      `armeabi-v7a`, test-install on the Soyes XS15 (MT6580; maps are switched off there, `src/lib/mapSupport.ts`), then drop the
+      "64-bit processor" lines from the KnG getting-started page and the FindCache page, say maps need a 64-bit
+      phone, and move this to `Done.md`.
 - [ ] Google Play: internal test installs and works; run the closed test (12+ testers opted in for
       14 continuous days, send them the join link); then Dashboard → Apply for production (target
       audience stays 18+).
