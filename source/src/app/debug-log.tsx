@@ -5,11 +5,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button } from '../components/ui';
+import { Button, Field } from '../components/ui';
 import { useSettings } from '../hooks/useSettings';
 import { clearDebugLog, debugLog, flushDebugLog, formatDebugLog, readDebugLog, type DebugEntry } from '../lib/debugLog';
 import { reportFailure } from '../lib/failure';
-import { buildUploadText, uploadDebugLog, uploadEnabled, uploadEntryMessage } from '../lib/logUpload';
+import { MAX_DESCRIPTION_LENGTH, buildUploadText, uploadDebugLog, uploadEnabled, uploadEntryMessage } from '../lib/logUpload';
 import { useTheme } from '../lib/theme';
 import { currentVersion } from '../lib/updates';
 
@@ -28,6 +28,8 @@ export default function DebugLogScreen() {
   const insets = useSafeAreaInsets();
   const { settings } = useSettings();
   const [entries, setEntries] = useState<DebugEntry[]>([]);
+  const [problem, setProblem] = useState('');
+  const description = problem.trim();
 
   const reload = useCallback(async () => setEntries(await readDebugLog(db)), [db]);
 
@@ -49,7 +51,7 @@ export default function DebugLogScreen() {
   const send = () =>
     Alert.alert(
       'Send the log to KnG?',
-      `This uploads the ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'} in this log. It can include nearby Bluetooth device names and the names used for sharing, but not your saved places. It is used only to find problems and is deleted after 6 months.`,
+      `This uploads the ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'} in this log and your description of the problem. It can include nearby Bluetooth device names and the names used for sharing, but not your saved places. It is used only to find problems and is deleted after 6 months.`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -63,7 +65,7 @@ export default function DebugLogScreen() {
               debugLog('app', uploadEntryMessage(version), at);
               await flushDebugLog();
               const stored = await readDebugLog(db);
-              const { id } = await uploadDebugLog(buildUploadText(stored, version, at), version);
+              const { id } = await uploadDebugLog(buildUploadText(stored, version, at), description, version);
               Alert.alert('Log sent', `Thank you. If you ask about it, quote this reference: ${id}`);
             } catch (e) {
               Alert.alert('Could not send the log', reportFailure('upload', 'Sending the log', e));
@@ -107,7 +109,20 @@ export default function DebugLogScreen() {
         </View>
       </View>
       <Button title="Share log" onPress={share} disabled={entries.length === 0} />
-      {uploadEnabled() ? <Button title="Send log to KnG" onPress={send} disabled={entries.length === 0} /> : null}
+      {uploadEnabled() ? (
+        <>
+          <Field
+            label="What went wrong?"
+            accessibilityLabel="What went wrong?"
+            hint="Required to send. Say what you were doing and what happened."
+            value={problem}
+            onChangeText={setProblem}
+            maxLength={MAX_DESCRIPTION_LENGTH}
+            multiline
+          />
+          <Button title="Send log to KnG" onPress={send} disabled={entries.length === 0 || description === ''} />
+        </>
+      ) : null}
     </View>
   );
 }
