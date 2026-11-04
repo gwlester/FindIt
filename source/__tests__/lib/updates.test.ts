@@ -110,6 +110,22 @@ describe('leftover downloads', () => {
     expect(logged().some((m) => m.includes('leftover'))).toBe(false);
   });
 
+  it('words a single leftover in the singular and copes with a non-Error failure', async () => {
+    files['file:///cache/findcache-2026.10.01.001.apk'] = 'older';
+    await downloadAndInstall(update);
+    expect(logged()).toContain('Removed 1 leftover download');
+    jest.spyOn(Directory.prototype, 'list').mockReturnValue([
+      {
+        uri: 'file:///cache/a.apk',
+        delete: () => {
+          throw 'busy'; // eslint-disable-line no-throw-literal
+        },
+      } as never,
+    ]);
+    await downloadAndInstall(update);
+    expect(logged()).toContain('Could not remove a leftover download: busy');
+  });
+
   it('uses a fresh name when a leftover cannot be deleted', async () => {
     files['file:///cache/findcache-2026.11.04.001.apk'] = 'locked';
     jest.spyOn(Directory.prototype, 'list').mockReturnValue([
