@@ -16,7 +16,27 @@ export class File {
     files[this.uri] = text;
   });
   text = jest.fn(async () => files[this.uri]);
-  static downloadFileAsync = jest.fn(async (_url: string, destination: File) => destination);
+  delete = jest.fn(() => {
+    delete files[this.uri];
+  });
+  // Like the real one, refuses to overwrite.
+  static downloadFileAsync = jest.fn(async (_url: string, destination: File) => {
+    if (destination.exists) throw new Error('Destination already exists');
+    files[destination.uri] = '';
+    return destination;
+  });
+}
+
+export class Directory {
+  uri: string;
+  constructor(...parts: (string | { uri: string })[]) {
+    this.uri = parts.map((p) => (typeof p === 'string' ? p : p.uri)).join('/');
+  }
+  list() {
+    return Object.keys(files)
+      .filter((uri) => uri.startsWith(`${this.uri}/`) && !uri.slice(this.uri.length + 1).includes('/'))
+      .map((uri) => new File(uri));
+  }
 }
 
 export const Paths = { cache: { uri: 'file:///cache' }, document: { uri: 'file:///document' } };

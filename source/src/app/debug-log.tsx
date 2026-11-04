@@ -1,8 +1,9 @@
+import * as Clipboard from 'expo-clipboard';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, Keyboard, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Field } from '../components/ui';
@@ -30,7 +31,18 @@ export default function DebugLogScreen() {
   const { settings } = useSettings();
   const [entries, setEntries] = useState<DebugEntry[]>([]);
   const [problem, setProblem] = useState('');
+  const [keyboard, setKeyboard] = useState(0);
   const description = problem.trim();
+
+  // Edge-to-edge Android does not resize the screen for the keyboard, so make room for it here.
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', (e) => setKeyboard(e.endCoordinates.height));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboard(0));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   const reload = useCallback(async () => setEntries(await readDebugLog(db)), [db]);
 
@@ -67,7 +79,10 @@ export default function DebugLogScreen() {
               await flushDebugLog();
               const stored = await readDebugLog(db);
               const { id } = await uploadDebugLog(buildUploadText(stored, version, at), description, version);
-              Alert.alert('Log sent', `Thank you. If you ask about it, quote this reference: ${id}`);
+              Alert.alert('Log sent', `Thank you. If you ask about it, quote this reference: ${id}`, [
+                { text: 'Copy', onPress: () => void Clipboard.setStringAsync(id) },
+                { text: 'OK' },
+              ]);
             } catch (e) {
               Alert.alert('Could not send the log', reportFailure('upload', 'Sending the log', e));
             }
@@ -83,7 +98,7 @@ export default function DebugLogScreen() {
     ]);
 
   return (
-    <View style={[styles.screen, { paddingBottom: insets.bottom + 16 }]}>
+    <View testID="debug-log-screen" style={[styles.screen, { paddingBottom: Math.max(insets.bottom, keyboard) + 16 }]}>
       <Text style={{ color: theme.muted }}>
         {settings.debugLogging
           ? `Debug logging is on. ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}, newest first.`
