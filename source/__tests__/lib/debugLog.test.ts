@@ -28,6 +28,29 @@ test('records nothing while logging is off', async () => {
   expect(await readDebugLog(db as never)).toEqual([]);
 });
 
+test('keeps crash entries made before logging was switched on, and writes them once it is', async () => {
+  debugLog('crash', 'early failure', 1000);
+  debugLog('ble', 'not a crash', 1000);
+  setDebugLogging(db as never, true);
+  await flushDebugLog();
+  expect((await readDebugLog(db as never)).map((e) => [e.tag, e.message])).toEqual([['crash', 'early failure']]);
+});
+
+test('drops early crash entries when logging stays off', async () => {
+  debugLog('crash', 'early failure');
+  setDebugLogging(db as never, false);
+  setDebugLogging(db as never, true);
+  await flushDebugLog();
+  expect(await readDebugLog(db as never)).toEqual([]);
+});
+
+test('holds only a few early crash entries', async () => {
+  for (let i = 0; i < 30; i++) debugLog('crash', `c${i}`);
+  setDebugLogging(db as never, true);
+  await flushDebugLog();
+  expect(await readDebugLog(db as never)).toHaveLength(20);
+});
+
 test('records entries in order and reads them newest first', async () => {
   setDebugLogging(db as never, true);
   expect(isDebugLogging()).toBe(true);

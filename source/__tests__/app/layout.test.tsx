@@ -29,6 +29,30 @@ test('migrates the database, then renders every route', async () => {
   expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 4 });
 });
 
+test('installs the crash handler as soon as the layout is loaded', () => {
+  const set = jest.spyOn(ErrorUtils, 'setGlobalHandler').mockImplementation(() => {});
+  jest.isolateModules(() => {
+    require('../../src/app/_layout');
+  });
+  expect(set).toHaveBeenCalled();
+  set.mockRestore();
+});
+
+test('a screen that throws shows the fallback instead of crashing the app', async () => {
+  const db = createRawTestDb();
+  setCurrentDb(db);
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+  const layout = require('../../src/components/DebugLogging');
+  const spy = jest.spyOn(layout, 'DebugLogging').mockImplementation(() => {
+    throw new Error('provider exploded');
+  });
+  await render(<RootLayout />);
+  await flush();
+  expect(screen.getByText('Something went wrong')).toBeOnTheScreen();
+  spy.mockRestore();
+  jest.restoreAllMocks();
+});
+
 test('turns the debug log on when Settings asks for it', async () => {
   const db = await createTestDb();
   await saveSettings(db as never, { ...DEFAULT_SETTINGS, debugLogging: true });

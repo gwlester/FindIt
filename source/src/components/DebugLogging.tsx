@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 
 import { onShareLog } from '../ble/server';
 import { useSettings } from '../hooks/useSettings';
+import { checkPreviousRun, logAppState } from '../lib/crashLog';
 import { debugLog, setDebugLogging } from '../lib/debugLog';
 
 /**
@@ -20,6 +21,8 @@ export function DebugLogging() {
   useEffect(() => {
     setDebugLogging(db, enabled);
     if (!enabled) return;
+    // Before anything new is written, see whether the last run was cut short.
+    void checkPreviousRun(db);
     const model = [Device.manufacturer, Device.modelName].filter(Boolean).join(' ');
     const about = [
       `FindCache ${Constants.expoConfig?.version ?? 'unknown'}`,
@@ -28,7 +31,9 @@ export function DebugLogging() {
     ];
     debugLog('app', `Debug logging on: ${about.filter(Boolean).join(', ')}`);
     const sub = onShareLog((message) => debugLog('share-server', message));
+    const stopAppState = logAppState();
     return () => {
+      stopAppState();
       sub.remove();
       setDebugLogging(null, false);
     };
