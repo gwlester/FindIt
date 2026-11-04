@@ -9,6 +9,9 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
 - [ ] A long sharing name (over 20 bytes) still downloads (long write to NAME).
 
 ## Improvements
+- [ ] iOS build of FindCache. Parked for now: no work started. Needs an Apple Developer Program enrollment, an iOS
+      native module for the GNSS/BLE parts (`modules/findit-native` is Kotlin only), and a review of the Android-only
+      features (satellite counts, sideload update check).
 - [ ] Crash on the XS15 (2026.11.04.003, reported 2026-11-03 after the no-compass note appeared): the debug log from that
       run showed no crash and no `[compass]` lines. `work/crash-logging` adds a catch-all at the top level (global error handler installed when the root layout loads, an error boundary around the whole app with a "Something went wrong / Try again" screen, unhandled promise rejections) that writes `[crash]` entries (kept in memory until the debug-log setting is read), and a
       "previous run did not end in the background" note at the next start; reproduce with debug logging on and read the log.
