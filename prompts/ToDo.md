@@ -9,6 +9,9 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
 - [ ] A long sharing name (over 20 bytes) still downloads (long write to NAME).
 
 ## Improvements
+- [ ] No-compass fallback + position source (`work/compass-no-sensor-fallback`): verify on the XS15 that the
+      "No compass sensor found" note and a north-up arrow appear after 8 s, and read the `[compass]` log lines to
+      confirm the phone really has no heading sensor. Position source is inferred from satellites in use.
 - [ ] Debug log upload + update check (`work/gps-debug-and-update-check`): built and tested. To finish: the KnG
       branch `work/findcache-log-upload` needs `terraform apply` run locally (owner), then set `LOG_UPLOAD_URL`
       in `source/src/lib/logUpload.ts` from the `findcache_log_upload_url` output (the Send button stays hidden

@@ -13,7 +13,7 @@ import { emitHeading, emitPosition, emitPositionError } from '../helpers/expoLoc
 import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
 import { setSupportedCpuArchitectures } from '../helpers/expoDeviceMock';
 import { setCurrentDb } from '../helpers/expoSqliteMock';
-import { svgTexts } from '../helpers/svg';
+import { svgRotations, svgTexts } from '../helpers/svg';
 import { createTestDb } from '../helpers/testDb';
 import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
 import { place, renderApp } from '../helpers/renderApp';
@@ -41,9 +41,37 @@ test('before any fix', async () => {
   expect(screen.getByText('uncertainty radius ± 4 m')).toBeOnTheScreen();
   expect(screen.getByText('Heading: waiting for compass…')).toBeOnTheScreen();
   expect(screen.getByText('Satellites: waiting for GNSS status…')).toBeOnTheScreen();
+  expect(screen.getByText('Position source: waiting for satellite status…')).toBeOnTheScreen();
   expect(screen.getByText('GPS accuracy: — · place recorded ± 4 m')).toBeOnTheScreen();
   expect(screen.getByText('Under the roots')).toBeOnTheScreen();
   expect(nativeMock.startGnssStatus).toHaveBeenCalledWith(true);
+});
+
+describe('a phone with no compass sensor', () => {
+  beforeEach(() => jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'] }));
+  afterEach(() => jest.useRealTimers());
+
+  it('draws the arrow from north, and says so, once no heading has come', async () => {
+    await renderApp(<CompassScreen />, { places: [OAK] });
+    // About 1.6 km south-west of the place, so it lies at a bearing of 45 degrees.
+    await act(async () => emitPosition({ latitude: 30.4252, longitude: -91.20189, accuracy: 5 }));
+    expect(svgRotations(screen.toJSON())).not.toContain(45); // no heading yet: no arrow
+    expect(screen.getByText('Heading: waiting for compass…')).toBeOnTheScreen();
+
+    await act(async () => jest.advanceTimersByTime(8000));
+    expect(screen.queryByText('Heading: waiting for compass…')).not.toBeOnTheScreen();
+    expect(screen.getByText(/No compass sensor found/)).toBeOnTheScreen();
+    expect(svgRotations(screen.toJSON())).toContain(45); // the arrow is now drawn, relative to north
+  });
+
+  it('goes back to normal if a heading does arrive', async () => {
+    await renderApp(<CompassScreen />, { places: [OAK] });
+    await act(async () => jest.advanceTimersByTime(8000));
+    expect(screen.getByText(/No compass sensor found/)).toBeOnTheScreen();
+    await act(async () => emitHeading({ trueHeading: 5, magHeading: 7, accuracy: 3 }));
+    expect(screen.queryByText(/No compass sensor found/)).not.toBeOnTheScreen();
+    expect(screen.getByText('Heading 005° true')).toBeOnTheScreen();
+  });
 });
 
 test('distance, uncertainty, bearing, heading and satellites', async () => {
@@ -62,8 +90,11 @@ test('distance, uncertainty, bearing, heading and satellites', async () => {
     emitNative('onGnssStatus', { known: 31, inView: 22, used: 14, usedByConstellation: { Galileo: 4, GPS: 8 } }),
   );
   expect(screen.getByText('Satellites: 14 used · 22 in view · 31 known')).toBeOnTheScreen();
+  expect(screen.getByText('Position source: GPS satellites (14 in use)')).toBeOnTheScreen();
   expect(screen.getByText('GPS 8 · Galileo 4')).toBeOnTheScreen();
   expect(screen.getByText('Full GNSS tracking on (High-accuracy GPS)')).toBeOnTheScreen();
+  await act(async () => emitNative('onGnssStatus', { known: 11, inView: 0, used: 0, usedByConstellation: {} }));
+  expect(screen.getByText('Position source: network or Wi-Fi (no satellites in use yet)')).toBeOnTheScreen();
 });
 
 test('inside the uncertainty radius, magnetic heading needing calibration, imperial', async () => {

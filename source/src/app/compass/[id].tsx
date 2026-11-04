@@ -12,7 +12,8 @@ import { foundLabel, listFinds, recordFind, summarizeFinds, type Find } from '..
 import { getPlace, type Place } from '../../db/locations';
 import { useAveragePosition } from '../../hooks/useAveragePosition';
 import { useGnssStatus } from '../../hooks/useGnssStatus';
-import { useHeading } from '../../hooks/useHeading';
+import { positionSource } from '../../lib/positionSource';
+import { useHeading, useNoCompass } from '../../hooks/useHeading';
 import { usePosition } from '../../hooks/usePosition';
 import { useSettings } from '../../hooks/useSettings';
 import { formatDistance, formatLatLon } from '../../lib/format';
@@ -35,6 +36,7 @@ export default function CompassScreen() {
   // Smoothed position/heading steady the display; the accuracy shown is still per fix.
   const { position, permission, error } = usePosition({ smooth: true });
   const heading = useHeading();
+  const noCompass = useNoCompass(heading);
   const gnss = useGnssStatus({ fullTracking: settings.highAccuracyGps });
   // While standing still the user can average their position for a steadier distance
   // and a tighter uncertainty radius; it stops by itself if they walk away.
@@ -122,7 +124,7 @@ export default function CompassScreen() {
         ) : null}
         <Compass
           size={compassSize}
-          heading={heading?.degrees ?? null}
+          heading={heading?.degrees ?? (noCompass ? 0 : null)}
           bearing={bearing}
           searchArea={searchArea}
           mapBehind={mapLayer != null}
@@ -187,7 +189,9 @@ export default function CompassScreen() {
         <Text style={[styles.detail, { color: theme.text }]}>
           {heading
             ? `Heading ${Math.round(heading.degrees).toString().padStart(3, '0')}° ${heading.isTrue ? 'true' : 'magnetic'}`
-            : 'Heading: waiting for compass…'}
+            : noCompass
+              ? 'No compass sensor found on this phone. The arrow is drawn from north (N at the top): turn to face north, then follow it.'
+              : 'Heading: waiting for compass…'}
         </Text>
         {heading && heading.accuracy <= 1 ? (
           <Text style={[styles.detail, { color: theme.danger }]}>
@@ -198,6 +202,7 @@ export default function CompassScreen() {
           {position?.accuracy != null ? `GPS accuracy ± ${fmt(position.accuracy)}` : 'GPS accuracy: —'}
           {place?.accuracy != null ? ` · place recorded ± ${fmt(place.accuracy)}` : ''}
         </Text>
+        <Text style={[styles.detail, { color: theme.text }]}>{positionSource(gnss.status)}</Text>
         <Text style={[styles.detail, { color: theme.text }]}>{satelliteLine}</Text>
         {constellations ? <Text style={[styles.small, { color: theme.muted }]}>{constellations}</Text> : null}
         {gnss.fullTrackingOn ? (
