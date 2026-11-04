@@ -1,3 +1,4 @@
+import { HttpError, ServerMessage } from '../../src/lib/failure';
 import { uploadDebugLog, uploadEnabled } from '../../src/lib/logUpload';
 
 afterEach(() => jest.restoreAllMocks());
@@ -14,11 +15,13 @@ test('posts the log text with the API and app versions and returns the reference
 
 test('reports the server error message', async () => {
   jest.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false, status: 413, json: async () => ({ error: 'The log is too large.' }) } as never);
+  await expect(uploadDebugLog('x', '1', 'https://logs.example/')).rejects.toThrow(ServerMessage);
   await expect(uploadDebugLog('x', '1', 'https://logs.example/')).rejects.toThrow('The log is too large.');
 });
 
 test('falls back to the status when the reply is not understood', async () => {
   jest.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false, status: 502, json: async () => { throw new Error('not json'); } } as never);
+  await expect(uploadDebugLog('x', '1', 'https://logs.example/')).rejects.toThrow(HttpError);
   await expect(uploadDebugLog('x', '1', 'https://logs.example/')).rejects.toThrow('The server answered 502');
 });
 

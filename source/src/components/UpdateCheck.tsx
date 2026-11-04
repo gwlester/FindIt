@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Alert, Text } from 'react-native';
 
+import { reportFailure } from '../lib/failure';
 import { useTheme } from '../lib/theme';
 import { checkForUpdate, currentVersion, downloadAndInstall, type Update } from '../lib/updates';
 import { Button } from './ui';
-
-const errorText = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
 /** Settings → Updates (sideloaded build only): look for a newer release, then download and install it. */
 export function UpdateCheck() {
@@ -17,7 +16,7 @@ export function UpdateCheck() {
     try {
       await downloadAndInstall(update);
     } catch (e) {
-      Alert.alert('Could not install the update', errorText(e));
+      Alert.alert('Could not install the update', reportFailure('update', 'Installing the update', e));
     } finally {
       setBusy(false);
     }
@@ -37,7 +36,7 @@ export function UpdateCheck() {
         [{ text: 'Not now', style: 'cancel' }, { text: 'Download and install', onPress: () => install(update) }],
       );
     } catch (e) {
-      Alert.alert('Could not check for updates', errorText(e));
+      Alert.alert('Could not check for updates', reportFailure('update', 'Checking for updates', e));
     } finally {
       setBusy(false);
     }

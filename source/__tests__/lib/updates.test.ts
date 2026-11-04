@@ -3,6 +3,7 @@ import { getContentUriAsync } from 'expo-file-system/legacy';
 import { startActivityAsync } from 'expo-intent-launcher';
 
 import { APK_NAME, canSelfUpdate, checkForUpdate, downloadAndInstall, isNewer, LATEST_RELEASE_URL } from '../../src/lib/updates';
+import { HttpError } from '../../src/lib/failure';
 import { nativeMock } from '../helpers/nativeModuleMock';
 
 jest.mock('expo-constants', () => ({ __esModule: true, default: { expoConfig: { version: '2026.11.03.001' } } }));
@@ -64,6 +65,7 @@ describe('checkForUpdate', () => {
 
   it('throws when GitHub cannot be reached', async () => {
     jest.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false, status: 403 } as never);
+    await expect(checkForUpdate()).rejects.toThrow(HttpError);
     await expect(checkForUpdate()).rejects.toThrow('GitHub answered 403');
   });
 });

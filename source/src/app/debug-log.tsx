@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../components/ui';
 import { useSettings } from '../hooks/useSettings';
 import { clearDebugLog, formatDebugLog, readDebugLog, type DebugEntry } from '../lib/debugLog';
+import { reportFailure } from '../lib/failure';
 import { uploadDebugLog, uploadEnabled } from '../lib/logUpload';
 import { useTheme } from '../lib/theme';
 import { currentVersion } from '../lib/updates';
@@ -58,7 +59,7 @@ export default function DebugLogScreen() {
               const { id } = await uploadDebugLog(formatDebugLog(entries), currentVersion());
               Alert.alert('Log sent', `Thank you. If you ask about it, quote this reference: ${id}`);
             } catch (e) {
-              Alert.alert('Could not send the log', e instanceof Error ? e.message : String(e));
+              Alert.alert('Could not send the log', reportFailure('upload', 'Sending the log', e));
             }
           },
         },

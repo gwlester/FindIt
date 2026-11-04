@@ -7,6 +7,8 @@ import { getContentUriAsync } from 'expo-file-system/legacy';
 import { startActivityAsync } from 'expo-intent-launcher';
 
 import FindItNative from '../../modules/findit-native';
+import { debugLog } from './debugLog';
+import { HttpError } from './failure';
 
 export const LATEST_RELEASE_URL = 'https://api.github.com/repos/gwlester/findit/releases/latest';
 export const APK_NAME = 'findcache.apk';
@@ -42,8 +44,9 @@ type Release = { tag_name?: string; body?: string | null; assets?: { name: strin
 /** The newest release if it is newer than this app and has an APK; otherwise null. Throws if GitHub can't be reached. */
 export async function checkForUpdate(): Promise<Update | null> {
   const response = await fetch(LATEST_RELEASE_URL, { headers: { Accept: 'application/vnd.github+json' } });
-  if (!response.ok) throw new Error(`GitHub answered ${response.status}`);
+  if (!response.ok) throw new HttpError(response.status, `GitHub answered ${response.status}`);
   const release = (await response.json()) as Release;
+  debugLog('update', `Latest release ${release.tag_name ?? '(none)'}; this app is ${currentVersion()}`);
   const version = release.tag_name?.replace(/^v/, '');
   const apk = release.assets?.find((a) => a.name === APK_NAME);
   if (!version || !apk || !isNewer(version, currentVersion())) return null;
@@ -52,7 +55,9 @@ export async function checkForUpdate(): Promise<Update | null> {
 
 /** Downloads the update and opens Android's installer for it. */
 export async function downloadAndInstall(update: Update): Promise<void> {
+  debugLog('update', `Downloading ${update.apkUrl}`);
   const file = await File.downloadFileAsync(update.apkUrl, new File(Paths.cache, `findcache-${update.version}.apk`));
+  debugLog('update', 'Downloaded; opening the installer');
   const uri = await getContentUriAsync(file.uri);
   await startActivityAsync('android.intent.action.INSTALL_PACKAGE', {
     data: uri,

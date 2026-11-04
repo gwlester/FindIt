@@ -78,11 +78,11 @@ describe('send log to KnG', () => {
     const user = userEvent.setup();
     const alert = mockAlert();
     jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(true);
-    jest.spyOn(logUpload, 'uploadDebugLog').mockRejectedValue(new Error('Network request failed'));
+    jest.spyOn(logUpload, 'uploadDebugLog').mockRejectedValue(new TypeError('Network request failed'));
     await renderApp(<DebugLogScreen />, { seed });
     await user.press(screen.getByRole('button', { name: 'Send log to KnG' }));
     await alert.press('Send the log to KnG?', 'Send');
-    expect(alert.message('Could not send the log')).toBe('Network request failed');
+    expect(alert.message('Could not send the log')).toBe('Could not reach the internet. Check your connection and try again.');
   });
 
   it('words a one-entry log in the singular and copes with non-Error failures', async () => {
@@ -100,7 +100,7 @@ describe('send log to KnG', () => {
     await user.press(screen.getByRole('button', { name: 'Send log to KnG' }));
     expect(alert.message('Send the log to KnG?')).toMatch(/the 1 entry in this log/);
     await alert.press('Send the log to KnG?', 'Send');
-    expect(alert.message('Could not send the log')).toBe('offline');
+    expect(alert.message('Could not send the log')).toBe('Something unexpected went wrong. Please try again.');
   });
 
   it('is disabled while the log is empty', async () => {

@@ -1,6 +1,8 @@
 import { render, screen, userEvent } from '@testing-library/react-native';
 
 import { UpdateCheck } from '../../src/components/UpdateCheck';
+import * as debugLogModule from '../../src/lib/debugLog';
+import { HttpError } from '../../src/lib/failure';
 import * as updates from '../../src/lib/updates';
 import { mockAlert } from '../helpers/renderApp';
 
@@ -48,20 +50,30 @@ test('copes with failures that are not Error objects', async () => {
   jest.spyOn(updates, 'checkForUpdate').mockRejectedValue('offline');
   await render(<UpdateCheck />);
   await user.press(screen.getByRole('button', { name: 'Check for updates' }));
-  expect(alert.message('Could not check for updates')).toBe('offline');
+  expect(alert.message('Could not check for updates')).toBe('Something unexpected went wrong. Please try again.');
 });
 
 test('reports when the check or the install fails', async () => {
   const user = userEvent.setup();
   const alert = mockAlert();
-  jest.spyOn(updates, 'checkForUpdate').mockRejectedValueOnce(new Error('GitHub answered 403'));
+  jest.spyOn(updates, 'checkForUpdate').mockRejectedValueOnce(new HttpError(403, 'GitHub answered 403'));
   await render(<UpdateCheck />);
   await user.press(screen.getByRole('button', { name: 'Check for updates' }));
-  expect(alert.message('Could not check for updates')).toBe('GitHub answered 403');
+  expect(alert.message('Could not check for updates')).toMatch(/limiting requests/);
 
   jest.spyOn(updates, 'checkForUpdate').mockResolvedValue(UPDATE);
   jest.spyOn(updates, 'downloadAndInstall').mockRejectedValue(new Error('Disk full'));
   await user.press(screen.getByRole('button', { name: 'Check for updates' }));
   await alert.press('Version 2026.11.04.001 is available', 'Download and install');
-  expect(alert.message('Could not install the update')).toBe('Disk full');
+  expect(alert.message('Could not install the update')).toBe('Something unexpected went wrong. Please try again.');
+});
+
+test('records a failed check in the debug log', async () => {
+  const user = userEvent.setup();
+  mockAlert();
+  const log = jest.spyOn(debugLogModule, 'debugLog').mockImplementation(() => {});
+  jest.spyOn(updates, 'checkForUpdate').mockRejectedValue(new HttpError(403, 'GitHub answered 403'));
+  await render(<UpdateCheck />);
+  await user.press(screen.getByRole('button', { name: 'Check for updates' }));
+  expect(log).toHaveBeenCalledWith('update', 'Checking for updates failed: GitHub answered 403');
 });
