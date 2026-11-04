@@ -67,11 +67,11 @@ describe('logAppState', () => {
   it('records when the app moves to the background, and stops listening when removed', async () => {
     const remove = jest.fn();
     const add = jest.spyOn(AppState, 'addEventListener').mockReturnValue({ remove } as never);
-    const stop = logAppState();
+    const stop = logAppState('FindCache 1, Android 15 (API 35), Pixel');
     const listener = add.mock.calls[0][1] as (state: string) => void;
     listener('active');
     listener('background');
-    expect(await messages()).toEqual(['[app] Moved to the background']);
+    expect(await messages()).toEqual(['[app] Moved to the background: FindCache 1, Android 15 (API 35), Pixel']);
     stop();
     expect(remove).toHaveBeenCalled();
   });
@@ -86,6 +86,17 @@ describe('checkPreviousRun', () => {
     resetPreviousRunCheck();
     await checkPreviousRun(db as never);
     expect(await messages()).toEqual(['[app] Moved to the background']);
+  });
+
+  it('is quiet when the newest entry is a normal lifecycle note', async () => {
+    for (const note of ['Moved to the background: FindCache 1', 'Debug logging off: FindCache 1', 'Debug log cleared: FindCache 1']) {
+      await clearDebugLog(db as never);
+      resetPreviousRunCheck();
+      debugLog('app', note);
+      await flushDebugLog();
+      await checkPreviousRun(db as never);
+      expect(await messages()).toEqual([`[app] ${note}`]);
+    }
   });
 
   it('flags a previous run that did not end in the background, once per start', async () => {

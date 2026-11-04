@@ -93,6 +93,17 @@ test('clears the log', async () => {
   expect(await readDebugLog(db as never)).toEqual([]);
 });
 
+test('clearing can leave one note behind, even while logging is off, after pending entries are written', async () => {
+  setDebugLogging(db as never, true);
+  debugLog('t', 'pending');
+  await clearDebugLog(db as never, 'Debug log cleared: FindCache 1', new Date(2026, 10, 4, 9, 0, 0).getTime());
+  setDebugLogging(null, false);
+  const entries = await readDebugLog(db as never);
+  expect(entries.map((e) => `${e.tag}|${e.message}`)).toEqual(['app|Debug log cleared: FindCache 1']);
+  await clearDebugLog(db as never, 'again');
+  expect((await readDebugLog(db as never)).map((e) => e.message)).toEqual(['again']);
+});
+
 test('a failed write never breaks the app', async () => {
   setDebugLogging(db as never, true);
   const broken = { runAsync: jest.fn(async () => Promise.reject(new Error('closed'))) };

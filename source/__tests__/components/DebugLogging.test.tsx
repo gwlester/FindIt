@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react-native';
+import { act, cleanup, render } from '@testing-library/react-native';
 import { Platform } from 'react-native';
 
 import { DebugLogging } from '../../src/components/DebugLogging';
@@ -54,17 +54,34 @@ test('on: starts with what is running where, and records the native server', asy
   expect(isDebugLogging()).toBe(true);
   emitNative('onShareLog', { message: 'Advertising started' });
   expect(await messages()).toEqual([
-    '[app] Debug logging on: FindCache 2026.11.02.001, Android 15 (API 35), Google Pixel 8',
+    '[app] App started: FindCache 2026.11.02.001, Android 15 (API 35), Google Pixel 8',
     '[share-server] Advertising started',
   ]);
 });
 
-test('turning it off stops logging', async () => {
+test('turning it off writes a last entry, then stops logging', async () => {
   await mount(true);
   await act(async () => update({ ...DEFAULT_SETTINGS, debugLogging: false }));
   expect(isDebugLogging()).toBe(false);
   emitNative('onShareLog', { message: 'ignored' });
-  expect((await messages()).some((m) => m.includes('ignored'))).toBe(false);
+  const all = await messages();
+  expect(all.some((m) => m.includes('ignored'))).toBe(false);
+  expect(all[all.length - 1]).toMatch(/^\[app\] Debug logging off: FindCache 2026\.11\.02\.001, Android .+ \(API .+\), .+$/);
+});
+
+test('turning it on later writes a "Debug logging on" entry, not "App started"', async () => {
+  await mount(false);
+  await act(async () => update({ ...DEFAULT_SETTINGS, debugLogging: true }));
+  const all = await messages();
+  expect(all).toHaveLength(1);
+  expect(all[0]).toMatch(/^\[app\] Debug logging on: FindCache 2026\.11\.02\.001, /);
+});
+
+test('the app going away with logging still on writes no "off" entry', async () => {
+  await mount(true);
+  await act(async () => cleanup());
+  setDebugLogging(db as never, true);
+  expect((await messages()).filter((m) => m.includes('logging off'))).toEqual([]);
 });
 
 test('copes with unknown version and device details', async () => {
@@ -76,5 +93,5 @@ test('copes with unknown version and device details', async () => {
   jest.replaceProperty(constants, 'expoConfig', null);
   Object.defineProperty(Platform, 'Version', { value: 30, configurable: true });
   await mount(true);
-  expect((await messages())[0]).toBe('[app] Debug logging on: FindCache unknown, Android ? (API 30)');
+  expect((await messages())[0]).toBe('[app] App started: FindCache unknown, Android ? (API 30)');
 });

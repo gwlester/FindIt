@@ -104,7 +104,10 @@ Settings → Troubleshooting → **Enable debug logging** (`debugLogging`, off b
 otherwise entries are queued (so they keep their order and never block or break the caller)
 and written to the `debug_log` table (schema v4), which keeps the newest 2000.
 `<DebugLogging />` in the root layout turns it on and off with the setting, writes a first line
-with the app version, Android version and phone model, and relays the native share server's
+with the app version, Android version and phone model (`App started` at launch, `Debug logging on`
+when the user switches it on, `Debug logging off` as the last entry when switched off, and
+`Moved to the background` each time the app is backgrounded, all with the same details; Clear
+log leaves a single `Debug log cleared` entry, even while logging is off), and relays the native share server's
 `onShareLog` events. Tags: `app`, `permissions`, `ble` (receiving: state, scan, devices seen,
 download steps), `share` (starting/stopping sharing) and `share-server` (the Kotlin GATT
 server: advertising, connections, MTU, reads and writes). The Debug log screen shows, shares
