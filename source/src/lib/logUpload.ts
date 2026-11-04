@@ -5,8 +5,8 @@
 import { debugLog } from './debugLog';
 import { HttpError, ServerMessage } from './failure';
 
-/** Empty until the endpoint is deployed; the Send button is hidden while it is empty. */
-export const LOG_UPLOAD_URL = '';
+/** The KnG log-upload endpoint; the Send button is hidden if this is ever empty. */
+export const LOG_UPLOAD_URL = 'https://6bjcezhnmuwnvuzighkzbppafq0ddjks.lambda-url.us-east-1.on.aws/';
 export const API_VERSION = '1';
 
 /** Whether uploading is available, i.e. the endpoint address has been filled in. */
