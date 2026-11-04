@@ -1,5 +1,5 @@
 import { HttpError, ServerMessage } from '../../src/lib/failure';
-import { uploadDebugLog, uploadEnabled } from '../../src/lib/logUpload';
+import { LOG_UPLOAD_URL, uploadDebugLog, uploadEnabled } from '../../src/lib/logUpload';
 
 afterEach(() => jest.restoreAllMocks());
 
@@ -32,7 +32,7 @@ test('uploading is enabled only once the endpoint is known', () => {
 
 test('uses the built-in endpoint by default', async () => {
   const fetchMock = jest.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true, status: 200, json: async () => ({ id: 'x' }) } as never);
-  expect(uploadEnabled()).toBe(false);
+  expect(uploadEnabled()).toBe(true);
   await uploadDebugLog('x', '1');
-  expect(fetchMock).toHaveBeenCalledWith('', expect.any(Object));
+  expect(fetchMock).toHaveBeenCalledWith(LOG_UPLOAD_URL, expect.any(Object));
 });
