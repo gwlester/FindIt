@@ -40,6 +40,8 @@ declare class FindItNativeModule extends NativeModule<FindItNativeEvents> {
   startSharing(advertisedName: string, infoJson: string, items: string[]): Promise<void>;
   stopSharing(): Promise<void>;
   isSharing(): boolean;
+  /** Whether this build may install updates (the sideloaded APK declares REQUEST_INSTALL_PACKAGES; the Play build doesn't). */
+  canSelfUpdate(): boolean;
 }
 
 export default requireNativeModule<FindItNativeModule>('FindItNative');

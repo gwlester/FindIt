@@ -16,6 +16,7 @@ export class File {
     files[this.uri] = text;
   });
   text = jest.fn(async () => files[this.uri]);
+  static downloadFileAsync = jest.fn(async (_url: string, destination: File) => destination);
 }
 
 export const Paths = { cache: { uri: 'file:///cache' }, document: { uri: 'file:///document' } };

@@ -6,6 +6,7 @@ import { DEFAULT_SETTINGS, loadSettings } from '../../src/db/settings';
 import { SettingsProvider } from '../../src/hooks/useSettings';
 import { setCurrentDb } from '../helpers/expoSqliteMock';
 import { setDeviceName, setSupportedCpuArchitectures } from '../helpers/expoDeviceMock';
+import { nativeMock } from '../helpers/nativeModuleMock';
 import { mockAlert, renderApp } from '../helpers/renderApp';
 import { createTestDb } from '../helpers/testDb';
 
@@ -140,6 +141,19 @@ describe('sharing history', () => {
     await user.press(screen.getByRole('checkbox', { name: /7 days/ }));
     await user.press(screen.getByRole('button', { name: 'Save' }));
     expect((await loadSettings(db as never)).shareHistoryDays).toBe(7);
+  });
+});
+
+describe('updates', () => {
+  it('shows the update check in the sideloaded build', async () => {
+    await renderApp(<SettingsScreen />);
+    expect(screen.getByRole('button', { name: 'Check for updates' })).toBeOnTheScreen();
+  });
+
+  it('hides it where the build cannot install updates (Google Play)', async () => {
+    nativeMock.canSelfUpdate.mockReturnValue(false);
+    await renderApp(<SettingsScreen />);
+    expect(screen.queryByRole('button', { name: 'Check for updates' })).not.toBeOnTheScreen();
   });
 });
 

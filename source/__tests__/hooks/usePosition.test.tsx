@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 import * as Location from 'expo-location';
 
+import * as debugLogModule from '../../src/lib/debugLog';
 import { ensureLocationPermission, usePosition } from '../../src/hooks/usePosition';
 import { emitPosition, emitPositionError, positionWatcherCount } from '../helpers/expoLocationMock';
 
@@ -18,6 +19,42 @@ describe('usePosition', () => {
     );
     await act(async () => emitPosition({ latitude: 1, longitude: 2, accuracy: 5 }, 1000));
     expect(result.current.position).toEqual({ latitude: 1, longitude: 2, accuracy: 5, timestamp: 1000 });
+  });
+
+  it('writes the provider status and each fix to the debug log', async () => {
+    const log = jest.spyOn(debugLogModule, 'debugLog').mockImplementation(() => {});
+    const throttled = jest.spyOn(debugLogModule, 'debugLogThrottled').mockImplementation(() => {});
+    jest.mocked(Location.getProviderStatusAsync).mockResolvedValueOnce({
+      locationServicesEnabled: true,
+      gpsAvailable: false,
+      networkAvailable: true,
+      passiveAvailable: true,
+      backgroundModeEnabled: false,
+    });
+    await renderHook(() => usePosition());
+    await flush();
+    expect(log).toHaveBeenCalledWith('gps', 'Providers: location services on, GPS off, network on');
+    await act(async () => emitPosition({ latitude: 1, longitude: 2, accuracy: 38.5 }, 1000));
+    expect(throttled).toHaveBeenCalledWith('gps', 'Fix accurate to 38.5 m', 5000);
+    await act(async () => emitPosition({ latitude: 1, longitude: 2 }, 1000));
+    expect(throttled).toHaveBeenLastCalledWith('gps', 'Fix with no accuracy', 5000);
+    log.mockRestore();
+    throttled.mockRestore();
+  });
+
+  it('copes with a provider status that is missing or incomplete', async () => {
+    const log = jest.spyOn(debugLogModule, 'debugLog').mockImplementation(() => {});
+    jest.mocked(Location.getProviderStatusAsync).mockResolvedValueOnce({ locationServicesEnabled: false } as never);
+    await renderHook(() => usePosition());
+    await flush();
+    expect(log).toHaveBeenCalledWith('gps', 'Providers: location services off, GPS off, network off');
+    log.mockClear();
+    jest.mocked(Location.getProviderStatusAsync).mockRejectedValueOnce(new Error('nope'));
+    const { result } = await renderHook(() => usePosition());
+    await flush();
+    expect(result.current.permission).toBe('granted');
+    expect(log).not.toHaveBeenCalled();
+    log.mockRestore();
   });
 
   it('reports denied permission and never subscribes', async () => {

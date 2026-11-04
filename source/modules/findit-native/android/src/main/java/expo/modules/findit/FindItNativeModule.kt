@@ -58,6 +58,14 @@ class FindItNativeModule : Module() {
       share?.isRunning == true
     }
 
+    // Only the sideloaded APK declares REQUEST_INSTALL_PACKAGES (CI adds it to that build's
+    // manifest alone), so this is false in the Google Play build, which must not self-update.
+    Function("canSelfUpdate") {
+      @Suppress("DEPRECATION")
+      val info = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
+      info.requestedPermissions?.contains("android.permission.REQUEST_INSTALL_PACKAGES") == true
+    }
+
     OnDestroy {
       gnss?.stop()
       share?.stop()

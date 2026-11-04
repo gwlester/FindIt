@@ -88,7 +88,10 @@ check required by the `master` ruleset):
 1. installs dependencies (`npm ci`), then runs the typecheck, lint, and unit tests with the
    90%-per-file coverage check;
 2. generates the Android project (`expo prebuild`) and builds a release APK for `arm64-v8a` and `armeabi-v7a` (one APK for 64-bit and 32-bit ARM phones),
-   signed with the debug key so it can be sideloaded;
+   signed with the debug key so it can be sideloaded. Only this APK gets the
+   `REQUEST_INSTALL_PACKAGES` permission (a CI step adds it to the manifest and removes it again before the
+   Play AAB build), which turns on Settings → Updates → Check for updates (`canSelfUpdate` in the native module).
+   Play forbids apps that update themselves, so the Play build never shows it;
 3. uploads the APK as the artifact `findcache-<commit>`, kept for **1 day** (the release job deletes it
    as soon as the Release holds the file);
 4. on release builds, if the upload-keystore secrets exist, also builds a Play-ready AAB

@@ -1,6 +1,7 @@
 import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
 
+import { debugLog, debugLogThrottled } from '../lib/debugLog';
 import { smoothPosition } from '../lib/smoothing';
 
 export type Position = {
@@ -46,10 +47,23 @@ export function usePosition({ smooth = false }: { smooth?: boolean } = {}) {
       if (!(await Location.hasServicesEnabledAsync())) {
         setError('Location services are turned off');
       }
+      const providers = await Location.getProviderStatusAsync().catch(() => null);
+      if (providers) {
+        const on = (v: boolean) => (v ? 'on' : 'off');
+        debugLog(
+          'gps',
+          `Providers: location services ${on(providers.locationServicesEnabled)}, GPS ${on(providers.gpsAvailable ?? false)}, network ${on(providers.networkAvailable ?? false)}`,
+        );
+      }
       const sub = await Location.watchPositionAsync(
         { accuracy: Location.Accuracy.BestForNavigation, timeInterval: 1000, distanceInterval: 0 },
         (loc) => {
           setError(null);
+          debugLogThrottled(
+            'gps',
+            loc.coords.accuracy == null ? 'Fix with no accuracy' : `Fix accurate to ${loc.coords.accuracy} m`,
+            5000,
+          );
           const fix: Position = {
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,

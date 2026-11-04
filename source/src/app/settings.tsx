@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { UpdateCheck } from '../components/UpdateCheck';
 import { Button, Checkbox, Field, Section, Stepper } from '../components/ui';
 import { DEFAULT_SEARCH_AREA_M, searchAreaRange, stepSearchDistance, toDisplayDistance } from '../lib/searchArea';
 import { useSettings } from '../hooks/useSettings';
@@ -12,6 +13,7 @@ import type { Units } from '../lib/format';
 import { useBottomPadding } from '../lib/insets';
 import { mapsSupported } from '../lib/mapSupport';
 import { useTheme } from '../lib/theme';
+import { canSelfUpdate } from '../lib/updates';
 
 const MAX_DISPLAY_NAME = 40;
 
@@ -154,6 +156,11 @@ function SettingsForm() {
         />
         <Button title="View debug log" variant="secondary" onPress={() => router.push('/debug-log')} />
       </Section>
+      {canSelfUpdate() ? (
+        <Section title="Updates">
+          <UpdateCheck />
+        </Section>
+      ) : null}
       <View>
         <Button title="Save" onPress={save} />
       </View>

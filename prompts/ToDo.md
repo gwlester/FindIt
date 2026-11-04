@@ -9,6 +9,12 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
 - [ ] A long sharing name (over 20 bytes) still downloads (long write to NAME).
 
 ## Improvements
+- [ ] Debug log upload + update check (`work/gps-debug-and-update-check`): built and tested. To finish: the KnG
+      branch `work/findcache-log-upload` needs `terraform apply` run locally (owner), then set `LOG_UPLOAD_URL`
+      in `source/src/lib/logUpload.ts` from the `findcache_log_upload_url` output (the Send button stays hidden
+      until then), merge the KnG branch, and update the KnG FindCache pages. Test "Check for updates" on a device
+      (needs an older sideloaded build installed first), and confirm the Play AAB has no
+      `REQUEST_INSTALL_PACKAGES` (`aapt2 dump badging`).
 - [ ] 32-bit ARM APK (`work/findcache-32-bit`): after the PR build, check `unzip -l findcache.apk | grep lib/` shows
       `armeabi-v7a`, test-install on the Soyes XS15 (MT6580; maps are switched off there, `src/lib/mapSupport.ts`), then drop the
       "64-bit processor" lines from the KnG getting-started page and the FindCache page, say maps need a 64-bit

@@ -204,9 +204,25 @@ jobs:
       # Release build, signed with the debug key from the Expo template, so it can
       # be sideloaded. arm64-v8a plus armeabi-v7a: one APK that installs on both 64-bit and
       # older 32-bit-only phones (Android picks the right native code).
+      # Only the sideloaded APK may install updates itself (Google Play forbids that), so
+      # REQUEST_INSTALL_PACKAGES is added to the manifest for this build and removed again before
+      # the Play AAB build. The app reads the manifest at run time (canSelfUpdate) to show or hide
+      # "Check for updates".
+      - name: Allow the sideload APK to install updates
+        run: |
+          manifest=android/app/src/main/AndroidManifest.xml
+          sed -i '0,/<uses-permission android:name="android.permission.INTERNET"\/>/s##&\n  <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>#' "$manifest"
+          grep -q REQUEST_INSTALL_PACKAGES "$manifest"
+
       - name: Build APK
         working-directory: source/android
         run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+
+      - name: Remove the install-updates permission again (Play build)
+        run: |
+          manifest=android/app/src/main/AndroidManifest.xml
+          sed -i '/REQUEST_INSTALL_PACKAGES/d' "$manifest"
+          ! grep -q REQUEST_INSTALL_PACKAGES "$manifest"
 
       - name: Upload APK
         uses: actions/upload-artifact@v7

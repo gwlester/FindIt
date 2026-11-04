@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 import * as Location from 'expo-location';
 
+import * as debugLogModule from '../../src/lib/debugLog';
 import { useGnssStatus } from '../../src/hooks/useGnssStatus';
 import { emitNative, nativeMock } from '../helpers/nativeModuleMock';
 
@@ -16,6 +17,17 @@ test('starts GNSS status with full tracking and reports updates', async () => {
   expect(result.current.status).toEqual(STATUS);
   await unmount();
   expect(nativeMock.stopGnssStatus).toHaveBeenCalled();
+});
+
+test('writes the satellite counts to the debug log', async () => {
+  const throttled = jest.spyOn(debugLogModule, 'debugLogThrottled').mockImplementation(() => {});
+  await renderHook(() => useGnssStatus({ fullTracking: false }));
+  await flush();
+  await act(async () => emitNative('onGnssStatus', STATUS));
+  expect(throttled).toHaveBeenCalledWith('gnss', '30 known, 20 in view, 12 used in fix (GPS 8, Galileo 4)', 5000);
+  await act(async () => emitNative('onGnssStatus', { known: 13, inView: 4, used: 0, usedByConstellation: {} }));
+  expect(throttled).toHaveBeenLastCalledWith('gnss', '13 known, 4 in view, 0 used in fix', 5000);
+  throttled.mockRestore();
 });
 
 test('restarts when the full-tracking setting changes', async () => {
