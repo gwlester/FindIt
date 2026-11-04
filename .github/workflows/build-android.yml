@@ -210,7 +210,7 @@ jobs:
       # "Check for updates".
       - name: Allow the sideload APK to install updates
         run: |
-          manifest=source/android/app/src/main/AndroidManifest.xml
+          manifest=android/app/src/main/AndroidManifest.xml
           sed -i '0,/<uses-permission android:name="android.permission.INTERNET"\/>/s##&\n  <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>#' "$manifest"
           grep -q REQUEST_INSTALL_PACKAGES "$manifest"
 
@@ -220,7 +220,7 @@ jobs:
 
       - name: Remove the install-updates permission again (Play build)
         run: |
-          manifest=source/android/app/src/main/AndroidManifest.xml
+          manifest=android/app/src/main/AndroidManifest.xml
           sed -i '/REQUEST_INSTALL_PACKAGES/d' "$manifest"
           ! grep -q REQUEST_INSTALL_PACKAGES "$manifest"
 
