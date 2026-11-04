@@ -1,6 +1,8 @@
 import { encodeInfo, encodeItem, INDEX_UUID, INFO_UUID, ITEM_UUID, NAME_UUID, SERVICE_UUID } from '../../src/ble/protocol';
 import { base64ToText, textToBase64 } from '../../src/lib/base64';
+import { flushDebugLog, readDebugLog, setDebugLogging } from '../../src/lib/debugLog';
 import { bleState, managerMethods, setBluetoothState } from '../helpers/bleMock';
+import { createTestDb, type TestDb } from '../helpers/testDb';
 
 import * as clientModule from '../../src/ble/client';
 
@@ -154,5 +156,70 @@ describe('sending my name (protocol v2)', () => {
     });
     bleState.device = device;
     await expect(client.fetchSharedPlaces('d1', undefined, 'Gerald')).resolves.toMatchObject({ from: 'Alex' });
+  });
+});
+
+describe('debug log', () => {
+  let db: TestDb;
+  const logged = async () => {
+    await flushDebugLog();
+    return (await readDebugLog(db as never))
+      .reverse()
+      .map((e) => `[${e.tag}] ${e.message}`)
+      .join('\n');
+  };
+  beforeEach(async () => {
+    db = await createTestDb();
+    setDebugLogging(db as never, true);
+  });
+  afterEach(() => {
+    setDebugLogging(null, false);
+    db.close();
+  });
+
+  it('records Bluetooth state, the scan, each device once, errors and stopping', async () => {
+    const client = loadClient();
+    const sub = client.onBluetoothStateChange(jest.fn());
+    setBluetoothState('PoweredOff');
+    sub.remove();
+    const stop = client.scanForNearbyUsers(jest.fn(), jest.fn());
+    bleState.scanCallback!(null, { id: 'd1', rssi: -50, serviceData: { [SERVICE_UUID]: textToBase64('Alex') } });
+    bleState.scanCallback!(null, { id: 'd1', rssi: -52, serviceData: { [SERVICE_UUID]: textToBase64('Alex') } });
+    bleState.scanCallback!({ message: 'Scan throttled' }, null);
+    stop();
+    const log = await logged();
+    expect(log).toContain('[ble] Bluetooth state: PoweredOff');
+    expect(log).toContain(`[ble] Scan started for service ${SERVICE_UUID}`);
+    expect(log.match(/Found "Alex" \(d1\), RSSI -50/g)).toHaveLength(1);
+    expect(log).toContain('[ble] Scan error: Scan throttled');
+    expect(log).toContain('[ble] Scan stopped (1 device seen)');
+  });
+
+  it('records each download step', async () => {
+    const client = loadClient();
+    const items = [encodeItem({ name: 'A', latitude: 1, longitude: 2, accuracy: 3, notes: '' })];
+    bleState.device = { ...fakeDevice(items), mtu: 512 };
+    await client.fetchSharedPlaces('d1', undefined, 'Gerald');
+    const log = await logged();
+    expect(log).toMatch(/\[ble\] Connecting to d1[\s\S]*Connected to d1, MTU 512[\s\S]*Sent my name "Gerald"[\s\S]*Sharer "Alex" offers 1 place[\s\S]*Read place 1 of 1 \(\d+ bytes\)[\s\S]*Downloaded 1 place from "Alex"[\s\S]*Disconnected from d1/);
+  });
+
+  it('records a refused name and a failed download', async () => {
+    const client = loadClient();
+    const device = fakeDevice([]);
+    device.writeCharacteristicWithResponseForService.mockRejectedValueOnce(new Error('Unknown characteristic'));
+    device.readCharacteristicForService.mockRejectedValueOnce(new Error('GATT 133'));
+    bleState.device = device;
+    await expect(client.fetchSharedPlaces('d1', undefined, 'Gerald')).rejects.toThrow('GATT 133');
+    const log = await logged();
+    expect(log).toContain('[ble] Name not accepted (older FindCache?): Unknown characteristic');
+    expect(log).toContain('[ble] Download from d1 failed: GATT 133');
+  });
+
+  it('records a connection that fails', async () => {
+    const client = loadClient();
+    managerMethods.connectToDevice.mockRejectedValueOnce(new Error('Device not found'));
+    await expect(client.fetchSharedPlaces('d9')).rejects.toThrow('Device not found');
+    expect(await logged()).toContain('[ble] Could not connect to d9: Device not found');
   });
 });

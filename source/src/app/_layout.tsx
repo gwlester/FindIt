@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 
 import { DATABASE_NAME, migrateDatabase } from '../db/schema';
+import { DebugLogging } from '../components/DebugLogging';
 import { HelpButton } from '../components/HelpButton';
 import { SettingsButton } from '../components/SettingsButton';
 import { SettingsProvider } from '../hooks/useSettings';
@@ -33,6 +34,7 @@ export default function RootLayout() {
   return (
     <SQLiteProvider databaseName={DATABASE_NAME} onInit={migrateDatabase}>
       <SettingsProvider>
+        <DebugLogging />
         <StatusBar style="auto" />
         <Stack
           screenOptions={{
@@ -52,6 +54,7 @@ export default function RootLayout() {
           <Stack.Screen name="help" options={{ title: 'Help', headerRight: settingsOnly }} />
           <Stack.Screen name="about" options={{ title: 'About FindCache', headerRight: settingsOnly }} />
           <Stack.Screen name="licenses" options={{ title: 'Licences', headerRight: settingsOnly }} />
+          <Stack.Screen name="debug-log" options={{ title: 'Debug log', headerRight: help('debug-log') }} />
           <Stack.Screen name="settings" options={{ title: 'Settings', headerRight: headerButtons({ settings: false, helpTopic: 'settings' }) }} />
         </Stack>
       </SettingsProvider>

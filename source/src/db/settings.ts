@@ -25,6 +25,8 @@ export type Settings = {
   mapLayer: MapLayer;
   /** What to draw behind the compass's search-area view. */
   compassBackground: CompassBackground;
+  /** Keep a debug log on the phone (Settings → Troubleshooting). */
+  debugLogging: boolean;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -37,6 +39,7 @@ export const DEFAULT_SETTINGS: Settings = {
   shareHistoryDays: 90,
   mapLayer: 'streets',
   compassBackground: 'plain',
+  debugLogging: false,
 };
 
 const FIND_MODES: FindMode[] = ['off', 'once', 'log'];
@@ -71,6 +74,7 @@ export async function loadSettings(db: SQLiteDatabase): Promise<Settings> {
     compassBackground: BACKGROUNDS.includes(map.compassBackground as CompassBackground)
       ? (map.compassBackground as CompassBackground)
       : 'plain',
+    debugLogging: map.debugLogging === 'true',
   };
 }
 

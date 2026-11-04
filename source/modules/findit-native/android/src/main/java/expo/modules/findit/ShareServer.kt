@@ -14,7 +14,9 @@ import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
 import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.Context
+import android.os.Build
 import android.os.ParcelUuid
+import java.io.ByteArrayOutputStream
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -31,12 +33,18 @@ import java.util.concurrent.ConcurrentHashMap
  * many distinct items it read, so the app can keep a sharing history.
  *
  * Each value stays under the 512 byte ATT limit, and reads honour the offset so
- * long reads work with any MTU. The INDEX selection is tracked per central.
+ * long reads work with any MTU. Writes longer than the MTU arrive as a "long write"
+ * (prepared pieces, then execute) and are handled too. The INDEX selection is tracked
+ * per central.
+ *
+ * `onLog` gets a line for the app's debug log at each step (advertising, connections,
+ * reads and writes); the app only stores them while debug logging is on.
  */
 @SuppressLint("MissingPermission") // The module checks Bluetooth permissions before use.
 class ShareServer(
   private val context: Context,
-  private val onPeer: (Map<String, Any>) -> Unit
+  private val onPeer: (Map<String, Any>) -> Unit,
+  private val onLog: (String) -> Unit = {}
 ) {
   companion object {
     val SERVICE_UUID: UUID = UUID.fromString("5c0a7f10-2b7e-4d1a-9a37-f1d17000c0de")
@@ -63,6 +71,8 @@ class ShareServer(
   private val selectedIndex = ConcurrentHashMap<String, Int>()
   private val peerNames = ConcurrentHashMap<String, String>()
   private val itemsRead = ConcurrentHashMap<String, MutableSet<Int>>()
+  // Pieces of a long write per central: the characteristic and the bytes so far.
+  private val preparedWrites = ConcurrentHashMap<String, Pair<UUID, ByteArrayOutputStream>>()
 
   val isRunning: Boolean
     get() = gattServer != null
@@ -71,14 +81,19 @@ class ShareServer(
     stop()
 
     val adapter = bluetoothManager.adapter
-    if (adapter == null) return onResult("This device has no Bluetooth adapter")
-    if (!adapter.isEnabled) return onResult("Bluetooth is turned off")
+    if (adapter == null) return fail(onResult, "This device has no Bluetooth adapter")
+    if (!adapter.isEnabled) return fail(onResult, "Bluetooth is turned off")
     val leAdvertiser = adapter.bluetoothLeAdvertiser
-      ?: return onResult("This device does not support Bluetooth LE advertising")
+      ?: return fail(onResult, "This device does not support Bluetooth LE advertising")
+    val extended = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && adapter.isLeExtendedAdvertisingSupported
+    onLog(
+      "Server starting: ${itemJson.size} items, Android API ${Build.VERSION.SDK_INT}, " +
+        "multiple advertisement ${adapter.isMultipleAdvertisementSupported}, extended advertising $extended"
+    )
 
     val encodedItems = itemJson.map { it.toByteArray(Charsets.UTF_8) }
     if (encodedItems.any { it.size > MAX_VALUE_BYTES }) {
-      return onResult("A shared location is too large to send")
+      return fail(onResult, "A shared location is too large to send")
     }
     info = infoJson.toByteArray(Charsets.UTF_8)
     items = encodedItems
@@ -118,18 +133,21 @@ class ShareServer(
       override fun onServiceAdded(status: Int, added: BluetoothGattService) {
         if (status != BluetoothGatt.GATT_SUCCESS) {
           stop()
-          onResult("Could not start the sharing service (status $status)")
+          fail(onResult, "Could not start the sharing service (status $status)")
           return
         }
+        onLog("GATT service added")
         startAdvertising(leAdvertiser, advertisedName, onResult)
       }
 
       override fun onConnectionStateChange(device: BluetoothDevice, status: Int, newState: Int) {
+        onLog("Connection ${device.address}: state $newState (2 connected, 0 disconnected), status $status")
         when (newState) {
           BluetoothProfile.STATE_CONNECTED ->
             onPeer(mapOf("address" to device.address, "state" to "connected"))
           BluetoothProfile.STATE_DISCONNECTED -> {
             selectedIndex.remove(device.address)
+            preparedWrites.remove(device.address)
             val name = peerNames.remove(device.address)
             val read = itemsRead.remove(device.address)?.size ?: 0
             val event = mutableMapOf<String, Any>(
@@ -141,6 +159,10 @@ class ShareServer(
             onPeer(event)
           }
         }
+      }
+
+      override fun onMtuChanged(device: BluetoothDevice, mtu: Int) {
+        onLog("MTU for ${device.address} is $mtu")
       }
 
       override fun onCharacteristicReadRequest(
@@ -155,6 +177,7 @@ class ShareServer(
           ITEM_UUID -> items.getOrNull(index)
           else -> null
         }
+        onLog("Read ${nameOf(characteristic.uuid)} by ${device.address}, offset $offset, ${value?.size ?: "no"} bytes")
         // Count each item once, on the first chunk of a (possibly long) read.
         if (characteristic.uuid == ITEM_UUID && value != null && offset == 0) {
           itemsRead.getOrPut(device.address) { ConcurrentHashMap.newKeySet() }.add(index)
@@ -179,23 +202,18 @@ class ShareServer(
         offset: Int,
         value: ByteArray?
       ) {
-        val text = value?.toString(Charsets.UTF_8)?.trim()
-        val ok = when (characteristic.uuid) {
-          INDEX_UUID -> {
-            val index = text?.toIntOrNull()
-            if (index != null && index in items.indices) {
-              selectedIndex[device.address] = index
-              true
-            } else false
-          }
-          NAME_UUID -> {
-            if (!text.isNullOrEmpty()) {
-              peerNames[device.address] = String(truncateUtf8(text, MAX_PEER_NAME_BYTES), Charsets.UTF_8)
-            }
-            true
-          }
-          else -> false
+        onLog(
+          "Write ${nameOf(characteristic.uuid)} by ${device.address}: ${value?.size ?: 0} bytes" +
+            if (preparedWrite) " (long write piece at offset $offset)" else ""
+        )
+        if (preparedWrite) {
+          // Collect the pieces until onExecuteWrite; each response echoes its piece back.
+          val (_, buffer) = preparedWrites.getOrPut(device.address) { characteristic.uuid to ByteArrayOutputStream() }
+          value?.let { buffer.write(it) }
+          if (responseNeeded) gattServer?.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value)
+          return
         }
+        val ok = applyWrite(device, characteristic.uuid, value)
         if (responseNeeded) {
           gattServer?.sendResponse(
             device,
@@ -206,14 +224,53 @@ class ShareServer(
           )
         }
       }
+
+      override fun onExecuteWrite(device: BluetoothDevice, requestId: Int, execute: Boolean) {
+        val pending = preparedWrites.remove(device.address)
+        val ok = !execute || (pending != null && applyWrite(device, pending.first, pending.second.toByteArray()))
+        onLog("Long write by ${device.address} ${if (execute) "executed" else "cancelled"}, ok $ok")
+        gattServer?.sendResponse(
+          device,
+          requestId,
+          if (ok) BluetoothGatt.GATT_SUCCESS else BluetoothGatt.GATT_WRITE_NOT_PERMITTED,
+          0,
+          null
+        )
+      }
     }
 
     val server = bluetoothManager.openGattServer(context, callback)
-      ?: return onResult("Could not open a Bluetooth GATT server")
+      ?: return fail(onResult, "Could not open a Bluetooth GATT server")
     gattServer = server
     if (!server.addService(service)) {
       stop()
-      onResult("Could not register the sharing service")
+      fail(onResult, "Could not register the sharing service")
+    }
+  }
+
+  /** Applies a complete INDEX or NAME write; false if it isn't valid. */
+  private fun applyWrite(device: BluetoothDevice, uuid: UUID, value: ByteArray?): Boolean {
+    val text = value?.toString(Charsets.UTF_8)?.trim()
+    return when (uuid) {
+      INDEX_UUID -> {
+        val index = text?.toIntOrNull()
+        if (index != null && index in items.indices) {
+          selectedIndex[device.address] = index
+          true
+        } else {
+          onLog("Rejected INDEX \"$text\" (have ${items.size} items)")
+          false
+        }
+      }
+      NAME_UUID -> {
+        if (!text.isNullOrEmpty()) {
+          val name = String(truncateUtf8(text, MAX_PEER_NAME_BYTES), Charsets.UTF_8)
+          peerNames[device.address] = name
+          onLog("Receiver ${device.address} is \"$name\"")
+        }
+        true
+      }
+      else -> false
     }
   }
 
@@ -232,35 +289,41 @@ class ShareServer(
       .setIncludeDeviceName(false)
       .addServiceUuid(ParcelUuid(SERVICE_UUID))
       .build()
+    val nameBytes = truncateUtf8(advertisedName, MAX_ADVERTISED_NAME_BYTES)
     val scanResponse = AdvertiseData.Builder()
       .setIncludeDeviceName(false)
-      .addServiceData(ParcelUuid(SERVICE_UUID), truncateUtf8(advertisedName, MAX_ADVERTISED_NAME_BYTES))
+      .addServiceData(ParcelUuid(SERVICE_UUID), nameBytes)
       .build()
 
     val callback = object : AdvertiseCallback() {
       override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
+        onLog(
+          "Advertising started: mode ${settingsInEffect.mode}, TX power ${settingsInEffect.txPowerLevel}, " +
+            "connectable ${settingsInEffect.isConnectable}"
+        )
         onResult(null)
       }
 
       override fun onStartFailure(errorCode: Int) {
         advertiseCallback = null
         stop()
-        onResult(
-          when (errorCode) {
-            AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED -> "This device does not support Bluetooth LE advertising"
-            AdvertiseCallback.ADVERTISE_FAILED_TOO_MANY_ADVERTISERS -> "Too many apps are advertising over Bluetooth"
-            AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE -> "Advertisement data is too large"
-            else -> "Could not start Bluetooth advertising (error $errorCode)"
-          }
-        )
+        val error = when (errorCode) {
+          AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED -> "This device does not support Bluetooth LE advertising"
+          AdvertiseCallback.ADVERTISE_FAILED_TOO_MANY_ADVERTISERS -> "Too many apps are advertising over Bluetooth"
+          AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE -> "Advertisement data is too large"
+          else -> "Could not start Bluetooth advertising (error $errorCode)"
+        }
+        fail(onResult, "$error (code $errorCode)")
       }
     }
     advertiser = leAdvertiser
     advertiseCallback = callback
+    onLog("Advertising service $SERVICE_UUID as \"${String(nameBytes, Charsets.UTF_8)}\" (${nameBytes.size} bytes)")
     leAdvertiser.startAdvertising(settings, data, scanResponse, callback)
   }
 
   fun stop() {
+    if (gattServer != null) onLog("Server stopped")
     advertiseCallback?.let { cb -> runCatching { advertiser?.stopAdvertising(cb) } }
     advertiseCallback = null
     advertiser = null
@@ -269,6 +332,20 @@ class ShareServer(
     selectedIndex.clear()
     peerNames.clear()
     itemsRead.clear()
+    preparedWrites.clear()
+  }
+
+  private fun fail(onResult: (String?) -> Unit, error: String) {
+    onLog("Server could not start: $error")
+    onResult(error)
+  }
+
+  private fun nameOf(uuid: UUID) = when (uuid) {
+    INFO_UUID -> "INFO"
+    INDEX_UUID -> "INDEX"
+    ITEM_UUID -> "ITEM"
+    NAME_UUID -> "NAME"
+    else -> uuid.toString()
   }
 
   private fun truncateUtf8(text: String, maxBytes: Int): ByteArray {

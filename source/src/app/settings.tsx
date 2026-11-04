@@ -40,6 +40,7 @@ function SettingsForm() {
   const [findMode, setFindMode] = useState<FindMode>(settings.findMode);
   const [historyDays, setHistoryDays] = useState(settings.shareHistoryDays);
   const [background, setBackground] = useState<CompassBackground>(settings.compassBackground);
+  const [debugLogging, setDebugLogging] = useState(settings.debugLogging);
 
   const save = async () => {
     const name = displayName.trim();
@@ -49,6 +50,7 @@ function SettingsForm() {
       findMode,
       shareHistoryDays: historyDays,
       compassBackground: background,
+      debugLogging,
       displayName: name,
       units,
       highAccuracyGps,
@@ -142,6 +144,15 @@ function SettingsForm() {
             onToggle={() => setHistoryDays(days)}
           />
         ))}
+      </Section>
+      <Section title="Troubleshooting">
+        <Checkbox
+          checked={debugLogging}
+          label="Enable debug logging"
+          sublabel="Record what the app does (Bluetooth sharing, permissions) on this phone, to help find problems. Nothing is sent anywhere unless you share the log."
+          onToggle={() => setDebugLogging(!debugLogging)}
+        />
+        <Button title="View debug log" variant="secondary" onPress={() => router.push('/debug-log')} />
       </Section>
       <View>
         <Button title="Save" onPress={save} />

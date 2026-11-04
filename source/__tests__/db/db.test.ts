@@ -31,11 +31,11 @@ afterEach(() => db.close());
 describe('schema', () => {
   it('names the database and sets user_version', async () => {
     expect(DATABASE_NAME).toBe('findit.db');
-    expect(await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version')).toEqual({ user_version: 3 });
+    expect(await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version')).toEqual({ user_version: 4 });
   });
   it('is idempotent', async () => {
     await migrateDatabase(db as never);
-    expect(await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version')).toEqual({ user_version: 3 });
+    expect(await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version')).toEqual({ user_version: 4 });
   });
   it('treats a missing user_version row as version 0', async () => {
     const raw = createRawTestDb();
@@ -100,7 +100,7 @@ describe('settings', () => {
     expect((await loadSettings(db as never)).displayName).toBe('Pixel 8');
   });
   it('saves and reloads every setting', async () => {
-    const next = { displayName: 'Gerald', units: 'imperial' as const, highAccuracyGps: false, searchAreaDistanceM: 48.768, findMode: 'once' as const, hideFound: false, shareHistoryDays: 30, mapLayer: 'satellite' as const, compassBackground: 'plain' as const };
+    const next = { displayName: 'Gerald', units: 'imperial' as const, highAccuracyGps: false, searchAreaDistanceM: 48.768, findMode: 'once' as const, hideFound: false, shareHistoryDays: 30, mapLayer: 'satellite' as const, compassBackground: 'plain' as const, debugLogging: false };
     await saveSettings(db as never, next);
     expect(await loadSettings(db as never)).toEqual(next);
     await saveSettings(db as never, { ...next, units: 'metric', highAccuracyGps: true });
@@ -108,10 +108,15 @@ describe('settings', () => {
   });
   it('stores the search-area distance in metres, or off', async () => {
     expect((await loadSettings(db as never)).searchAreaDistanceM).toBe(50);
-    await saveSettings(db as never, { ...DEFAULT_SETTINGS, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const });
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, searchAreaDistanceM: null, findMode: 'once' as const, hideFound: false, shareHistoryDays: 90, mapLayer: 'streets' as const, compassBackground: 'plain' as const, debugLogging: false });
     expect((await loadSettings(db as never)).searchAreaDistanceM).toBeNull();
     await db.runAsync("UPDATE settings SET value = 'garbage' WHERE key = 'searchAreaDistanceM'");
     expect((await loadSettings(db as never)).searchAreaDistanceM).toBe(50);
+  });
+  it('debug logging is off by default and can be turned on', async () => {
+    expect((await loadSettings(db as never)).debugLogging).toBe(false);
+    await saveSettings(db as never, { ...DEFAULT_SETTINGS, debugLogging: true });
+    expect((await loadSettings(db as never)).debugLogging).toBe(true);
   });
   it('remembers what goes behind the compass search area, plain by default', async () => {
     expect((await loadSettings(db as never)).compassBackground).toBe('plain');

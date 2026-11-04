@@ -1,0 +1,31 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='760' viewBox='0 0 360 760'>
+<rect width='360' height='760' rx='28' fill='#fff' stroke='#333' stroke-width='3'/>
+<text x='24' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888'>12:00</text>
+<text x='336' y='26' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' text-anchor='end'>▲ ✱ ▮</text>
+<line x1='0' y1='88' x2='360' y2='88' stroke='#bbb'/>
+<text x='56' y='70' font-family='Helvetica, Arial, sans-serif' font-size='20' font-weight='bold' fill='#333'>Debug log</text>
+<text x='20' y='70' font-family='Helvetica, Arial, sans-serif' font-size='22' fill='#333'>←</text>
+<text x='340' y='69' font-family='Helvetica, Arial, sans-serif' font-size='15' font-weight='bold' fill='#555' text-anchor='end'>?</text>
+<text x='308' y='71' font-family='Helvetica, Arial, sans-serif' font-size='20' fill='#555' text-anchor='end'>⚙</text>
+<text x='16' y='114' font-family='Helvetica, Arial, sans-serif' font-size='12' fill='#888' font-weight='normal' text-anchor='start'>Debug logging is on. 9 entries, newest first.</text>
+<rect x='16' y='124' width='328' height='452' rx='8' fill='#fff' stroke='#bbb' stroke-width='1.5'/>
+<text x='26' y='146' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>09:00:09 [ble] Scan stopped (0 devices seen)</text>
+<text x='26' y='166' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>09:00:01 [ble] Scan started for service 5c0a7f10-…</text>
+<text x='26' y='186' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>09:00:01 [permissions] Location services on</text>
+<text x='26' y='206' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>09:00:00 [permissions] Android API 34:</text>
+<text x='26' y='226' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>    BLUETOOTH_SCAN=granted,</text>
+<text x='26' y='246' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>    BLUETOOTH_CONNECT=granted, BLUETOOTH_ADVERTISE=granted,</text>
+<text x='26' y='266' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>    ACCESS_FINE_LOCATION=denied</text>
+<text x='26' y='286' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>08:59:40 [ble] Bluetooth state: PoweredOn</text>
+<text x='26' y='306' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>08:59:39 [app] Debug logging on: FindCache</text>
+<text x='26' y='326' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#333' font-weight='normal' text-anchor='start'>    2026.11.03.001, Android 14 (API 34), Google Pixel 8</text>
+<rect x='16' y='590' width='158' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='95.0' y='617.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Refresh</text>
+<rect x='186' y='590' width='158' height='44' rx='10' fill='none' stroke='#555' stroke-width='2'/>
+<text x='265.0' y='617.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#555' font-weight='bold' text-anchor='middle'>Clear log</text>
+<rect x='16' y='644' width='328' height='44' rx='10' fill='#555' stroke='#555' stroke-width='2'/>
+<text x='180.0' y='671.0' font-family='Helvetica, Arial, sans-serif' font-size='15' fill='#fff' font-weight='bold' text-anchor='middle'>Share log</text>
+<text x='16' y='710' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>Share log sends a .txt file (email, chat, Files). Newest 2,000</text>
+<text x='16' y='724' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>lines are kept. No places or coordinates; it does contain the</text>
+<text x='16' y='738' font-family='Helvetica, Arial, sans-serif' font-size='11' fill='#b04a00' font-weight='normal' text-anchor='start'>names and Bluetooth addresses of nearby FindCache users.</text>
+</svg>

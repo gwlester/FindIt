@@ -2,6 +2,12 @@
 
 Open work, roughly in priority order. Move items to `Done.md` when finished.
 
+## Verify on hardware
+- [ ] Sharing nearby on two phones after the precise-location fix: Look for nearby finds the
+      other phone. If not, turn on Settings → Troubleshooting → Enable debug logging on both,
+      try again, and share both debug logs.
+- [ ] A long sharing name (over 20 bytes) still downloads (long write to NAME).
+
 ## Improvements
 - [ ] 32-bit ARM APK (`work/findcache-32-bit`): after the PR build, check `unzip -l findcache.apk | grep lib/` shows
       `armeabi-v7a`, test-install on the Soyes XS15 (MT6580; maps are switched off there, `src/lib/mapSupport.ts`), then drop the
