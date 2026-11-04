@@ -1,28 +1,28 @@
 import { HttpError, ServerMessage } from '../../src/lib/failure';
-import { LOG_UPLOAD_URL, buildUploadText, uploadDebugLog, uploadEnabled, uploadEntryMessage } from '../../src/lib/logUpload';
+import { LOG_UPLOAD_URL, MAX_DESCRIPTION_LENGTH, buildUploadText, uploadDebugLog, uploadEnabled, uploadEntryMessage } from '../../src/lib/logUpload';
 
 afterEach(() => jest.restoreAllMocks());
 
-test('posts the log text with the API and app versions and returns the reference', async () => {
+test('posts the description and log as JSON with the API and app versions and returns the reference', async () => {
   const fetchMock = jest.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true, status: 200, json: async () => ({ FormatVersion: 1, id: 'abc-123' }) } as never);
-  expect(await uploadDebugLog('line one\n', '2026.11.04.001', 'https://logs.example/')).toEqual({ id: 'abc-123' });
+  expect(await uploadDebugLog('line one\n', 'The map froze', '2026.11.04.001', 'https://logs.example/')).toEqual({ id: 'abc-123' });
   expect(fetchMock).toHaveBeenCalledWith('https://logs.example/', {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain; charset=utf-8', 'X-API-Version': '2', 'X-App-Version': '2026.11.04.001' },
-    body: 'line one\n',
+    headers: { 'Content-Type': 'application/json; charset=utf-8', 'X-API-Version': '3', 'X-App-Version': '2026.11.04.001' },
+    body: JSON.stringify({ description: 'The map froze', log: 'line one\n' }),
   });
 });
 
 test('reports the server error message', async () => {
   jest.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false, status: 413, json: async () => ({ error: 'The log is too large.' }) } as never);
-  await expect(uploadDebugLog('x', '1', 'https://logs.example/')).rejects.toThrow(ServerMessage);
-  await expect(uploadDebugLog('x', '1', 'https://logs.example/')).rejects.toThrow('The log is too large.');
+  await expect(uploadDebugLog('x', 'd', '1', 'https://logs.example/')).rejects.toThrow(ServerMessage);
+  await expect(uploadDebugLog('x', 'd', '1', 'https://logs.example/')).rejects.toThrow('The log is too large.');
 });
 
 test('falls back to the status when the reply is not understood', async () => {
   jest.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: false, status: 502, json: async () => { throw new Error('not json'); } } as never);
-  await expect(uploadDebugLog('x', '1', 'https://logs.example/')).rejects.toThrow(HttpError);
-  await expect(uploadDebugLog('x', '1', 'https://logs.example/')).rejects.toThrow('The server answered 502');
+  await expect(uploadDebugLog('x', 'd', '1', 'https://logs.example/')).rejects.toThrow(HttpError);
+  await expect(uploadDebugLog('x', 'd', '1', 'https://logs.example/')).rejects.toThrow('The server answered 502');
 });
 
 test('uploading is enabled only once the endpoint is known', () => {
@@ -33,7 +33,7 @@ test('uploading is enabled only once the endpoint is known', () => {
 test('uses the built-in endpoint by default', async () => {
   const fetchMock = jest.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true, status: 200, json: async () => ({ id: 'x' }) } as never);
   expect(uploadEnabled()).toBe(true);
-  await uploadDebugLog('x', '1');
+  await uploadDebugLog('x', 'd', '1');
   expect(fetchMock).toHaveBeenCalledWith(LOG_UPLOAD_URL, expect.any(Object));
 });
 
@@ -52,4 +52,8 @@ test('the upload text always ends with the upload entry, once, and drops anythin
   expect(lines[1]).toBe(`2026-11-04 10:30:00.123 [app] ${message}`);
   // With logging off nothing was stored, so the entry is added.
   expect(buildUploadText([entries[2]], '2026.11.04.006', at).trimEnd().split('\n')).toHaveLength(2);
+});
+
+test('the description limit matches the server', () => {
+  expect(MAX_DESCRIPTION_LENGTH).toBe(1000);
 });

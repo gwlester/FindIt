@@ -51,8 +51,24 @@ test('shares the log as a text file', async () => {
   expect(files[uri]).toBe('2026-11-02 09:00:00.000 [ble] Scan started\n2026-11-02 09:00:01.000 [ble] Found "Alex" (d1), RSSI -50\n');
 });
 
+const PROBLEM_LABEL = 'What went wrong?';
+const typeProblem = (user: ReturnType<typeof userEvent.setup>, text: string) =>
+  user.type(screen.getByLabelText(PROBLEM_LABEL), text);
+
 describe('send log to KnG', () => {
   afterEach(() => jest.restoreAllMocks());
+
+  it('needs a description of the problem before it can send', async () => {
+    const user = userEvent.setup();
+    jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(true);
+    await renderApp(<DebugLogScreen />, { seed });
+    expect(screen.getByRole('button', { name: 'Send log to KnG' })).toBeDisabled();
+    await typeProblem(user, '   ');
+    expect(screen.getByRole('button', { name: 'Send log to KnG' })).toBeDisabled();
+    await typeProblem(user, 'Crashed');
+    expect(screen.getByRole('button', { name: 'Send log to KnG' })).toBeEnabled();
+    expect(screen.getByLabelText(PROBLEM_LABEL).props.maxLength).toBe(logUpload.MAX_DESCRIPTION_LENGTH);
+  });
 
   it('has no send button until the endpoint is known', async () => {
     jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(false);
@@ -60,12 +76,13 @@ describe('send log to KnG', () => {
     expect(screen.queryByRole('button', { name: 'Send log to KnG' })).not.toBeOnTheScreen();
   });
 
-  it('asks first, then uploads the log and shows the reference', async () => {
+  it('asks first, then uploads the log with the description and shows the reference', async () => {
     const user = userEvent.setup();
     const alert = mockAlert();
     jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(true);
     const upload = jest.spyOn(logUpload, 'uploadDebugLog').mockResolvedValue({ id: 'ref-1' });
     await renderApp(<DebugLogScreen />, { seed });
+    await typeProblem(user, '  The map froze  ');
     await user.press(screen.getByRole('button', { name: 'Send log to KnG' }));
     expect(upload).not.toHaveBeenCalled();
     expect(alert.message('Send the log to KnG?')).toMatch(/2 entries.*Bluetooth device names.*6 months/s);
@@ -75,6 +92,7 @@ describe('send log to KnG', () => {
     const lines = text.trimEnd().split('\n');
     expect(lines).toHaveLength(3);
     expect(lines[2]).toMatch(/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d{3} \[app\] Uploading debug log: FindCache .+, Android .+ \(API .+\), .+$/);
+    expect(upload.mock.calls[0][1]).toBe('The map froze');
     expect(alert.message('Log sent')).toMatch(/ref-1/);
   });
 
@@ -84,6 +102,7 @@ describe('send log to KnG', () => {
     jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(true);
     jest.spyOn(logUpload, 'uploadDebugLog').mockRejectedValue(new TypeError('Network request failed'));
     await renderApp(<DebugLogScreen />, { seed });
+    await typeProblem(user, 'Broken');
     await user.press(screen.getByRole('button', { name: 'Send log to KnG' }));
     await alert.press('Send the log to KnG?', 'Send');
     expect(alert.message('Could not send the log')).toBe('Could not reach the internet. Check your connection and try again.');
@@ -101,6 +120,7 @@ describe('send log to KnG', () => {
         await flushDebugLog();
       },
     });
+    await typeProblem(user, 'Broken');
     await user.press(screen.getByRole('button', { name: 'Send log to KnG' }));
     expect(alert.message('Send the log to KnG?')).toMatch(/the 1 entry in this log/);
     await alert.press('Send the log to KnG?', 'Send');
