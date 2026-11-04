@@ -5,7 +5,7 @@ import SettingsScreen from '../../src/app/settings';
 import { DEFAULT_SETTINGS, loadSettings } from '../../src/db/settings';
 import { SettingsProvider } from '../../src/hooks/useSettings';
 import { setCurrentDb } from '../helpers/expoSqliteMock';
-import { setDeviceName } from '../helpers/expoDeviceMock';
+import { setDeviceName, setSupportedCpuArchitectures } from '../helpers/expoDeviceMock';
 import { mockAlert, renderApp } from '../helpers/renderApp';
 import { createTestDb } from '../helpers/testDb';
 
@@ -140,6 +140,16 @@ describe('sharing history', () => {
     await user.press(screen.getByRole('checkbox', { name: /7 days/ }));
     await user.press(screen.getByRole('button', { name: 'Save' }));
     expect((await loadSettings(db as never)).shareHistoryDays).toBe(7);
+  });
+});
+
+describe('search area background on a 32-bit phone', () => {
+  it('offers no map or satellite choice', async () => {
+    setSupportedCpuArchitectures(['armeabi-v7a']);
+    await renderApp(<SettingsScreen />);
+    expect(screen.queryByText('Behind the search area')).not.toBeOnTheScreen();
+    expect(screen.queryByRole('checkbox', { name: /Satellite/ })).not.toBeOnTheScreen();
+    expect(screen.getByText('Always show the arrow')).toBeOnTheScreen();
   });
 });
 

@@ -10,6 +10,7 @@ import { findSummaries, foundLabel, type FindSummary } from '../db/finds';
 import { deletePlace, listPlaces, type Place } from '../db/locations';
 import { usePosition } from '../hooks/usePosition';
 import { useSettings } from '../hooks/useSettings';
+import { mapsSupported } from '../lib/mapSupport';
 import { formatDistance, formatLatLon } from '../lib/format';
 import { distanceMeters } from '../lib/geo';
 import { useTheme } from '../lib/theme';
@@ -52,7 +53,9 @@ export default function PlacesScreen() {
   const showActions = (place: Place) =>
     Alert.alert(place.name, formatLatLon(place.latitude, place.longitude), [
       { text: 'Edit', onPress: () => router.push({ pathname: '/place', params: { id: String(place.id) } }) },
-      { text: 'Show on map', onPress: () => router.push({ pathname: '/map', params: { id: String(place.id) } }) },
+      ...(mapsSupported()
+        ? [{ text: 'Show on map', onPress: () => router.push({ pathname: '/map', params: { id: String(place.id) } }) }]
+        : []),
       { text: 'Delete', style: 'destructive', onPress: () => confirmDelete(place) },
       { text: 'Cancel', style: 'cancel' },
     ]);
@@ -63,9 +66,11 @@ export default function PlacesScreen() {
         options={{
           headerRight: () => (
             <View style={styles.headerButtons}>
-              <Pressable accessibilityRole="button" onPress={() => router.push('/map')} hitSlop={12}>
-                <Text style={[styles.headerButton, { color: theme.accent }]}>Map</Text>
-              </Pressable>
+              {mapsSupported() ? (
+                <Pressable accessibilityRole="button" onPress={() => router.push('/map')} hitSlop={12}>
+                  <Text style={[styles.headerButton, { color: theme.accent }]}>Map</Text>
+                </Pressable>
+              ) : null}
               <Pressable accessibilityRole="button" onPress={() => router.push('/files')} hitSlop={12}>
                 <Text style={[styles.headerButton, { color: theme.accent }]}>Files</Text>
               </Pressable>

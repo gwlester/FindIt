@@ -11,6 +11,7 @@ import { SATELLITE_STYLE, STREETS_STYLE_URL } from '../../src/lib/mapSources';
 import { formatDate } from '../../src/lib/format';
 import { emitHeading, emitPosition, emitPositionError } from '../helpers/expoLocationMock';
 import { activeKeepAwakeTags } from '../helpers/keepAwakeMock';
+import { setSupportedCpuArchitectures } from '../helpers/expoDeviceMock';
 import { setCurrentDb } from '../helpers/expoSqliteMock';
 import { svgTexts } from '../helpers/svg';
 import { createTestDb } from '../helpers/testDb';
@@ -211,6 +212,14 @@ describe('map behind the search area', () => {
     expect(camera.center[1]).toBeCloseTo(30.4352 - 14 / M_LAT, 4);
     expect(camera.zoom).toBeGreaterThan(18);
     expect(screen.getByText('Map © OpenStreetMap contributors, OpenFreeMap')).toBeOnTheScreen();
+  });
+
+  it('draws no map on a 32-bit phone, whatever the setting says', async () => {
+    setSupportedCpuArchitectures(['armeabi-v7a']);
+    await renderApp(<CompassScreen />, { places: [OAK], settings: { ...DEFAULT_SETTINGS, compassBackground: 'streets' } });
+    await settle(114);
+    expect(screen.queryByTestId('map')).not.toBeOnTheScreen();
+    expect(screen.queryByText(/OpenStreetMap/)).not.toBeOnTheScreen();
   });
 
   it('uses satellite imagery in the US', async () => {

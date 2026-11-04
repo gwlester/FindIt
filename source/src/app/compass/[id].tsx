@@ -20,6 +20,7 @@ import { bearingDegrees, combinedUncertainty, compassPoint, distanceMeters } fro
 import { compassMapLayer } from '../../lib/compassMap';
 import { mapScale, showSearchArea } from '../../lib/searchArea';
 import { useBottomPadding } from '../../lib/insets';
+import { mapsSupported } from '../../lib/mapSupport';
 import { useTheme } from '../../lib/theme';
 
 export default function CompassScreen() {
@@ -77,7 +78,7 @@ export default function CompassScreen() {
       : undefined;
   const fmt = (m: number) => formatDistance(m, settings.units);
   const compassSize = Math.min(width - 32, 360);
-  const mapLayer = searchArea && here ? compassMapLayer(settings.compassBackground, here.latitude, here.longitude) : null;
+  const mapLayer = mapsSupported() && searchArea && here ? compassMapLayer(settings.compassBackground, here.latitude, here.longitude) : null;
 
   let statusLine: string;
   if (permission === 'denied') statusLine = 'Location permission denied';

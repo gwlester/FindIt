@@ -16,7 +16,7 @@ Simple geocache-type app for Android.
 
 **[⬇ Download the latest FindCache release (findcache.apk)](https://github.com/gwlester/findit/releases/latest/download/findcache.apk)**
 ([release notes and older versions](https://github.com/gwlester/findit/releases/latest)).
-Android 7+ on 64-bit ARM phones. Open the file on the phone and allow installs from unknown
+Android 7+ on ARM phones (64-bit and 32-bit). Open the file on the phone and allow installs from unknown
 sources. Releases use date-based versions (e.g. `2026.10.28.001`), one per successful
 build of `master`; the two newest are kept. They are currently signed with the debug key.
 

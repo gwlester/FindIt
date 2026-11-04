@@ -10,6 +10,7 @@ import type { CompassBackground } from '../lib/compassMap';
 import { HISTORY_RETENTION_OPTIONS, retentionLabel } from '../db/shareHistory';
 import type { Units } from '../lib/format';
 import { useBottomPadding } from '../lib/insets';
+import { mapsSupported } from '../lib/mapSupport';
 import { useTheme } from '../lib/theme';
 
 const MAX_DISPLAY_NAME = 40;
@@ -96,16 +97,20 @@ function SettingsForm() {
               decreaseLabel="Decrease distance"
               increaseLabel="Increase distance"
             />
-            <Text style={[styles.label, { color: theme.muted }]}>Behind the search area</Text>
-            {BACKGROUND_OPTIONS.map(({ value, label, sublabel }) => (
-              <Checkbox
-                key={value}
-                checked={background === value}
-                label={label}
-                sublabel={sublabel}
-                onToggle={() => setBackground(value)}
-              />
-            ))}
+            {mapsSupported() ? (
+              <>
+                <Text style={[styles.label, { color: theme.muted }]}>Behind the search area</Text>
+                {BACKGROUND_OPTIONS.map(({ value, label, sublabel }) => (
+                  <Checkbox
+                    key={value}
+                    checked={background === value}
+                    label={label}
+                    sublabel={sublabel}
+                    onToggle={() => setBackground(value)}
+                  />
+                ))}
+              </>
+            ) : null}
           </>
         )}
       </Section>

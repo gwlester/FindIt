@@ -87,7 +87,7 @@ check required by the `master` ruleset):
 
 1. installs dependencies (`npm ci`), then runs the typecheck, lint, and unit tests with the
    90%-per-file coverage check;
-2. generates the Android project (`expo prebuild`) and builds a release APK for `arm64-v8a`,
+2. generates the Android project (`expo prebuild`) and builds a release APK for `arm64-v8a` and `armeabi-v7a` (one APK for 64-bit and 32-bit ARM phones),
    signed with the debug key so it can be sideloaded;
 3. uploads the APK as the artifact `findcache-<commit>`, kept for **1 day** (the release job deletes it
    as soon as the Release holds the file);
