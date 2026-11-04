@@ -9,6 +9,9 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
 - [ ] A long sharing name (over 20 bytes) still downloads (long write to NAME).
 
 ## Improvements
+- [ ] Crash on the XS15 (2026.11.04.003, reported 2026-11-03 after the no-compass note appeared): the debug log from that
+      run showed no crash and no `[compass]` lines. `work/crash-logging` adds `[crash]` (fatal JS errors) and a
+      "previous run did not end in the background" note at the next start; reproduce with debug logging on and read the log.
 - [ ] No-compass fallback + position source (`work/compass-no-sensor-fallback`): verify on the XS15 that the
       "No compass sensor found" note and a north-up arrow appear after 8 s, and read the `[compass]` log lines to
       confirm the phone really has no heading sensor. Position source is inferred from satellites in use.
