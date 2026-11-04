@@ -1,6 +1,7 @@
 import {
   clearDebugLog,
   debugLog,
+  debugLogThrottled,
   flushDebugLog,
   formatDebugLog,
   isDebugLogging,
@@ -75,4 +76,14 @@ test('a failed write never breaks the app', async () => {
   setDebugLogging(broken as never, true);
   debugLog('t', 'x');
   await expect(flushDebugLog()).resolves.toBeUndefined();
+});
+
+test('throttled entries are written at most once per interval for each tag', async () => {
+  setDebugLogging(db as never, true);
+  debugLogThrottled('gps', 'a', 5000, 1000);
+  debugLogThrottled('gps', 'b', 5000, 3000);
+  debugLogThrottled('gnss', 'c', 5000, 3000);
+  debugLogThrottled('gps', 'd', 5000, 6000);
+  await flushDebugLog();
+  expect((await readDebugLog(db as never)).map((e) => e.message).reverse()).toEqual(['a', 'c', 'd']);
 });

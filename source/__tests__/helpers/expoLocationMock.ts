@@ -14,6 +14,13 @@ const positionWatchers = new Set<{ cb: Cb<unknown>; err?: Cb<string> }>();
 const headingWatchers = new Set<Cb<unknown>>();
 
 export const requestForegroundPermissionsAsync = jest.fn(async () => ({ granted: true }));
+export const getProviderStatusAsync = jest.fn(async () => ({
+  locationServicesEnabled: true,
+  gpsAvailable: true,
+  networkAvailable: true,
+  passiveAvailable: true,
+  backgroundModeEnabled: false,
+}));
 export const hasServicesEnabledAsync = jest.fn(async () => true);
 
 export const watchPositionAsync = jest.fn(async (_options: unknown, cb: Cb<unknown>, err?: Cb<string>) => {
@@ -49,6 +56,13 @@ export function resetLocationMock() {
   positionWatchers.clear();
   headingWatchers.clear();
   requestForegroundPermissionsAsync.mockReset().mockImplementation(async () => ({ granted: true }));
+  getProviderStatusAsync.mockReset().mockImplementation(async () => ({
+    locationServicesEnabled: true,
+    gpsAvailable: true,
+    networkAvailable: true,
+    passiveAvailable: true,
+    backgroundModeEnabled: false,
+  }));
   hasServicesEnabledAsync.mockReset().mockImplementation(async () => true);
   watchPositionAsync.mockClear();
   watchHeadingAsync.mockClear();

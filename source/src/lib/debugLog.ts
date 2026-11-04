@@ -12,9 +12,11 @@ export const MAX_DEBUG_ENTRIES = 2000;
 
 let target: SQLiteDatabase | null = null;
 let queue: Promise<void> = Promise.resolve();
+const lastLogged = new Map<string, number>();
 
 export function setDebugLogging(db: SQLiteDatabase | null, enabled: boolean) {
   target = enabled ? db : null;
+  lastLogged.clear();
 }
 
 export function isDebugLogging(): boolean {
@@ -31,6 +33,15 @@ export function debugLog(tag: string, message: string, at = Date.now()) {
       await db.runAsync('DELETE FROM debug_log WHERE id <= (SELECT MAX(id) FROM debug_log) - ?', MAX_DEBUG_ENTRIES);
     })
     .catch(() => {});
+}
+
+/** Like debugLog, but writes at most once per `intervalMs` for each tag (for noisy streams such as GPS fixes). */
+export function debugLogThrottled(tag: string, message: string, intervalMs: number, at = Date.now()) {
+  if (!target) return;
+  const last = lastLogged.get(tag);
+  if (last !== undefined && at - last < intervalMs) return;
+  lastLogged.set(tag, at);
+  debugLog(tag, message, at);
 }
 
 /** Resolves once every queued entry is written. */

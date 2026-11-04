@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import FindItNative, { type GnssStatus } from '../../modules/findit-native';
+import { debugLogThrottled } from '../lib/debugLog';
 import { ensureLocationPermission } from './usePosition';
 
 /**
@@ -14,7 +15,14 @@ export function useGnssStatus({ fullTracking }: { fullTracking: boolean }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const subscription = FindItNative.addListener('onGnssStatus', setStatus);
+    const subscription = FindItNative.addListener('onGnssStatus', (s) => {
+      const by = Object.entries(s.usedByConstellation)
+        .sort((a, b) => b[1] - a[1])
+        .map(([name, n]) => `${name} ${n}`)
+        .join(', ');
+      debugLogThrottled('gnss', `${s.known} known, ${s.inView} in view, ${s.used} used in fix${by ? ` (${by})` : ''}`, 5000);
+      setStatus(s);
+    });
     let cancelled = false;
 
     ensureLocationPermission()

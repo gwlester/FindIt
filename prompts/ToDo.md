@@ -9,6 +9,11 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
 - [ ] A long sharing name (over 20 bytes) still downloads (long write to NAME).
 
 ## Improvements
+- [ ] Debug log upload: a "Send log to KnG" button (manual, with a confirmation) that uploads the debug log to a
+      private KnG S3 bucket through a Lambda-issued upload link, with a 180-day lifecycle delete. Needs a KnG
+      Terraform change, a privacy-page update (logs hold positions and Bluetooth names), and an API decision.
+- [ ] In-app update check: look up the latest GitHub release, download `findcache.apk`, hand it to Android's
+      installer. Sideload build only (Play forbids self-updating apps), so it must be left out of the Play AAB.
 - [ ] 32-bit ARM APK (`work/findcache-32-bit`): after the PR build, check `unzip -l findcache.apk | grep lib/` shows
       `armeabi-v7a`, test-install on the Soyes XS15 (MT6580; maps are switched off there, `src/lib/mapSupport.ts`), then drop the
       "64-bit processor" lines from the KnG getting-started page and the FindCache page, say maps need a 64-bit
