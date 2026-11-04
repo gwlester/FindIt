@@ -7,9 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '../components/ui';
 import { useSettings } from '../hooks/useSettings';
-import { clearDebugLog, formatDebugLog, readDebugLog, type DebugEntry } from '../lib/debugLog';
+import { clearDebugLog, debugLog, flushDebugLog, formatDebugLog, readDebugLog, type DebugEntry } from '../lib/debugLog';
 import { reportFailure } from '../lib/failure';
-import { uploadDebugLog, uploadEnabled } from '../lib/logUpload';
+import { buildUploadText, uploadDebugLog, uploadEnabled, uploadEntryMessage } from '../lib/logUpload';
 import { useTheme } from '../lib/theme';
 import { currentVersion } from '../lib/updates';
 
@@ -56,7 +56,14 @@ export default function DebugLogScreen() {
           text: 'Send',
           onPress: async () => {
             try {
-              const { id } = await uploadDebugLog(formatDebugLog(entries), currentVersion());
+              // The server requires the log to end with this entry, so it is written (and kept in the
+              // log on the phone) just before sending.
+              const version = currentVersion();
+              const at = Date.now();
+              debugLog('app', uploadEntryMessage(version), at);
+              await flushDebugLog();
+              const stored = await readDebugLog(db);
+              const { id } = await uploadDebugLog(buildUploadText(stored, version, at), version);
               Alert.alert('Log sent', `Thank you. If you ask about it, quote this reference: ${id}`);
             } catch (e) {
               Alert.alert('Could not send the log', reportFailure('upload', 'Sending the log', e));

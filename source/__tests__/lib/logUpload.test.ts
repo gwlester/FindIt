@@ -1,5 +1,5 @@
 import { HttpError, ServerMessage } from '../../src/lib/failure';
-import { LOG_UPLOAD_URL, uploadDebugLog, uploadEnabled } from '../../src/lib/logUpload';
+import { LOG_UPLOAD_URL, buildUploadText, uploadDebugLog, uploadEnabled, uploadEntryMessage } from '../../src/lib/logUpload';
 
 afterEach(() => jest.restoreAllMocks());
 
@@ -8,7 +8,7 @@ test('posts the log text with the API and app versions and returns the reference
   expect(await uploadDebugLog('line one\n', '2026.11.04.001', 'https://logs.example/')).toEqual({ id: 'abc-123' });
   expect(fetchMock).toHaveBeenCalledWith('https://logs.example/', {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain; charset=utf-8', 'X-API-Version': '1', 'X-App-Version': '2026.11.04.001' },
+    headers: { 'Content-Type': 'text/plain; charset=utf-8', 'X-API-Version': '2', 'X-App-Version': '2026.11.04.001' },
     body: 'line one\n',
   });
 });
@@ -35,4 +35,21 @@ test('uses the built-in endpoint by default', async () => {
   expect(uploadEnabled()).toBe(true);
   await uploadDebugLog('x', '1');
   expect(fetchMock).toHaveBeenCalledWith(LOG_UPLOAD_URL, expect.any(Object));
+});
+
+test('the upload text always ends with the upload entry, once, and drops anything logged after it', () => {
+  const at = new Date(2026, 10, 4, 10, 30, 0, 123).getTime();
+  const message = uploadEntryMessage('2026.11.04.006');
+  expect(message).toMatch(/^Uploading debug log: FindCache 2026\.11\.04\.006, Android .+ \(API .+\)/);
+  const entries = [
+    { id: 3, at: at + 500, tag: 'gps', message: 'later' },
+    { id: 2, at, tag: 'app', message },
+    { id: 1, at: at - 1000, tag: 'ble', message: 'earlier' },
+  ];
+  const lines = buildUploadText(entries, '2026.11.04.006', at).trimEnd().split('\n');
+  expect(lines).toHaveLength(2);
+  expect(lines[0]).toContain('[ble] earlier');
+  expect(lines[1]).toBe(`2026-11-04 10:30:00.123 [app] ${message}`);
+  // With logging off nothing was stored, so the entry is added.
+  expect(buildUploadText([entries[2]], '2026.11.04.006', at).trimEnd().split('\n')).toHaveLength(2);
 });

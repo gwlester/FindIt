@@ -2,16 +2,29 @@
 // kng-findcache-log Lambda (KnG repo, terraform/findcache_logs.tf); its address is the
 // findcache_log_upload_url Terraform output.
 
-import { debugLog } from './debugLog';
+import { describeApp } from './appInfo';
+import { debugLog, formatDebugLog, type DebugEntry } from './debugLog';
 import { HttpError, ServerMessage } from './failure';
 
 /** The KnG log-upload endpoint; the Send button is hidden if this is ever empty. */
 export const LOG_UPLOAD_URL = 'https://6bjcezhnmuwnvuzighkzbppafq0ddjks.lambda-url.us-east-1.on.aws/';
-export const API_VERSION = '1';
+export const API_VERSION = '2';
 
 /** Whether uploading is available, i.e. the endpoint address has been filled in. */
 export function uploadEnabled(url = LOG_UPLOAD_URL): boolean {
   return url !== '';
+}
+
+/** The entry the server requires as the last line of an uploaded log. */
+export function uploadEntryMessage(version: string): string {
+  return `Uploading debug log: ${describeApp(version)}`;
+}
+
+/** The log text to send: everything up to now, ending with the upload entry (whether or not logging is on). */
+export function buildUploadText(entries: DebugEntry[], version: string, at: number): string {
+  const message = uploadEntryMessage(version);
+  const history = entries.filter((e) => e.at <= at && !(e.tag === 'app' && e.at === at && e.message === message));
+  return formatDebugLog([...history, { id: Number.MAX_SAFE_INTEGER, at, tag: 'app', message }]);
 }
 
 export type UploadResult = { id: string };
