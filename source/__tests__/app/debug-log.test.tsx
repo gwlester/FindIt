@@ -3,6 +3,7 @@ import * as Sharing from 'expo-sharing';
 
 import DebugLogScreen from '../../src/app/debug-log';
 import { DEFAULT_SETTINGS } from '../../src/db/settings';
+import * as logUpload from '../../src/lib/logUpload';
 import { debugLog, flushDebugLog, setDebugLogging } from '../../src/lib/debugLog';
 import { files } from '../helpers/fileSystemMock';
 import { mockAlert, renderApp } from '../helpers/renderApp';
@@ -48,6 +49,65 @@ test('shares the log as a text file', async () => {
   expect(uri).toMatch(/^file:\/\/\/cache\/findcache-debug-log-\d{8}-\d{6}\.txt$/);
   expect(options).toMatchObject({ mimeType: 'text/plain' });
   expect(files[uri]).toBe('2026-11-02 09:00:00.000 [ble] Scan started\n2026-11-02 09:00:01.000 [ble] Found "Alex" (d1), RSSI -50\n');
+});
+
+describe('send log to KnG', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it('has no send button until the endpoint is known', async () => {
+    jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(false);
+    await renderApp(<DebugLogScreen />, { seed });
+    expect(screen.queryByRole('button', { name: 'Send log to KnG' })).not.toBeOnTheScreen();
+  });
+
+  it('asks first, then uploads the log and shows the reference', async () => {
+    const user = userEvent.setup();
+    const alert = mockAlert();
+    jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(true);
+    const upload = jest.spyOn(logUpload, 'uploadDebugLog').mockResolvedValue({ id: 'ref-1' });
+    await renderApp(<DebugLogScreen />, { seed });
+    await user.press(screen.getByRole('button', { name: 'Send log to KnG' }));
+    expect(upload).not.toHaveBeenCalled();
+    expect(alert.message('Send the log to KnG?')).toMatch(/2 entries.*Bluetooth device names.*6 months/s);
+    await alert.press('Send the log to KnG?', 'Send');
+    expect(upload).toHaveBeenCalledWith('2026-11-02 09:00:00.000 [ble] Scan started\n2026-11-02 09:00:01.000 [ble] Found "Alex" (d1), RSSI -50\n', expect.any(String));
+    expect(alert.message('Log sent')).toMatch(/ref-1/);
+  });
+
+  it('reports a failed upload', async () => {
+    const user = userEvent.setup();
+    const alert = mockAlert();
+    jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(true);
+    jest.spyOn(logUpload, 'uploadDebugLog').mockRejectedValue(new Error('Network request failed'));
+    await renderApp(<DebugLogScreen />, { seed });
+    await user.press(screen.getByRole('button', { name: 'Send log to KnG' }));
+    await alert.press('Send the log to KnG?', 'Send');
+    expect(alert.message('Could not send the log')).toBe('Network request failed');
+  });
+
+  it('words a one-entry log in the singular and copes with non-Error failures', async () => {
+    const user = userEvent.setup();
+    const alert = mockAlert();
+    jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(true);
+    jest.spyOn(logUpload, 'uploadDebugLog').mockRejectedValue('offline');
+    await renderApp(<DebugLogScreen />, {
+      seed: async (db) => {
+        setDebugLogging(db as never, true);
+        debugLog('ble', 'Only entry');
+        await flushDebugLog();
+      },
+    });
+    await user.press(screen.getByRole('button', { name: 'Send log to KnG' }));
+    expect(alert.message('Send the log to KnG?')).toMatch(/the 1 entry in this log/);
+    await alert.press('Send the log to KnG?', 'Send');
+    expect(alert.message('Could not send the log')).toBe('offline');
+  });
+
+  it('is disabled while the log is empty', async () => {
+    jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(true);
+    await renderApp(<DebugLogScreen />);
+    expect(screen.getByRole('button', { name: 'Send log to KnG' })).toBeDisabled();
+  });
 });
 
 test('reports when sharing fails', async () => {

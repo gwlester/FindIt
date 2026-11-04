@@ -8,7 +8,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../components/ui';
 import { useSettings } from '../hooks/useSettings';
 import { clearDebugLog, formatDebugLog, readDebugLog, type DebugEntry } from '../lib/debugLog';
+import { uploadDebugLog, uploadEnabled } from '../lib/logUpload';
 import { useTheme } from '../lib/theme';
+import { currentVersion } from '../lib/updates';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const clock = (ms: number) => {
@@ -42,6 +44,26 @@ export default function DebugLogScreen() {
       Alert.alert('Could not share the log', e instanceof Error ? e.message : String(e));
     }
   };
+
+  const send = () =>
+    Alert.alert(
+      'Send the log to KnG?',
+      `This uploads the ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'} in this log. It can include nearby Bluetooth device names and the names used for sharing, but not your saved places. It is used only to find problems and is deleted after 6 months.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Send',
+          onPress: async () => {
+            try {
+              const { id } = await uploadDebugLog(formatDebugLog(entries), currentVersion());
+              Alert.alert('Log sent', `Thank you. If you ask about it, quote this reference: ${id}`);
+            } catch (e) {
+              Alert.alert('Could not send the log', e instanceof Error ? e.message : String(e));
+            }
+          },
+        },
+      ],
+    );
 
   const clear = () =>
     Alert.alert('Clear the debug log?', 'This deletes every entry.', [
@@ -77,6 +99,7 @@ export default function DebugLogScreen() {
         </View>
       </View>
       <Button title="Share log" onPress={share} disabled={entries.length === 0} />
+      {uploadEnabled() ? <Button title="Send log to KnG" onPress={send} disabled={entries.length === 0} /> : null}
     </View>
   );
 }

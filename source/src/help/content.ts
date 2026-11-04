@@ -100,7 +100,7 @@ export const HELP_TOPICS: HelpTopic[] = [
     paragraphs: [
       'Your name for sharing is what nearby FindCache users see; it starts as your phone’s name. Units switch between metres and feet.',
       'High-accuracy GPS tracks every satellite on the compass (Android 12 and later; uses more battery). Search area sets how close you need to be before the compass shows the search-area map, and what is drawn behind it.',
-      'Found places: off, once per place, or a log of every find. Sharing history: how long to remember who downloaded your places. Troubleshooting: Enable debug logging keeps a log to help find problems (see Debug log).',
+      'Found places: off, once per place, or a log of every find. Sharing history: how long to remember who downloaded your places. Troubleshooting: Enable debug logging keeps a log to help find problems (see Debug log). Updates (sideloaded app only): Check for updates finds the newest version and installs it.',
     ],
   },
   {
@@ -110,6 +110,7 @@ export const HELP_TOPICS: HelpTopic[] = [
     paragraphs: [
       'A record of what the app does, kept on this phone to help find problems, for example why sharing nearby finds nobody. Turn it on in Settings → Troubleshooting → Enable debug logging, try what goes wrong, then come back here.',
       'Share log sends it as a text file (by email, a message, or to your files) to whoever is helping you. It holds the app and Android versions, the phone model, permissions, and Bluetooth steps with the names and Bluetooth addresses of nearby FindCache users, but none of your places or coordinates. Only the newest 2,000 lines are kept; Clear log deletes it.',
+      'Send log to KnG (when available) uploads the same text to KnG Consulting after you confirm, so the developer can look into a problem. Uploaded logs are deleted after 6 months.',
     ],
   },
 ];

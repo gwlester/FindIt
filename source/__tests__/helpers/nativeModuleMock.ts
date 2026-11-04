@@ -9,6 +9,7 @@ export const nativeMock = {
   startSharing: jest.fn(async (_name: string, _info: string, _items: string[]) => {}),
   stopSharing: jest.fn(async () => {}),
   isSharing: jest.fn(() => false),
+  canSelfUpdate: jest.fn(() => true),
   addListener: jest.fn((event: string, listener: Listener) => {
     (listeners[event] ??= new Set()).add(listener);
     return { remove: jest.fn(() => listeners[event].delete(listener)) };
@@ -26,5 +27,6 @@ export function resetNativeMock() {
   nativeMock.startSharing.mockReset().mockImplementation(async () => {});
   nativeMock.stopSharing.mockReset().mockImplementation(async () => {});
   nativeMock.isSharing.mockReset().mockImplementation(() => false);
+  nativeMock.canSelfUpdate.mockReset().mockImplementation(() => true);
   nativeMock.addListener.mockClear();
 }
