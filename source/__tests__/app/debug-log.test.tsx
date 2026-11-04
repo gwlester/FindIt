@@ -70,7 +70,11 @@ describe('send log to KnG', () => {
     expect(upload).not.toHaveBeenCalled();
     expect(alert.message('Send the log to KnG?')).toMatch(/2 entries.*Bluetooth device names.*6 months/s);
     await alert.press('Send the log to KnG?', 'Send');
-    expect(upload).toHaveBeenCalledWith('2026-11-02 09:00:00.000 [ble] Scan started\n2026-11-02 09:00:01.000 [ble] Found "Alex" (d1), RSSI -50\n', expect.any(String));
+    const text = upload.mock.calls[0][0];
+    expect(text.startsWith('2026-11-02 09:00:00.000 [ble] Scan started\n2026-11-02 09:00:01.000 [ble] Found "Alex" (d1), RSSI -50\n')).toBe(true);
+    const lines = text.trimEnd().split('\n');
+    expect(lines).toHaveLength(3);
+    expect(lines[2]).toMatch(/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d{3} \[app\] Uploading debug log: FindCache .+, Android .+ \(API .+\), .+$/);
     expect(alert.message('Log sent')).toMatch(/ref-1/);
   });
 
