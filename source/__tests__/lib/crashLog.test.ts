@@ -130,6 +130,18 @@ describe('logRejections', () => {
   it('does nothing without Hermes', () => {
     expect(() => logRejections()).not.toThrow();
   });
+
+  it('does nothing on a Hermes without a rejection tracker, and copes with an error that has no stack', async () => {
+    (globalThis as { HermesInternal?: unknown }).HermesInternal = {};
+    expect(() => logRejections()).not.toThrow();
+    const enable = jest.fn();
+    (globalThis as { HermesInternal?: unknown }).HermesInternal = { enablePromiseRejectionTracker: enable };
+    logRejections();
+    const error = new Error('no stack here');
+    error.stack = undefined;
+    (enable.mock.calls[0][0] as { onUnhandled: (id: number, e: unknown) => void }).onUnhandled(3, error);
+    expect(await messages()).toEqual(['[crash] Unhandled promise rejection: no stack here\n']);
+  });
 });
 
 describe('installCrashLogging', () => {
