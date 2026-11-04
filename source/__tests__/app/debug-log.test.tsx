@@ -152,7 +152,11 @@ test('clears the log after confirming', async () => {
   expect(screen.getAllByTestId('debug-entry')).toHaveLength(2);
   await user.press(screen.getByRole('button', { name: 'Clear log' }));
   await alert.press('Clear the debug log?', 'Clear');
-  expect(screen.getByText('The log is empty.')).toBeOnTheScreen();
+  expect(screen.queryByText('The log is empty.')).not.toBeOnTheScreen();
+  expect(screen.getAllByTestId('debug-entry')).toHaveLength(1);
+  expect(screen.getByTestId('debug-entry').props.children.join('')).toMatch(
+    /^\d\d:\d\d:\d\d \[app\] Debug log cleared: FindCache .+, Android .+ \(API .+\), .+$/,
+  );
 });
 
 test('counts a single entry and reports odd share failures', async () => {

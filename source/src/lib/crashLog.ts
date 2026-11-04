@@ -7,6 +7,8 @@ import { AppState } from 'react-native';
 import { debugLog, flushDebugLog, readDebugLog } from './debugLog';
 
 const BACKGROUND = 'Moved to the background';
+/** Newest entries that show the last run ended normally (or the log was deliberately cleared or switched off). */
+const ENDINGS = [BACKGROUND, 'Debug logging off', 'Debug log cleared'];
 const FLUSH_WAIT_MS = 1000;
 let checked = false;
 let installed = false;
@@ -52,9 +54,9 @@ export function installCrashLogging(): void {
 }
 
 /** Logs when the app goes to the background, which is how a normal run ends. Returns the undo. */
-export function logAppState(): () => void {
+export function logAppState(details: string): () => void {
   const subscription = AppState.addEventListener('change', (state) => {
-    if (state === 'background') debugLog('app', BACKGROUND);
+    if (state === 'background') debugLog('app', `${BACKGROUND}: ${details}`);
   });
   return () => subscription.remove();
 }
@@ -64,7 +66,7 @@ export async function checkPreviousRun(db: SQLiteDatabase): Promise<void> {
   if (checked) return;
   checked = true;
   const [newest] = await readDebugLog(db);
-  if (newest && newest.message !== BACKGROUND) {
+  if (newest && !ENDINGS.some((note) => newest.message.startsWith(note))) {
     debugLog('app', 'The previous run did not end in the background: the app probably crashed, or was closed while in use');
   }
 }

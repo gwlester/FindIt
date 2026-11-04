@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Field } from '../components/ui';
 import { useSettings } from '../hooks/useSettings';
 import { clearDebugLog, debugLog, flushDebugLog, formatDebugLog, readDebugLog, type DebugEntry } from '../lib/debugLog';
+import { describeApp } from '../lib/appInfo';
 import { reportFailure } from '../lib/failure';
 import { MAX_DESCRIPTION_LENGTH, buildUploadText, uploadDebugLog, uploadEnabled, uploadEntryMessage } from '../lib/logUpload';
 import { useTheme } from '../lib/theme';
@@ -78,7 +79,7 @@ export default function DebugLogScreen() {
   const clear = () =>
     Alert.alert('Clear the debug log?', 'This deletes every entry.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Clear', style: 'destructive', onPress: () => clearDebugLog(db).then(reload) },
+      { text: 'Clear', style: 'destructive', onPress: () => clearDebugLog(db, `Debug log cleared: ${describeApp(currentVersion())}`).then(reload) },
     ]);
 
   return (

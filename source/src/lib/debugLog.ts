@@ -36,6 +36,11 @@ export function debugLog(tag: string, message: string, at = Date.now()) {
     if (tag === 'crash' && pendingCrashes.length < MAX_PENDING_CRASHES) pendingCrashes.push({ tag, message, at });
     return;
   }
+  debugLogTo(db, tag, message, at);
+}
+
+/** Adds an entry to `db` even though logging is off (for the note that says it was just switched off). */
+export function debugLogTo(db: SQLiteDatabase, tag: string, message: string, at = Date.now()) {
   queue = queue
     .then(async () => {
       await db.runAsync('INSERT INTO debug_log (at, tag, message) VALUES (?, ?, ?)', at, tag, message);
@@ -63,8 +68,11 @@ export function readDebugLog(db: SQLiteDatabase): Promise<DebugEntry[]> {
   return db.getAllAsync<DebugEntry>('SELECT id, at, tag, message FROM debug_log ORDER BY id DESC');
 }
 
-export async function clearDebugLog(db: SQLiteDatabase): Promise<void> {
+/** Deletes every entry; `note`, if given, is then written as the log's only entry (even while logging is off). */
+export async function clearDebugLog(db: SQLiteDatabase, note?: string, at = Date.now()): Promise<void> {
+  await flushDebugLog(); // so a queued entry cannot land after the clear
   await db.runAsync('DELETE FROM debug_log');
+  if (note !== undefined) await db.runAsync('INSERT INTO debug_log (at, tag, message) VALUES (?, ?, ?)', at, 'app', note);
 }
 
 const pad = (n: number, width = 2) => String(n).padStart(width, '0');
