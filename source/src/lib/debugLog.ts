@@ -12,11 +12,17 @@ export const MAX_DEBUG_ENTRIES = 2000;
 
 let target: SQLiteDatabase | null = null;
 let queue: Promise<void> = Promise.resolve();
+const MAX_PENDING_CRASHES = 20;
+const pendingCrashes: { tag: string; message: string; at: number }[] = [];
 const lastLogged = new Map<string, number>();
 
 export function setDebugLogging(db: SQLiteDatabase | null, enabled: boolean) {
   target = enabled ? db : null;
   lastLogged.clear();
+  // Crashes that happened before the setting was read are kept in memory, and written only now
+  // that logging is known to be on; otherwise they are dropped.
+  const early = pendingCrashes.splice(0);
+  if (target) for (const entry of early) debugLog(entry.tag, entry.message, entry.at);
 }
 
 export function isDebugLogging(): boolean {
@@ -26,7 +32,10 @@ export function isDebugLogging(): boolean {
 /** Adds an entry, e.g. debugLog('ble', 'Scan started'). */
 export function debugLog(tag: string, message: string, at = Date.now()) {
   const db = target;
-  if (!db) return;
+  if (!db) {
+    if (tag === 'crash' && pendingCrashes.length < MAX_PENDING_CRASHES) pendingCrashes.push({ tag, message, at });
+    return;
+  }
   queue = queue
     .then(async () => {
       await db.runAsync('INSERT INTO debug_log (at, tag, message) VALUES (?, ?, ?)', at, tag, message);

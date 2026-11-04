@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 
 import { onShareLog } from '../ble/server';
 import { useSettings } from '../hooks/useSettings';
-import { checkPreviousRun, logAppState, logCrashes } from '../lib/crashLog';
+import { checkPreviousRun, logAppState } from '../lib/crashLog';
 import { debugLog, setDebugLogging } from '../lib/debugLog';
 
 /**
@@ -31,10 +31,8 @@ export function DebugLogging() {
     ];
     debugLog('app', `Debug logging on: ${about.filter(Boolean).join(', ')}`);
     const sub = onShareLog((message) => debugLog('share-server', message));
-    const stopCrashLog = logCrashes();
     const stopAppState = logAppState();
     return () => {
-      stopCrashLog();
       stopAppState();
       sub.remove();
       setDebugLogging(null, false);

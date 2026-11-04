@@ -10,7 +10,7 @@ Open work, roughly in priority order. Move items to `Done.md` when finished.
 
 ## Improvements
 - [ ] Crash on the XS15 (2026.11.04.003, reported 2026-11-03 after the no-compass note appeared): the debug log from that
-      run showed no crash and no `[compass]` lines. `work/crash-logging` adds `[crash]` (fatal JS errors) and a
+      run showed no crash and no `[compass]` lines. `work/crash-logging` adds a catch-all at the top level (global error handler installed when the root layout loads, an error boundary around the whole app with a "Something went wrong / Try again" screen, unhandled promise rejections) that writes `[crash]` entries (kept in memory until the debug-log setting is read), and a
       "previous run did not end in the background" note at the next start; reproduce with debug logging on and read the log.
 - [ ] No-compass fallback + position source (`work/compass-no-sensor-fallback`): verify on the XS15 that the
       "No compass sensor found" note and a north-up arrow appear after 8 s, and read the `[compass]` log lines to

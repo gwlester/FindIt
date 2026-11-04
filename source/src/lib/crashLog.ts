@@ -9,6 +9,7 @@ import { debugLog, flushDebugLog, readDebugLog } from './debugLog';
 const BACKGROUND = 'Moved to the background';
 const FLUSH_WAIT_MS = 1000;
 let checked = false;
+let installed = false;
 
 /** For tests: forget that this run's check was done. */
 export function resetPreviousRunCheck() {
@@ -28,6 +29,26 @@ export function logCrashes(): () => void {
     Promise.race([flushDebugLog(), new Promise((resolve) => setTimeout(resolve, FLUSH_WAIT_MS))]).then(handOn, handOn);
   });
   return () => utils.setGlobalHandler(previous);
+}
+
+/** Logs promise rejections that nothing handled (Hermes drops these silently in release builds). */
+export function logRejections(): void {
+  const hermes = (globalThis as { HermesInternal?: { enablePromiseRejectionTracker?: (options: object) => void } }).HermesInternal;
+  hermes?.enablePromiseRejectionTracker?.({
+    allRejections: true,
+    onUnhandled: (_id: number, error: unknown) => {
+      const stack = error instanceof Error ? (error.stack ?? '').split('\n').slice(0, 8).join('\n') : '';
+      debugLog('crash', `Unhandled promise rejection: ${error instanceof Error ? error.message : String(error)}\n${stack}`);
+    },
+  });
+}
+
+/** Installs the catch-all handlers once, as early as possible (called when the root layout loads). */
+export function installCrashLogging(): void {
+  if (installed) return;
+  installed = true;
+  logCrashes();
+  logRejections();
 }
 
 /** Logs when the app goes to the background, which is how a normal run ends. Returns the undo. */

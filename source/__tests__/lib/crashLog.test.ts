@@ -1,7 +1,7 @@
 import { AppState } from 'react-native';
 
 import { clearDebugLog, debugLog, flushDebugLog, readDebugLog, setDebugLogging } from '../../src/lib/debugLog';
-import { checkPreviousRun, logAppState, logCrashes, resetPreviousRunCheck } from '../../src/lib/crashLog';
+import { checkPreviousRun, installCrashLogging, logAppState, logCrashes, logRejections, resetPreviousRunCheck } from '../../src/lib/crashLog';
 import { createTestDb, type TestDb } from '../helpers/testDb';
 
 let db: TestDb;
@@ -105,5 +105,39 @@ describe('checkPreviousRun', () => {
     await clearDebugLog(db as never);
     await checkPreviousRun(db as never);
     expect(await messages()).toEqual([]);
+  });
+});
+
+describe('logRejections', () => {
+  afterEach(() => {
+    delete (globalThis as { HermesInternal?: unknown }).HermesInternal;
+  });
+
+  it('logs promise rejections nobody handled', async () => {
+    const enable = jest.fn();
+    (globalThis as { HermesInternal?: unknown }).HermesInternal = { enablePromiseRejectionTracker: enable };
+    logRejections();
+    const options = enable.mock.calls[0][0] as { allRejections: boolean; onUnhandled: (id: number, error: unknown) => void };
+    expect(options.allRejections).toBe(true);
+    options.onUnhandled(1, Object.assign(new Error('no handler'), { stack: 'Error: no handler\n  at x' }));
+    options.onUnhandled(2, 'plain text');
+    expect(await messages()).toEqual([
+      '[crash] Unhandled promise rejection: no handler\nError: no handler\n  at x',
+      '[crash] Unhandled promise rejection: plain text\n',
+    ]);
+  });
+
+  it('does nothing without Hermes', () => {
+    expect(() => logRejections()).not.toThrow();
+  });
+});
+
+describe('installCrashLogging', () => {
+  it('installs the error handler once', () => {
+    const set = jest.spyOn(ErrorUtils, 'setGlobalHandler').mockImplementation(() => {});
+    jest.spyOn(ErrorUtils, 'getGlobalHandler').mockReturnValue(jest.fn());
+    installCrashLogging();
+    installCrashLogging();
+    expect(set).toHaveBeenCalledTimes(1);
   });
 });
