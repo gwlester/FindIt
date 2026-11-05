@@ -1,4 +1,6 @@
 import { act, screen, userEvent } from '@testing-library/react-native';
+import { Keyboard } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import * as Sharing from 'expo-sharing';
 
 import DebugLogScreen from '../../src/app/debug-log';
@@ -94,6 +96,36 @@ describe('send log to KnG', () => {
     expect(lines[2]).toMatch(/^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d{3} \[app\] Uploading debug log: FindCache .+, Android .+ \(API .+\), .+$/);
     expect(upload.mock.calls[0][1]).toBe('The map froze');
     expect(alert.message('Log sent')).toMatch(/ref-1/);
+    expect(Clipboard.setStringAsync).not.toHaveBeenCalled(); // only when Copy is pressed
+  });
+
+  it('copies only the reference when Copy is pressed on the confirmation', async () => {
+    const user = userEvent.setup();
+    const alert = mockAlert();
+    jest.spyOn(logUpload, 'uploadEnabled').mockReturnValue(true);
+    jest.spyOn(logUpload, 'uploadDebugLog').mockResolvedValue({ id: 'ref-2' });
+    await renderApp(<DebugLogScreen />, { seed });
+    await typeProblem(user, 'Broken');
+    await user.press(screen.getByRole('button', { name: 'Send log to KnG' }));
+    await alert.press('Send the log to KnG?', 'Send');
+    await alert.press('Log sent', 'Copy');
+    expect(Clipboard.setStringAsync).toHaveBeenCalledWith('ref-2');
+    expect(alert.spy.mock.calls.at(-1)?.[2]?.map((b) => b.text)).toEqual(['Copy', 'OK']);
+  });
+
+  it('keeps the description box above the keyboard', async () => {
+    const listeners: Record<string, (e: unknown) => void> = {};
+    jest.spyOn(Keyboard, 'addListener').mockImplementation(((name: string, fn: (e: unknown) => void) => {
+      listeners[name] = fn;
+      return { remove: jest.fn() };
+    }) as never);
+    await renderApp(<DebugLogScreen />, { seed });
+    const padding = () => (screen.getByTestId('debug-log-screen').props.style as { paddingBottom: number }[]).flat().reduce((p, x) => x?.paddingBottom ?? p, 0);
+    const resting = padding();
+    await act(async () => listeners.keyboardDidShow({ endCoordinates: { height: 300 } }));
+    expect(padding()).toBe(316);
+    await act(async () => listeners.keyboardDidHide({}));
+    expect(padding()).toBe(resting);
   });
 
   it('reports a failed upload', async () => {

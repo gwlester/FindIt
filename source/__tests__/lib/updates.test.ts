@@ -1,11 +1,15 @@
-import { File } from 'expo-file-system';
+import { Directory, File } from 'expo-file-system';
 import { getContentUriAsync } from 'expo-file-system/legacy';
 import { startActivityAsync } from 'expo-intent-launcher';
 
 import { APK_NAME, canSelfUpdate, checkForUpdate, downloadAndInstall, isNewer, LATEST_RELEASE_URL } from '../../src/lib/updates';
 import { HttpError } from '../../src/lib/failure';
+import { debugLog } from '../../src/lib/debugLog';
+import { files } from '../helpers/fileSystemMock';
 import { nativeMock } from '../helpers/nativeModuleMock';
 
+jest.mock('../../src/lib/debugLog', () => ({ debugLog: jest.fn() }));
+const logged = () => jest.mocked(debugLog).mock.calls.map(([, message]) => message);
 jest.mock('expo-constants', () => ({ __esModule: true, default: { expoConfig: { version: '2026.11.03.001' } } }));
 jest.mock('expo-intent-launcher', () => ({ startActivityAsync: jest.fn(async () => ({ resultCode: -1 })) }));
 jest.mock('expo-file-system/legacy', () => ({ getContentUriAsync: jest.fn(async (uri: string) => `content://fc${uri.slice(7)}`) }));
@@ -78,5 +82,63 @@ test('downloadAndInstall downloads the APK and opens the installer on it', async
     data: 'content://fc/cache/findcache-2026.11.04.001.apk',
     flags: 1,
     type: 'application/vnd.android.package-archive',
+  });
+});
+
+describe('leftover downloads', () => {
+  const update = { version: '2026.11.04.001', apkUrl: 'https://example.com/findcache.apk', notes: '' };
+
+  it('deletes every APK in the cache first, so an earlier interrupted install cannot block the download', async () => {
+    files['file:///cache/findcache-2026.11.04.001.apk'] = 'old';
+    files['file:///cache/findcache-2026.10.01.001.apk'] = 'older';
+    files['file:///cache/other.APK'] = 'x';
+    files['file:///cache/notes.txt'] = 'keep';
+    files['file:///cache/sub/inner.apk'] = 'keep';
+    await downloadAndInstall(update);
+    expect(Object.keys(files).sort()).toEqual([
+      'file:///cache/findcache-2026.11.04.001.apk',
+      'file:///cache/notes.txt',
+      'file:///cache/sub/inner.apk',
+    ]);
+    expect(files['file:///cache/findcache-2026.11.04.001.apk']).toBe('');
+    expect(startActivityAsync).toHaveBeenCalled();
+    expect(logged()).toContain('Removed 3 leftover downloads');
+  });
+
+  it('says nothing about leftovers when there are none', async () => {
+    await downloadAndInstall(update);
+    expect(logged().some((m) => m.includes('leftover'))).toBe(false);
+  });
+
+  it('words a single leftover in the singular and copes with a non-Error failure', async () => {
+    files['file:///cache/findcache-2026.10.01.001.apk'] = 'older';
+    await downloadAndInstall(update);
+    expect(logged()).toContain('Removed 1 leftover download');
+    jest.spyOn(Directory.prototype, 'list').mockReturnValue([
+      {
+        uri: 'file:///cache/a.apk',
+        delete: () => {
+          throw 'busy'; // eslint-disable-line no-throw-literal
+        },
+      } as never,
+    ]);
+    await downloadAndInstall(update);
+    expect(logged()).toContain('Could not remove a leftover download: busy');
+  });
+
+  it('uses a fresh name when a leftover cannot be deleted', async () => {
+    files['file:///cache/findcache-2026.11.04.001.apk'] = 'locked';
+    jest.spyOn(Directory.prototype, 'list').mockReturnValue([
+      {
+        uri: 'file:///cache/findcache-2026.11.04.001.apk',
+        delete: () => {
+          throw new Error('busy');
+        },
+      } as never,
+    ]);
+    await downloadAndInstall(update);
+    const [, destination] = jest.mocked(File.downloadFileAsync).mock.calls[0];
+    expect((destination as File).uri).toMatch(/^file:\/\/\/cache\/findcache-2026\.11\.04\.001-\d+\.apk$/);
+    expect(logged()).toContain('Could not remove a leftover download: busy');
   });
 });

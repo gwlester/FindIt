@@ -23,6 +23,7 @@ jest.mock('../../modules/findit-native', () => ({
 }));
 jest.mock('expo-device', () => require('./expoDeviceMock'));
 jest.mock('expo-file-system', () => require('./fileSystemMock'));
+jest.mock('expo-clipboard', () => ({ setStringAsync: jest.fn(async () => true) }));
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
 
 beforeEach(() => {
