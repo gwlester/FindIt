@@ -20,6 +20,7 @@ import { importPlaces, listPlaces, placesForExport, type Place } from '../db/loc
 import { addShare, listShareHistory, pruneShareHistory } from '../db/shareHistory';
 import { useSettings } from '../hooks/useSettings';
 import { askIncludeFinds } from '../lib/askIncludeFinds';
+import { useScrollPast } from '../lib/insets';
 import { formatLatLon } from '../lib/format';
 import { useTheme } from '../lib/theme';
 
@@ -47,6 +48,7 @@ export default function ShareScreen() {
   const theme = useTheme();
   const { settings, loaded } = useSettings();
   const insets = useSafeAreaInsets();
+  const scrollPast = useScrollPast();
 
   const [bluetooth, setBluetooth] = useState<string>('Unknown');
   const [places, setPlaces] = useState<Place[]>([]);
@@ -201,7 +203,7 @@ export default function ShareScreen() {
 
       {received ? (
         <Section title={`From ${received.from}`} style={styles.fill}>
-          <ScrollView style={styles.fill} persistentScrollbar>
+          <ScrollView testID="scroll" style={styles.fill} persistentScrollbar onLayout={scrollPast.onLayout} contentContainerStyle={{ paddingBottom: scrollPast.contentPadding }}>
             {received.places.length === 0 ? (
               <Text style={{ color: theme.muted }}>They aren’t sharing any places.</Text>
             ) : (
@@ -233,7 +235,7 @@ export default function ShareScreen() {
             onPress={toggleScanning}
             disabled={!bluetoothReady || fetching != null}
           />
-          <ScrollView style={styles.fill} persistentScrollbar>
+          <ScrollView testID="scroll" style={styles.fill} persistentScrollbar onLayout={scrollPast.onLayout} contentContainerStyle={{ paddingBottom: scrollPast.contentPadding }}>
             {scanning && nearby.size === 0 ? (
               <View style={styles.row}>
                 <ActivityIndicator color={theme.accent} />
@@ -267,7 +269,7 @@ export default function ShareScreen() {
         <Text style={{ color: theme.muted, marginBottom: 6 }}>
           Nearby FindCache users will see you as “{settings.displayName}”.
         </Text>
-        <ScrollView style={styles.fill} persistentScrollbar>
+        <ScrollView testID="scroll" style={styles.fill} persistentScrollbar onLayout={scrollPast.onLayout} contentContainerStyle={{ paddingBottom: scrollPast.contentPadding }}>
           {places.map((p) => (
             <Checkbox
               key={p.id}

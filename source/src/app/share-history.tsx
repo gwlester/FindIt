@@ -7,6 +7,7 @@ import { Button } from '../components/ui';
 import { clearShareHistory, listShareHistory, pruneShareHistory, retentionLabel, type ShareRecord } from '../db/shareHistory';
 import { useSettings } from '../hooks/useSettings';
 import { formatDate } from '../lib/format';
+import { useScrollPast } from '../lib/insets';
 import { useTheme } from '../lib/theme';
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
@@ -16,6 +17,7 @@ export default function ShareHistoryScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const scrollPast = useScrollPast();
   const { settings, loaded } = useSettings();
   const [records, setRecords] = useState<ShareRecord[]>([]);
   const days = settings.shareHistoryDays;
@@ -42,6 +44,9 @@ export default function ShareHistoryScreen() {
         data={records}
         keyExtractor={(r) => String(r.id)}
         persistentScrollbar
+        testID="scroll"
+        onLayout={scrollPast.onLayout}
+        contentContainerStyle={{ paddingBottom: scrollPast.contentPadding }}
         ListEmptyComponent={<Text style={{ color: theme.muted }}>Nobody has downloaded your places yet.</Text>}
         renderItem={({ item }) => (
           <View

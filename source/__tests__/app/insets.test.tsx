@@ -1,11 +1,16 @@
-import { act, screen } from '@testing-library/react-native';
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import { Dimensions, Keyboard, StyleSheet } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import CompassScreen from '../../src/app/compass/[id]';
 import AboutScreen from '../../src/app/about';
+import DebugLogScreen from '../../src/app/debug-log';
+import FilesScreen from '../../src/app/files';
 import HelpScreen from '../../src/app/help';
+import PlacesScreen from '../../src/app/index';
+import OfflineMapsScreen from '../../src/app/offline-maps';
+import ShareHistoryScreen from '../../src/app/share-history';
 import LicensesScreen from '../../src/app/licenses';
 import PlaceScreen from '../../src/app/place';
 import SettingsScreen from '../../src/app/settings';
@@ -71,4 +76,35 @@ test('Place reserves room for the keyboard so Save can be scrolled above it', as
   expect(bottomPadding()).toBe(resting - NAV_BAR + 300);
   await act(async () => listeners.keyboardDidHide({}));
   expect(bottomPadding()).toBe(resting);
+});
+
+// Lists and scrolling regions (not whole-screen scrolls) also scroll past their end, measured from their own height.
+describe('lists scroll past their end', () => {
+  const VIEWPORT = 400;
+  const expectScrollPast = async () => {
+    const list = screen.getAllByTestId('scroll')[0];
+    await act(async () => fireEvent(list, 'layout', { nativeEvent: { layout: { height: VIEWPORT } } }));
+    expect(StyleSheet.flatten(screen.getAllByTestId('scroll')[0].props.contentContainerStyle).paddingBottom).toBe(VIEWPORT - 56);
+  };
+
+  test('Places', async () => {
+    await renderApp(<PlacesScreen />, { places: [place('Oak')] });
+    await expectScrollPast();
+  });
+  test('Share history', async () => {
+    await renderApp(<ShareHistoryScreen />);
+    await expectScrollPast();
+  });
+  test('Offline maps', async () => {
+    await renderApp(<OfflineMapsScreen />);
+    await expectScrollPast();
+  });
+  test('Debug log', async () => {
+    await renderApp(<DebugLogScreen />);
+    await expectScrollPast();
+  });
+  test('Files (the export list)', async () => {
+    await renderApp(<FilesScreen />, { places: [place('Oak')] });
+    await expectScrollPast();
+  });
 });

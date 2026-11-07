@@ -2,6 +2,12 @@
 
 Completed work, newest first.
 
+## 2026-11-06: Every scrolling page and list scrolls past its end
+
+Consistency follow-up: the home list, Share, Share history, Files, Offline maps and Debug log now
+let their last line scroll up to just below the top of their own area (`useScrollPast`, measured
+from the list's height), matching the help pages and forms. Built test-first.
+
 ## 2026-11-06: Add Place Save hidden by the keyboard
 
 Reported on the first scroll-past release: on Add Place the Save button stayed hidden behind the

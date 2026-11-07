@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Field } from '../components/ui';
 import { useSettings } from '../hooks/useSettings';
 import { clearDebugLog, debugLog, flushDebugLog, formatDebugLog, readDebugLog, type DebugEntry } from '../lib/debugLog';
+import { useScrollPast } from '../lib/insets';
 import { describeApp } from '../lib/appInfo';
 import { reportFailure } from '../lib/failure';
 import { MAX_DESCRIPTION_LENGTH, buildUploadText, uploadDebugLog, uploadEnabled, uploadEntryMessage } from '../lib/logUpload';
@@ -28,6 +29,7 @@ export default function DebugLogScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const scrollPast = useScrollPast();
   const { settings } = useSettings();
   const [entries, setEntries] = useState<DebugEntry[]>([]);
   const [problem, setProblem] = useState('');
@@ -109,6 +111,9 @@ export default function DebugLogScreen() {
         data={entries}
         keyExtractor={(e) => String(e.id)}
         persistentScrollbar
+        testID="scroll"
+        onLayout={scrollPast.onLayout}
+        contentContainerStyle={{ paddingBottom: scrollPast.contentPadding }}
         ListEmptyComponent={<Text style={{ color: theme.muted, padding: 8 }}>The log is empty.</Text>}
         renderItem={({ item }) => (
           <Text testID="debug-entry" style={[styles.entry, { color: theme.text }]}>
