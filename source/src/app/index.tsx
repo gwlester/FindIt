@@ -11,6 +11,7 @@ import { deletePlace, listPlaces, type Place } from '../db/locations';
 import { usePosition } from '../hooks/usePosition';
 import { useSettings } from '../hooks/useSettings';
 import { mapsSupported } from '../lib/mapSupport';
+import { useScrollPast } from '../lib/insets';
 import { formatDistance, formatLatLon } from '../lib/format';
 import { distanceMeters } from '../lib/geo';
 import { useTheme } from '../lib/theme';
@@ -19,6 +20,7 @@ export default function PlacesScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const scrollPast = useScrollPast();
   const { settings, updateSettings } = useSettings();
   const { position } = usePosition();
   const [places, setPlaces] = useState<Place[]>([]);
@@ -87,7 +89,9 @@ export default function PlacesScreen() {
         keyExtractor={(p) => String(p.id)}
         style={styles.list}
         persistentScrollbar
-        contentContainerStyle={places.length === 0 ? styles.emptyContainer : styles.listContent}
+        testID="scroll"
+        onLayout={scrollPast.onLayout}
+        contentContainerStyle={places.length === 0 ? styles.emptyContainer : [styles.listContent, { paddingBottom: scrollPast.contentPadding }]}
         ListHeaderComponent={
           places.length > 0 ? (
             <View>

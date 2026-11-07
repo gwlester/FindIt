@@ -3,6 +3,7 @@ import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { formatDate } from '../lib/format';
+import { useScrollPast } from '../lib/insets';
 import { deleteDownload, listDownloads, watchDownload, type Download } from '../lib/offlineMaps';
 import { useTheme } from '../lib/theme';
 
@@ -13,6 +14,7 @@ const LAYER_LABEL = { streets: 'Map', satellite: 'Satellite' } as const;
 export default function OfflineMapsScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const scrollPast = useScrollPast();
   const [downloads, setDownloads] = useState<Download[]>([]);
 
   const reload = useCallback(async () => setDownloads(await listDownloads()), []);
@@ -59,6 +61,9 @@ export default function OfflineMapsScreen() {
         data={downloads}
         keyExtractor={(d) => d.id}
         persistentScrollbar
+        testID="scroll"
+        onLayout={scrollPast.onLayout}
+        contentContainerStyle={{ paddingBottom: scrollPast.contentPadding }}
         ListEmptyComponent={<Text style={{ color: theme.muted }}>No offline maps yet.</Text>}
         renderItem={({ item }) => {
           const state = item.complete ? 'ready' : `downloading ${Math.floor(item.percentage)}%`;

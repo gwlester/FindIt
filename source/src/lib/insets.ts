@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Keyboard, useWindowDimensions } from 'react-native';
+import { Keyboard, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LAST_LINE_MARGIN } from '../components/InsetBackdrop';
@@ -33,4 +33,17 @@ export function useKeyboardHeight(): number {
     };
   }, []);
   return keyboard;
+}
+
+/**
+ * For a list or scrolling region (not a whole-screen scroll): bottom padding that lets its last line
+ * be scrolled up to just below the top of the region. Spread the result onto the list:
+ * `onLayout` measures it, `contentPadding` goes in `contentContainerStyle.paddingBottom`.
+ */
+export function useScrollPast(): { onLayout: (event: LayoutChangeEvent) => void; contentPadding: number } {
+  const [viewport, setViewport] = useState(0);
+  return {
+    onLayout: (event) => setViewport(event.nativeEvent.layout.height),
+    contentPadding: Math.max(16, viewport - LAST_LINE_MARGIN),
+  };
 }

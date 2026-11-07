@@ -9,6 +9,7 @@ import { importPlaces, listPlaces, placesForExport, type Place } from '../db/loc
 import { pickImportFile, shareExport, type ImportedFile } from '../formats/files';
 import { FORMATS, type ExchangeFormat } from '../formats/index';
 import { askIncludeFinds } from '../lib/askIncludeFinds';
+import { useScrollPast } from '../lib/insets';
 import { formatLatLon } from '../lib/format';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../lib/theme';
@@ -29,6 +30,7 @@ export default function FilesScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const scrollPast = useScrollPast();
   const { settings } = useSettings();
 
   const [places, setPlaces] = useState<Place[]>([]);
@@ -100,7 +102,7 @@ export default function FilesScreen() {
             {FORMATS[pending.format].label} · {plural(pending.places.length, 'place')}
             {pending.skipped ? ` · ${pending.skipped} other item${pending.skipped === 1 ? '' : 's'} skipped` : ''}
           </Text>
-          <ScrollView style={styles.fill} persistentScrollbar>
+          <ScrollView testID="scroll" style={styles.fill} persistentScrollbar onLayout={scrollPast.onLayout} contentContainerStyle={{ paddingBottom: scrollPast.contentPadding }}>
             {pending.places.map((p, i) => (
               <Checkbox
                 key={i}
@@ -130,7 +132,7 @@ export default function FilesScreen() {
       )}
 
       <Section title="Export" style={styles.fill}>
-        <ScrollView style={styles.fill} persistentScrollbar>
+        <ScrollView testID="scroll" style={styles.fill} persistentScrollbar onLayout={scrollPast.onLayout} contentContainerStyle={{ paddingBottom: scrollPast.contentPadding }}>
           {places.map((p) => (
             <Checkbox
               key={p.id}
