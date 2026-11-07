@@ -20,14 +20,14 @@ import { formatDistance, formatLatLon } from '../../lib/format';
 import { bearingDegrees, combinedUncertainty, compassPoint, distanceMeters } from '../../lib/geo';
 import { compassMapLayer } from '../../lib/compassMap';
 import { mapScale, showSearchArea } from '../../lib/searchArea';
-import { useBottomPadding } from '../../lib/insets';
+import { useScrollPastPadding } from '../../lib/insets';
 import { mapsSupported } from '../../lib/mapSupport';
 import { useTheme } from '../../lib/theme';
 
 export default function CompassScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
-  const bottom = useBottomPadding();
+  const bottom = useScrollPastPadding();
   const { width } = useWindowDimensions();
   const { settings } = useSettings();
   const { id } = useLocalSearchParams<{ id: string }>();

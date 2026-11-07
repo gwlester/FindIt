@@ -2,6 +2,14 @@
 
 Completed work, newest first.
 
+## 2026-11-06: Add Place Save hidden by the keyboard
+
+Reported on the first scroll-past release: on Add Place the Save button stayed hidden behind the
+keyboard while entering a Note, and the form would not scroll far enough. Cause: only the help
+pages had the scroll-past space, and edge-to-edge Android does not resize the screen for the
+keyboard. Built test-first: Place, Settings and Compass now use `useScrollPastPadding`, which also
+reserves the keyboard's height (`useKeyboardHeight`); the unused `useBottomPadding` was removed.
+
 ## 2026-11-06: Dialogs and help pages scroll past their end
 
 Audit for the navigation-bar and camera-cutout problem found in the VCM apps. FindCache is
