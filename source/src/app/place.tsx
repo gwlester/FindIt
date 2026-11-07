@@ -12,7 +12,7 @@ import { useSettings } from '../hooks/useSettings';
 import type { Average } from '../lib/averaging';
 import { formatDistance } from '../lib/format';
 import { parseCoordinate } from '../lib/geo';
-import { useBottomPadding } from '../lib/insets';
+import { useScrollPastPadding } from '../lib/insets';
 import { useTheme } from '../lib/theme';
 
 const MAX_NAME_LENGTH = 60;
@@ -20,7 +20,7 @@ const MAX_NAME_LENGTH = 60;
 export default function PlaceScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
-  const bottom = useBottomPadding();
+  const bottom = useScrollPastPadding();
   const { settings } = useSettings();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const editingId = id ? Number(id) : null;

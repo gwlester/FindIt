@@ -10,7 +10,7 @@ import type { FindMode } from '../db/finds';
 import type { CompassBackground } from '../lib/compassMap';
 import { HISTORY_RETENTION_OPTIONS, retentionLabel } from '../db/shareHistory';
 import type { Units } from '../lib/format';
-import { useBottomPadding } from '../lib/insets';
+import { useScrollPastPadding } from '../lib/insets';
 import { mapsSupported } from '../lib/mapSupport';
 import { useTheme } from '../lib/theme';
 import { canSelfUpdate } from '../lib/updates';
@@ -32,7 +32,7 @@ export default function SettingsScreen() {
 function SettingsForm() {
   const { settings, updateSettings } = useSettings();
   const theme = useTheme();
-  const bottom = useBottomPadding();
+  const bottom = useScrollPastPadding();
   const [displayName, setDisplayName] = useState(settings.displayName);
   const [units, setUnits] = useState<Units>(settings.units);
   const [highAccuracyGps, setHighAccuracyGps] = useState(settings.highAccuracyGps);
