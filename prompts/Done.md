@@ -2,6 +2,18 @@
 
 Completed work, newest first.
 
+## 2026-11-06: Dialogs and help pages scroll past their end
+
+Audit for the navigation-bar and camera-cutout problem found in the VCM apps. FindCache is
+portrait-only and already padded every screen for the navigation bar; its two dialogs were not.
+Built test-first:
+- **Dialogs:** the help menu and the "Mark as found" dialog sit in `InsetBackdrop`, which adds the
+  device insets to the backdrop padding and scrolls, so on a small phone (or with the keyboard
+  open) the last line, buttons included, can be brought up to just below the top of the screen.
+  Layout is otherwise unchanged (the card sits in a box one screen tall).
+- **Help pages:** Help, About and Licences get the same scroll-past space (`useScrollPastPadding`).
+- Not verified on a device (landscape is locked, so only portrait cutouts apply).
+
 ## 2026-11-03: Debug logging; nearby sharing finds nobody
 
 Reported: Share → Look for nearby never finds anyone. Android only reports nearby Bluetooth

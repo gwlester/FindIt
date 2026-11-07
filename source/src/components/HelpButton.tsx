@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../lib/theme';
+import { InsetBackdrop } from './InsetBackdrop';
 
 type MenuItem = { label: string; go: () => void };
 
@@ -23,7 +24,7 @@ export function HelpButton({ topic }: { topic: string }) {
         <Text style={[styles.icon, { color: theme.accent, borderColor: theme.accent }]}>?</Text>
       </Pressable>
       <Modal testID="help-menu" visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <View style={styles.backdrop}>
+        <InsetBackdrop style={styles.backdrop}>
           <View style={[styles.menu, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             {items.map(({ label, go }) => (
               <Pressable
@@ -42,7 +43,7 @@ export function HelpButton({ topic }: { topic: string }) {
               <Text style={[styles.label, { color: theme.muted }]}>Close</Text>
             </Pressable>
           </View>
-        </View>
+        </InsetBackdrop>
       </Modal>
     </>
   );

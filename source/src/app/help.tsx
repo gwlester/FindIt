@@ -3,13 +3,13 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '../components/ui';
 import { GUIDE_INTRO, HELP_TOPICS, helpTopic, type HelpTopic } from '../help/content';
-import { useBottomPadding } from '../lib/insets';
+import { useScrollPastPadding } from '../lib/insets';
 import { useTheme } from '../lib/theme';
 
 /** Help for one screen (`topic`), or the full "How to use FindCache" guide. */
 export default function HelpScreen() {
   const theme = useTheme();
-  const bottom = useBottomPadding();
+  const bottom = useScrollPastPadding();
   const { topic } = useLocalSearchParams<{ topic?: string }>();
   const one = helpTopic(topic);
 

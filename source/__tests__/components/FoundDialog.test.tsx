@@ -21,3 +21,8 @@ test('the Android back button cancels', async () => {
   expect(onCancel).toHaveBeenCalled();
   expect(onSave).not.toHaveBeenCalled();
 });
+
+test('the dialog scrolls past its end so the buttons can clear the keyboard', async () => {
+  await render(<FoundDialog visible updating={false} onSave={jest.fn()} onCancel={jest.fn()} />);
+  expect(screen.getByTestId('inset-backdrop-scroll-space')).toBeOnTheScreen();
+});

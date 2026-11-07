@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react-native';
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -37,4 +37,14 @@ test('Compass leaves room for the navigation bar', async () => {
   jest.mocked(useLocalSearchParams).mockReturnValue({ id: '1' });
   await renderApp(<CompassScreen />, { places: [place('Oak')] });
   expect(bottomPadding()).toBeGreaterThanOrEqual(NAV_BAR + 16);
+});
+
+// The help pages scroll past their end so the last line can be brought up near the top of the screen.
+test.each([
+  ['Help', <HelpScreen key="h" />],
+  ['About', <AboutScreen key="a" />],
+  ['Licences', <LicensesScreen key="l" />],
+])('%s scrolls past its end', async (_name, ui) => {
+  await renderApp(ui);
+  expect(bottomPadding()).toBe(NAV_BAR + Dimensions.get('window').height - 0 - 56 - 56);
 });

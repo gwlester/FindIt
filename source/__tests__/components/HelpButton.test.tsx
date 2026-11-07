@@ -34,3 +34,10 @@ test('the menu can be closed with the back button', async () => {
   await act(async () => screen.getByTestId('help-menu').props.onRequestClose());
   expect(screen.queryByText('Help for this screen')).not.toBeOnTheScreen();
 });
+
+test('the help menu scrolls past its end so small phones can reach every line', async () => {
+  const user = userEvent.setup();
+  await render(<HelpButton topic="map" />);
+  await user.press(screen.getByRole('button', { name: 'Help' }));
+  expect(screen.getByTestId('inset-backdrop-scroll-space')).toBeOnTheScreen();
+});

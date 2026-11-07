@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../lib/theme';
+import { InsetBackdrop } from './InsetBackdrop';
 import { Button, Field } from './ui';
 
 type Props = {
@@ -23,7 +24,7 @@ export function FoundDialog({ visible, updating, onSave, onCancel }: Props) {
   };
   return (
     <Modal testID="found-dialog" visible={visible} transparent animationType="fade" onRequestClose={() => close(false)}>
-      <View style={styles.backdrop}>
+      <InsetBackdrop style={styles.backdrop}>
         <View style={[styles.dialog, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <Text style={[styles.title, { color: theme.text }]}>{updating ? 'Update find' : 'Mark as found'}</Text>
           <Field label="Comment" value={comment} onChangeText={setComment} placeholder="Comment (optional)" multiline />
@@ -36,7 +37,7 @@ export function FoundDialog({ visible, updating, onSave, onCancel }: Props) {
             </View>
           </View>
         </View>
-      </View>
+      </InsetBackdrop>
     </Modal>
   );
 }

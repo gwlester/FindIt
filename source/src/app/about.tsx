@@ -4,7 +4,7 @@ import { Image, Linking, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { QrCode } from '../components/QrCode';
 import { Button } from '../components/ui';
-import { useBottomPadding } from '../lib/insets';
+import { useScrollPastPadding } from '../lib/insets';
 import { DOWNLOAD_URL } from '../lib/links';
 import { useTheme } from '../lib/theme';
 
@@ -13,7 +13,7 @@ const ICON = require('../../assets/icon.png');
 /** App name, version, a short description and the licences. */
 export default function AboutScreen() {
   const theme = useTheme();
-  const bottom = useBottomPadding();
+  const bottom = useScrollPastPadding();
   const version = Constants.expoConfig?.version ?? 'unknown';
   const licences = (kind: string) => router.push({ pathname: '/licenses', params: { kind } });
 
